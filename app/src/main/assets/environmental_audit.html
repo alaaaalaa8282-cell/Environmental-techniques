@@ -1,0 +1,3743 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔍 Environmental Audit Generator | مولد تقارير التدقيق البيئي - 110 مشروعاً</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
+  :root {
+    --primary: #0d4f4f; --secondary: #1a7a7a; --accent: #d97706;
+    --danger: #dc2626; --success: #059669; --warning: #f59e0b;
+    --bg: #f0fdfa; --card-bg: #ffffff; --text: #0f172a; --text-light: #475569;
+    --border: #cbd5e1; --shadow: 0 4px 6px rgba(0,0,0,0.07);
+  }
+  body { background: var(--bg); color: var(--text); line-height: 1.8; }
+  .header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white; padding: 40px 20px; text-align: center; box-shadow: var(--shadow); position: relative;
+  }
+  .header h1 { font-size: 2.2em; margin-bottom: 10px; letter-spacing: 1px; }
+  .header p { opacity: 0.9; font-size: 1.1em; }
+  .lang-toggle {
+    position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.2);
+    border: 2px solid white; color: white; padding: 10px 20px; border-radius: 25px;
+    cursor: pointer; font-size: 1em; font-weight: bold; transition: all 0.3s;
+  }
+  .lang-toggle:hover { background: rgba(255,255,255,0.3); }
+  .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+  .input-section {
+    background: var(--card-bg); padding: 30px; border-radius: 8px; box-shadow: var(--shadow);
+    margin-bottom: 30px; text-align: center; border-top: 4px solid var(--primary);
+  }
+  .project-selector, .search-input, .audit-type {
+    width: 100%; max-width: 700px; padding: 14px 20px; border: 2px solid var(--border);
+    border-radius: 6px; font-size: 1.05em; background: var(--bg); color: var(--text);
+    margin-bottom: 15px; transition: all 0.3s;
+  }
+  .project-selector:focus, .search-input:focus, .audit-type:focus {
+    outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(13,79,79,0.1);
+  }
+  .suggestions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 15px; }
+  .suggestion-chip {
+    padding: 8px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 20px;
+    cursor: pointer; font-size: 0.9em; transition: all 0.3s; color: var(--text);
+  }
+  .suggestion-chip:hover { background: var(--primary); color: white; border-color: var(--primary); }
+  .generate-btn {
+    background: var(--primary); color: white; border: none;
+    padding: 14px 40px; border-radius: 6px; font-size: 1.1em; font-weight: bold;
+    cursor: pointer; margin-top: 20px; transition: all 0.3s;
+  }
+  .generate-btn:hover { background: var(--secondary); transform: translateY(-2px); }
+  .report-section { display: none; animation: fadeIn 0.6s; }
+  .report-section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .report-document {
+    background: white; padding: 50px; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    border: 1px solid var(--border);
+  }
+  .report-cover {
+    text-align: center; padding: 40px 0; border-bottom: 3px solid var(--primary); margin-bottom: 40px;
+  }
+  .report-cover h1 { color: var(--primary); font-size: 2em; margin-bottom: 15px; }
+  .report-cover .meta { color: var(--text-light); font-size: 1em; margin-top: 20px; }
+  .report-cover .meta div { margin: 8px 0; }
+  .report-section-title {
+    color: var(--primary); font-size: 1.5em; margin: 35px 0 20px 0;
+    padding-bottom: 10px; border-bottom: 2px solid var(--secondary);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .report-section-title .num {
+    background: var(--primary); color: white; width: 35px; height: 35px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9em;
+  }
+  .report-block {
+    background: #f0fdfa; padding: 20px; border-radius: 6px; margin: 15px 0;
+    border-right: 4px solid var(--secondary);
+  }
+  [dir="ltr"] .report-block { border-right: none; border-left: 4px solid var(--secondary); }
+  .report-block strong { color: var(--primary); }
+  .report-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em; }
+  .report-table th {
+    background: var(--primary); color: white; padding: 12px; text-align: right; font-size: 0.9em;
+  }
+  [dir="ltr"] .report-table th { text-align: left; }
+  .report-table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .report-table tr:nth-child(even) { background: #f0fdfa; }
+  .status-badge {
+    display: inline-block; padding: 4px 12px; border-radius: 15px;
+    font-size: 0.8em; font-weight: bold; color: white;
+  }
+  .status-compliant { background: var(--success); }
+  .status-non-compliant { background: var(--danger); }
+  .status-partial { background: var(--warning); color: #000; }
+  .ncr-box {
+    background: #fef2f2; padding: 15px; border-radius: 6px; margin: 10px 0;
+    border-right: 4px solid var(--danger);
+  }
+  [dir="ltr"] .ncr-box { border-right: none; border-left: 4px solid var(--danger); }
+  .ncr-box strong { color: var(--danger); }
+  .cap-box {
+    background: #fffbeb; padding: 15px; border-radius: 6px; margin: 10px 0;
+    border-right: 4px solid var(--accent);
+  }
+  [dir="ltr"] .cap-box { border-right: none; border-left: 4px solid var(--accent); }
+  .cap-box strong { color: var(--accent); }
+  .action-buttons { display: flex; gap: 10px; justify-content: center; margin: 25px 0; flex-wrap: wrap; }
+  .action-btn {
+    padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer;
+    font-weight: bold; transition: all 0.3s; font-size: 1em;
+  }
+  .btn-print { background: var(--primary); color: white; }
+  .btn-new { background: var(--secondary); color: white; }
+  .action-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .executive-summary {
+    background: linear-gradient(135deg, #ccfbf1, #99f6e4); padding: 25px; border-radius: 8px;
+    margin: 20px 0; border-right: 5px solid var(--primary);
+  }
+  [dir="ltr"] .executive-summary { border-right: none; border-left: 5px solid var(--primary); }
+  .score-card {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px; margin: 20px 0;
+  }
+  .score-item {
+    background: var(--card-bg); padding: 20px; border-radius: 8px; text-align: center;
+    box-shadow: var(--shadow); border-top: 4px solid var(--primary);
+  }
+  .score-item .number { font-size: 2.5em; font-weight: bold; color: var(--primary); }
+  .score-item .label { color: var(--text-light); font-size: 0.9em; margin-top: 5px; }
+  .review-section { display: none; animation: fadeIn 0.6s; }
+  .review-section.active { display: block; }
+  .review-document {
+    background: white; padding: 35px; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    border: 1px solid var(--border); margin-bottom: 30px;
+  }
+  .review-title { color: var(--primary); font-size: 1.6em; margin-bottom: 8px; }
+  .review-hint { color: var(--text-light); font-size: 0.95em; margin-bottom: 20px; line-height: 1.7; }
+  .review-section-title {
+    color: var(--primary); font-size: 1.2em; margin: 30px 0 12px 0;
+    padding-bottom: 8px; border-bottom: 2px solid var(--secondary);
+  }
+  .review-list { display: flex; flex-direction: column; gap: 10px; }
+  .review-row {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 14px 16px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .review-row-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .review-row-head input[type="text"] {
+    flex: 1; min-width: 160px; padding: 6px 10px; border: 1px solid var(--border);
+    border-radius: 4px; font-weight: bold; color: var(--primary); background: white;
+  }
+  .review-status-group { display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.9em; }
+  .review-status-group label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+  .review-row textarea, .review-row .review-field input[type="text"] {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px;
+    background: white; color: var(--text); font-size: 0.92em; font-family: inherit;
+  }
+  .review-row textarea { min-height: 44px; resize: vertical; }
+  .review-fields-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; }
+  .review-field label { display: block; font-size: 0.8em; color: var(--text-light); margin-bottom: 3px; }
+  .review-field select {
+    width: 100%; padding: 7px 8px; border: 1px solid var(--border); border-radius: 4px; background: white;
+  }
+  .review-remove-btn {
+    background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.1em;
+    margin-inline-start: auto; padding: 2px 8px;
+  }
+  .review-include-check { display: flex; align-items: center; gap: 6px; font-size: 0.9em; }
+  .review-add-btn {
+    margin-top: 10px; background: white; border: 2px dashed var(--secondary); color: var(--secondary);
+    padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold;
+  }
+  .review-add-btn:hover { background: var(--bg); }
+  @media print {
+    body { background: white; }
+    .header, .input-section, .action-buttons, .lang-toggle { display: none !important; }
+    .report-document { box-shadow: none; border: none; padding: 20px; }
+    .report-section { display: block !important; }
+    .report-section-title { page-break-before: always; }
+    .report-section-title:first-of-type { page-break-before: avoid; }
+  }
+  @media (max-width: 768px) {
+    .report-document { padding: 20px; }
+    .header h1 { font-size: 1.6em; }
+    .lang-toggle { top: 10px; left: 10px; padding: 8px 15px; font-size: 0.9em; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="lang-toggle" onclick="toggleLanguage()">🌐 English</button>
+  <h1 id="mainTitle">🔍 مولد تقارير التدقيق البيئي (Environmental Audit)</h1>
+  <p id="mainSubtitle">نظام احترافي لتقييم الامتثال البيئي للمنشآت القائمة - 110 مشروعاً</p>
+</div>
+
+<div class="container">
+  <div class="input-section">
+    <h2 style="color: var(--primary); margin-bottom: 20px;" id="selectTitle"> تحديد المشروع للتدقيق</h2>
+    <input type="text" id="searchInput" class="search-input" placeholder="🔍 ابحث عن المشروع..." oninput="filterSuggestions()" onkeypress="handleEnter(event)">
+    <select id="projectSelect" class="project-selector" onchange="selectFromDropdown()">
+      <option value="">📋 اختر من القائمة...</option>
+    </select>
+    
+    <div style="margin-top: 20px;">
+      <label id="auditTypeLabel" style="color: var(--primary); font-weight: bold; display: block; margin-bottom: 10px;">📊 نوع التدقيق:</label>
+      <select id="auditType" class="audit-type">
+        <option value="compliance">تدقيق الامتثال (Compliance Audit)</option>
+        <option value="gap">تحليل الفجوات (Gap Analysis)</option>
+        <option value="iso">تدقيق ISO 14001</option>
+        <option value="pre-purchase">تدقيق ما قبل الشراء (Due Diligence)</option>
+      </select>
+    </div>
+    
+    <div class="suggestions" id="suggestions"></div>
+    <button class="generate-btn" onclick="openReview()" id="generateBtn"> مراجعة واختيار بنود التدقيق</button>
+  </div>
+
+  <div id="reviewSection" class="review-section">
+    <div class="review-document">
+      <h2 class="review-title" id="reviewProjectTitle"></h2>
+      <p class="review-hint" id="reviewHint">حدد لكل بند الحالة الفعلية في هذا الموقع بالتحديد (مطابق / جزئي / غير مطابق / غير منطبق)، وعدّل التفاصيل كما تشاء. البنود غير المنطبقة على هذا الموقع لن تظهر في التقرير النهائي. تقدر تضيف بنود مخصصة أو تحذف أي بند غير مرتبط بالموقع.</p>
+
+      <h3 class="review-section-title">1) مجالات التدقيق</h3>
+      <div id="reviewAuditAreas" class="review-list"></div>
+      <button type="button" class="review-add-btn" onclick="addAuditAreaRow()">+ إضافة بند تدقيق مخصص</button>
+
+      <h3 class="review-section-title">2) الفجوات التنظيمية</h3>
+      <div id="reviewGaps" class="review-list"></div>
+      <button type="button" class="review-add-btn" onclick="addGapRow()">+ إضافة فجوة مخصصة</button>
+
+      <h3 class="review-section-title">3) المخالفات (NCRs)</h3>
+      <div id="reviewNCRs" class="review-list"></div>
+      <button type="button" class="review-add-btn" onclick="addNCRRow()">+ إضافة مخالفة مخصصة</button>
+
+      <h3 class="review-section-title">4) خطة العمل التصحيحية</h3>
+      <div id="reviewCAP" class="review-list"></div>
+      <button type="button" class="review-add-btn" onclick="addCAPRow()">+ إضافة إجراء تصحيحي مخصص</button>
+
+      <div class="action-buttons" style="margin-top:30px;">
+        <button class="action-btn btn-new" onclick="cancelReview()">↩️ رجوع</button>
+        <button class="action-btn btn-print" onclick="generateFinalReport()">✅ توليد التقرير بناءً على الاختيارات</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="reportSection" class="report-section">
+    <div class="action-buttons">
+      <button class="action-btn btn-print" onclick="window.print()" id="printBtn">🖨️ طباعة / حفظ PDF</button>
+      <button class="action-btn btn-new" onclick="newReport()" id="newBtn">🔄 تقرير جديد</button>
+    </div>
+    <div id="reportContent" class="report-document"></div>
+  </div>
+</div>
+
+<script>
+let currentLang = 'ar';
+
+const translations = {
+  ar: {
+    mainTitle: '🔍 مولد تقارير التدقيق البيئي (Environmental Audit)',
+    mainSubtitle: 'نظام احترافي لتقييم الامتثال البيئي للمنشآت القائمة - 110 مشروعاً',
+    selectTitle: '🎯 تحديد المشروع للتدقيق',
+    searchPlaceholder: '🔍 ابحث عن المشروع...',
+    selectPlaceholder: '📋 اختر من القائمة...',
+    auditTypeLabel: '📊 نوع التدقيق:',
+    auditTypes: {
+      compliance: 'تدقيق الامتثال (Compliance Audit)',
+      gap: 'تحليل الفجوات (Gap Analysis)',
+      iso: 'تدقيق ISO 14001',
+      prePurchase: 'تدقيق ما قبل الشراء (Due Diligence)'
+    },
+    generateBtn: '📄 إنشاء تقرير التدقيق',
+    printBtn: '🖨️ طباعة / حفظ PDF',
+    newBtn: '🔄 تقرير جديد',
+    langBtn: '🌐 English',
+    notFound: '❌ المشروع غير موجود. اختر من القائمة أو تأكد من الإملاء.',
+    reportDate: 'تاريخ التدقيق',
+    reportType: 'نوع الوثيقة',
+    reportStatus: 'الحالة',
+    reportStatusValue: 'تقرير تدقيق نهائي',
+    executiveSummary: ' الملخص التنفيذي (Executive Summary)',
+    executiveSummaryText: 'يهدف هذا التقرير إلى تقييم مدى امتثال المنشأة',
+    executiveSummaryText2: 'للاشتراطات البيئية المحلية والدولية، وتحديد الفجوات والمخالفات، ووضع خطة عمل تصحيحية شاملة.',
+    section1: 'نطاق ومنهجية التدقيق (Audit Scope & Methodology)',
+    section2: 'حالة الامتثال البيئي (Compliance Status)',
+    section3: 'تحليل الفجوات (Gap Analysis)',
+    section4: 'تقارير عدم الامتثال (NCRs - Non-Conformance Reports)',
+    section5: 'خطة العمل التصحيحية (CAP - Corrective Action Plan)',
+    section6: 'التوصيات والخاتمة (Recommendations & Conclusion)',
+    auditScope: 'نطاق التدقيق',
+    auditMethodology: 'منهجية التدقيق',
+    auditCriteria: 'معايير التدقيق',
+    complianceStatus: 'حالة الامتثال',
+    compliant: 'مطابق',
+    nonCompliant: 'غير مطابق',
+    partialCompliance: 'مطابق جزئياً',
+    gapAnalysis: 'تحليل الفجوات',
+    requirement: 'المتطلب',
+    currentStatus: 'الوضع الحالي',
+    gap: 'الفجوة',
+    priority: 'الأولوية',
+    high: 'عالية',
+    medium: 'متوسطة',
+    low: 'منخفضة',
+    ncrTitle: 'تقارير عدم الامتثال',
+    ncrNumber: 'رقم NCR',
+    ncrDescription: 'وصف المخالفة',
+    ncrSeverity: 'الخطورة',
+    ncrCorrectiveAction: 'الإجراء التصحيحي المطلوب',
+    capTitle: 'خطة العمل التصحيحية',
+    capAction: 'الإجراء',
+    capResponsible: 'المسؤول',
+    capDeadline: 'الموعد النهائي',
+    capStatus: 'الحالة',
+    recommendations: 'التوصيات',
+    conclusion: 'الخاتمة',
+    overallScore: 'النتيجة الإجمالية',
+    complianceRate: 'معدل الامتثال',
+    totalNCRs: 'إجمالي NCRs',
+    criticalIssues: 'المشاكل الحرجة',
+    reportFooter: 'تم إعداد هذا التقرير بواسطة',
+    reportFooterNote: 'ملاحظة: هذا التقرير يُعد وثيقة رسمية ويجب اعتماده من استشاري بيئي معتمد.'
+  },
+  en: {
+    mainTitle: '🔍 Environmental Audit Report Generator',
+    mainSubtitle: 'Professional System for Environmental Compliance Assessment - 110 Projects',
+    selectTitle: '🎯 Select Project for Audit',
+    searchPlaceholder: ' Search for project...',
+    selectPlaceholder: '📋 Select from list...',
+    auditTypeLabel: '📊 Audit Type:',
+    auditTypes: {
+      compliance: 'Compliance Audit',
+      gap: 'Gap Analysis',
+      iso: 'ISO 14001 Audit',
+      prePurchase: 'Pre-Purchase Due Diligence'
+    },
+    generateBtn: '📄 Generate Audit Report',
+    printBtn: '🖨️ Print / Save PDF',
+    newBtn: '🔄 New Report',
+    langBtn: ' العربية',
+    notFound: '❌ Project not found. Select from the list or check spelling.',
+    reportDate: 'Audit Date',
+    reportType: 'Document Type',
+    reportStatus: 'Status',
+    reportStatusValue: 'Final Audit Report',
+    executiveSummary: '📋 Executive Summary',
+    executiveSummaryText: 'This report aims to assess the compliance of the facility',
+    executiveSummaryText2: 'with local and international environmental requirements, identify gaps and non-conformances, and develop a comprehensive corrective action plan.',
+    section1: 'Audit Scope & Methodology',
+    section2: 'Environmental Compliance Status',
+    section3: 'Gap Analysis',
+    section4: 'Non-Conformance Reports (NCRs)',
+    section5: 'Corrective Action Plan (CAP)',
+    section6: 'Recommendations & Conclusion',
+    auditScope: 'Audit Scope',
+    auditMethodology: 'Audit Methodology',
+    auditCriteria: 'Audit Criteria',
+    complianceStatus: 'Compliance Status',
+    compliant: 'Compliant',
+    nonCompliant: 'Non-Compliant',
+    partialCompliance: 'Partially Compliant',
+    gapAnalysis: 'Gap Analysis',
+    requirement: 'Requirement',
+    currentStatus: 'Current Status',
+    gap: 'Gap',
+    priority: 'Priority',
+    high: 'High',
+    medium: 'Medium',
+    low: 'Low',
+    ncrTitle: 'Non-Conformance Reports',
+    ncrNumber: 'NCR Number',
+    ncrDescription: 'Non-Conformance Description',
+    ncrSeverity: 'Severity',
+    ncrCorrectiveAction: 'Required Corrective Action',
+    capTitle: 'Corrective Action Plan',
+    capAction: 'Action',
+    capResponsible: 'Responsible',
+    capDeadline: 'Deadline',
+    capStatus: 'Status',
+    recommendations: 'Recommendations',
+    conclusion: 'Conclusion',
+    overallScore: 'Overall Score',
+    complianceRate: 'Compliance Rate',
+    totalNCRs: 'Total NCRs',
+    criticalIssues: 'Critical Issues',
+    reportFooter: 'This report was prepared by',
+    reportFooterNote: 'Note: This report is an official document and must be approved by an accredited environmental consultant.'
+  }
+};
+
+const projects = {
+  "محطة وقود": { 
+    icon: "⛽", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة (NCEC)" },
+    auditAreas: [
+      { area: "الخزانات الأرضية", status: "partial", details: "ATG موجود لكن بعض الخزانات قديمة" },
+      { area: "الاحتواء الثانوي", status: "compliant", details: "أحواض عازلة بسعة 110%" },
+      { area: "استرداد الأبخرة", status: "non-compliant", details: "لا توجد وحدات VRU" },
+      { area: "إدارة النفايات", status: "partial", details: "عقد مع متعهد لكن السجلات ناقصة" },
+      { area: "خطة الطوارئ", status: "compliant", details: "محدثة ومختبرة" }
+    ],
+    gaps: [
+      { requirement: "تركيب VRU", current: "لا توجد", gap: "انبعاثات VOCs عالية", priority: "high" },
+      { requirement: "تحديث ATG", current: "أجهزة قديمة", gap: "خطر عدم الكشف", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم وجود وحدات استرداد أبخرة", severity: "high", action: "تركيب VRU على جميع نقاط التعبئة" },
+      { number: "NCR-002", description: "سجلات نقل النفايات غير مكتملة", severity: "medium", action: "توثيق جميع سندات النقل" }
+    ],
+    cap: [
+      { action: "تركيب وحدات VRU", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "مخطط" },
+      { action: "تحديث أنظمة ATG", responsible: "مدير الصيانة", deadline: "4 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "الاستثمار في وحدات استرداد الأبخرة",
+      "تحديث أنظمة الكشف عن التسرب",
+      "تعزيز توثيق نقل النفايات"
+    ]
+  },
+
+  "مسلخ": { 
+    icon: "🥩", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "مياه الصرف", status: "non-compliant", details: "BOD 450 mg/L (الحد 250)" },
+      { area: "DAF", status: "partial", details: "موجود لكن كفاءة 70%" },
+      { area: "الروائح", status: "non-compliant", details: "شكاوى متكررة" },
+      { area: "النفايات", status: "compliant", details: "فصل جيد" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة موثقة لسيناريو انسكاب كميات كبيرة من الدم أو تعطل مفاجئ لمحطة معالجة الصرف؛ لا يوجد خزان تجميع طوارئ (Holding Tank) لتحويل الصرف غير المعالج إليه" }
+    ],
+    gaps: [
+      { requirement: "رفع كفاءة DAF", current: "70%", gap: "شحم في الصرف", priority: "high" },
+      { requirement: "معالجة الروائح", current: "لا توجد", gap: "شكاوى مجتمعية", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "BOD يتجاوز الحدود المسموحة", severity: "high", action: "ترقية محطة المعالجة" },
+      { number: "NCR-002", description: "عدم وجود معالجة للروائح", severity: "high", action: "تركيب Biofilters" }
+    ],
+    cap: [
+      { action: "ترقية DAF لرفع الكفاءة إلى 90%", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" },
+      { action: "تركيب مرشحات حيوية", responsible: "مدير البيئة", deadline: "4 أشهر", status: "مطلوب" }
+    ],
+    recommendations: [
+      "أولوية قصوى لترقية DAF",
+      "الاستثمار في معالجة الروائح",
+      "تعزيز الرصد المستمر"
+    ]
+  },
+
+  "مصنع أدوية": { 
+    icon: "💊", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "APIs في الصرف", status: "non-compliant", details: "تركيز عالي" },
+      { area: "VOCs", status: "partial", details: "RTO موجود لكن كفاءة 95%" },
+      { area: "ZLD", status: "compliant", details: "نظام متكامل" },
+      { area: "النفايات الخطرة", status: "compliant", details: "توثيق كامل" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة معتمدة لتسرب مذيبات كيميائية أو حريق في مخازن المواد الخام، ولا تتوفر معدات وقاية شخصية من المستوى A/B لفريق الاستجابة" }
+    ],
+    gaps: [
+      { requirement: "إضافة AOP", current: "لا توجد", gap: "APIs في الصرف", priority: "high" },
+      { requirement: "رفع كفاءة RTO", current: "95%", gap: "انبعاثات متبقية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "وجود APIs في الصرف النهائي", severity: "high", action: "تركيب وحدة AOP" },
+      { number: "NCR-002", description: "كفاءة RTO أقل من 99%", severity: "medium", action: "صيانة وتحسين RTO" }
+    ],
+    cap: [
+      { action: "تصميم وتركيب وحدة AOP", responsible: "مدير الهندسة", deadline: "8 أشهر", status: "قيد التصميم" },
+      { action: "تحسين كفاءة RTO", responsible: "مدير الصيانة", deadline: "3 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "الاستثمار في AOP كمرحلة نهائية",
+      "تحسين كفاءة RTO",
+      "تعزيز الرصد المستمر"
+    ]
+  },
+
+  "مصنع أسمنت": { 
+    icon: "🏗️", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Bag Filters", status: "compliant", details: "كفاءة 99%" },
+      { area: "SCR", status: "partial", details: "موجود لكن يحتاج تحسين" },
+      { area: "CEMS", status: "compliant", details: "يعمل بكفاءة" },
+      { area: "الضوضاء", status: "non-compliant", details: "تجاوز الحدود" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات لإيقاف خط الإنتاج عند عطل الفلاتر، لكن لا يوجد بروتوكول موثق للتعامل مع تجاوز الانبعاثات المستمر أعلى من حدود CEMS لأكثر من ساعة" }
+    ],
+    gaps: [
+      { requirement: "تحسين SCR", current: "كفاءة 85%", gap: "NOx عالي", priority: "high" },
+      { requirement: "حواجز صوتية", current: "جزئية", gap: "تأثير على الجيران", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "NOx يتجاوز الحدود", severity: "high", action: "تحسين نظام SCR" },
+      { number: "NCR-002", description: "ضوضاء زائدة", severity: "medium", action: "تركيب حواجز صوتية" }
+    ],
+    cap: [
+      { action: "تحسين SCR لرفع الكفاءة إلى 95%", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" },
+      { action: "تركيب حواجز صوتية", responsible: "مدير البيئة", deadline: "4 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "تحسين نظام SCR",
+      "تعزيز الحواجز الصوتية",
+      "الصيانة الدورية للفلاتر"
+    ]
+  },
+
+  "محطة تحلية": { 
+    icon: "💧", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Diffusers", status: "compliant", details: "تصميم جيد" },
+      { area: "Cooling Towers", status: "partial", details: "تحتاج صيانة" },
+      { area: "Brine", status: "compliant", details: "ضمن الحدود" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب كيميائي من مواد المعالجة المسبقة (كلور/مضادات ترسيب) أو عطل مفاجئ في أنظمة التصريف نحو البيئة البحرية" }
+    ],
+    gaps: [
+      { requirement: "صيانة Cooling Towers", current: "متأخرة", gap: "كفاءة منخفضة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "صيانة متأخرة لأبراج التبريد", severity: "medium", action: "جدولة صيانة فورية" }
+    ],
+    cap: [
+      { action: "صيانة شاملة لأبراج التبريد", responsible: "مدير الصيانة", deadline: "3 أشهر", status: "مجدول" }
+    ],
+    recommendations: [
+      "الصيانة الدورية لأبراج التبريد",
+      "تعزيز الرصد البيئي"
+    ]
+  },
+
+  "محطة كهرباء": { 
+    icon: "⚡", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "ESP", status: "compliant", details: "كفاءة 99.5%" },
+      { area: "FGD", status: "partial", details: "تحتاج تحسين" },
+      { area: "Cooling Towers", status: "compliant", details: "تعمل بكفاءة" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات إيقاف للوحدة المتأثرة عند تسرب وقود، لكن لا تغطي الخطة سيناريو انهيار جدار الاحتواء الثانوي لخزانات الوقود الثقيل" }
+    ],
+    gaps: [
+      { requirement: "تحسين FGD", current: "كفاءة 80%", gap: "SOx متبقي", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة FGD منخفضة", severity: "high", action: "ترقية نظام FGD" }
+    ],
+    cap: [
+      { action: "ترقية FGD لرفع الكفاءة إلى 95%", responsible: "مدير الهندسة", deadline: "8 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "الاستثمار في ترقية FGD",
+      "الصيانة الدورية لـ ESP"
+    ]
+  },
+
+  "مستشفى": { 
+    icon: "🏥", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "النفايات الطبية", status: "partial", details: "فصل جيد لكن المحارق قديمة" },
+      { area: "AOP", status: "non-compliant", details: "لا توجد" },
+      { area: "الفصل اللوني", status: "compliant", details: "مطبق بشكل كامل" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة طوارئ موثقة لانسكاب مواد بيولوجية معدية أو تسرب كيميائي بالمختبرات، ولجنة مكافحة العدوى غير مُشرِكة في تحديثها" }
+    ],
+    gaps: [
+      { requirement: "تركيب AOP", current: "لا توجد", gap: "APIs في الصرف", priority: "high" },
+      { requirement: "تحديث المحارق", current: "قديمة", gap: "انبعاثات عالية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم وجود AOP", severity: "high", action: "تركيب وحدة AOP" },
+      { number: "NCR-002", description: "محارق قديمة", severity: "medium", action: "تحديث المحارق" }
+    ],
+    cap: [
+      { action: "تركيب وحدة AOP", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "مخطط" },
+      { action: "تحديث المحارق الطبية", responsible: "مدير المشتريات", deadline: "12 شهر", status: "قيد التفاوض" }
+    ],
+    recommendations: [
+      "الاستثمار في AOP",
+      "تحديث المحارق",
+      "تعزيز الفصل من المصدر"
+    ]
+  },
+
+  "مدبغة جلود": { 
+    icon: "🦎", 
+    classification: { egypt: "قائمة (أ) - القائمة السوداء", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Chromium Recovery", status: "partial", details: "كفاءة 60%" },
+      { area: "Chemical Precipitation", status: "compliant", details: "تعمل بكفاءة" },
+      { area: "Neutralization", status: "compliant", details: "نظام آلي" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لانسكاب أحماض مركزة أو مواد دباغة كيميائية، ولا تتوفر مواد معادلة (جير مطفي) جاهزة بالقرب من خطوط الدباغة" }
+    ],
+    gaps: [
+      { requirement: "رفع كفاءة Chromium Recovery", current: "60%", gap: "فقدان كروم", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد الكروم منخفضة", severity: "high", action: "تحسين نظام الاسترداد" }
+    ],
+    cap: [
+      { action: "تحسين Chromium Recovery لرفع الكفاءة إلى 80%", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين نظام استرداد الكروم",
+      "تعزيز الترسيب الكيميائي"
+    ]
+  },
+
+  "موقع بناء": { 
+    icon: "🏗️", 
+    classification: { egypt: "قائمة (ج) - أثر بيئي محدود", saudi: "الفئة الأولى - نشاط منخفض الخطورة" },
+    auditAreas: [
+      { area: "الغبار", status: "partial", details: "رش مائي موجود لكن غير كافٍ" },
+      { area: "Spill Kits", status: "compliant", details: "متوفرة" },
+      { area: "PPE", status: "compliant", details: "مستخدم بشكل صحيح" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد عدة احتواء تسربات أساسية، لكن لا توجد خطة موثقة للاستجابة لعاصفة ترابية شديدة أو انهيار حفر عميقة" }
+    ],
+    gaps: [
+      { requirement: "تعزيز الرش المائي", current: "غير كافٍ", gap: "غبار متطاير", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "الرش المائي غير كافٍ", severity: "medium", action: "زيادة تردد الرش" }
+    ],
+    cap: [
+      { action: "زيادة تردد الرش المائي", responsible: "مدير الموقع", deadline: "فوري", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "تعزيز الرش المائي",
+      "تركيب حواجز رياح"
+    ]
+  },
+
+  "مزرعة دواجن": { 
+    icon: "🐔", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Biofilters", status: "non-compliant", details: "لا توجد" },
+      { area: "Anaerobic Digestion", status: "partial", details: "بحيرات غير مغطاة" },
+      { area: "Composting", status: "compliant", details: "مطبق بشكل جيد" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة للتعامل مع نفوق جماعي مفاجئ (انفلونزا الطيور) أو تسرب عصارة الروث لمجرى مائي، ولا بروتوكول تطهير معتمد" }
+    ],
+    gaps: [
+      { requirement: "تركيب Biofilters", current: "لا توجد", gap: "روائح نفاذة", priority: "high" },
+      { requirement: "تغطية البحيرات", current: "مكشوفة", gap: "انبعاثات CH4", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم وجود مرشحات حيوية", severity: "high", action: "تركيب Biofilters" },
+      { number: "NCR-002", description: "بحيرات الروث غير مغطاة", severity: "high", action: "تغطية البحيرات" }
+    ],
+    cap: [
+      { action: "تركيب مرشحات حيوية", responsible: "مدير المزرعة", deadline: "6 أشهر", status: "مخطط" },
+      { action: "تغطية بحيرات الروث", responsible: "مدير العمليات", deadline: "4 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "الاستثمار في Biofilters",
+      "تغطية بحيرات الروث",
+      "تعزيز التسميد العضوي"
+    ]
+  },
+
+  "مصنع بطاريات": { 
+    icon: "🔋", 
+    classification: { egypt: "قائمة (أ) - القائمة السوداء", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Chemical Precipitation", status: "compliant", details: "كفاءة 95%" },
+      { area: "Ion Exchange", status: "partial", details: "يحتاج استبدال راتنجات" },
+      { area: "Secondary Containment", status: "compliant", details: "مطبق بشكل كامل" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لانسكاب حمض الكبريتيك المركز أو تسرب معادن ثقيلة (رصاص/كادميوم)، ولا تتوفر دوشات طوارئ لغسل العين والجسم بالقرب من خطوط التصنيع" }
+    ],
+    gaps: [
+      { requirement: "استبدال راتنجات Ion Exchange", current: "مستهلكة", gap: "كفاءة منخفضة", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "راتنجات Ion Exchange مستهلكة", severity: "high", action: "استبدال الراتنجات" }
+    ],
+    cap: [
+      { action: "استبدال راتنجات Ion Exchange", responsible: "مدير الصيانة", deadline: "3 أشهر", status: "مطلوب" }
+    ],
+    recommendations: [
+      "استبدال الراتنجات فوراً",
+      "تعزيز الاحتواء الثانوي"
+    ]
+  },
+
+  "مصنع حديد وصلب": { 
+    icon: "⚙️", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Bag Filters", status: "compliant", details: "عالية الحرارة" },
+      { area: "Heat Recovery", status: "partial", details: "يحتاج تحسين" },
+      { area: "S/S", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات مسحوق جاف بالقرب من الأفران، لكن لا توجد خطة إخلاء موثقة لسيناريو تسرب معدن منصهر" }
+    ],
+    gaps: [
+      { requirement: "تحسين Heat Recovery", current: "كفاءة 60%", gap: "فقدان طاقة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد الحرارة منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Heat Recovery لرفع الكفاءة إلى 80%", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين استرداد الحرارة",
+      "الصيانة الدورية للفلاتر"
+    ]
+  },
+
+  "مصنع دهانات": { 
+    icon: "🎨", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "RTO", status: "compliant", details: "كفاءة 99%" },
+      { area: "Coagulation", status: "partial", details: "يحتاج تحسين" },
+      { area: "Manifest", status: "compliant", details: "موثق بالكامل" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة معتمدة لحريق في مخزن المذيبات القابلة للاشتعال، ولا تتوفر أنظمة إطفاء رغوية (Foam Systems) تلقائية" }
+    ],
+    gaps: [
+      { requirement: "تحسين Coagulation", current: "كفاءة 70%", gap: "ألوان في الصرف", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة التخثر منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين نظام التخثر", responsible: "مدير الهندسة", deadline: "4 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين التخثر الكيميائي",
+      "تعزيز توثيق النفايات"
+    ]
+  },
+
+  "مصنع بلاستيك": { 
+    icon: "🧴", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Activated Carbon", status: "compliant", details: "يعمل بكفاءة" },
+      { area: "Recycling", status: "partial", details: "70% فقط" },
+      { area: "Cooling", status: "compliant", details: "مغلق الدورة" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات CO2 بالموقع، لكن الخطة لا تغطي سيناريو انبعاثات سامة ناتجة عن احتراق البوليمرات" }
+    ],
+    gaps: [
+      { requirement: "زيادة إعادة التدوير", current: "70%", gap: "نفايات بلاستيكية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "إعادة التدوير أقل من المستهدف", severity: "medium", action: "زيادة نسبة التدوير" }
+    ],
+    cap: [
+      { action: "زيادة إعادة التدوير إلى 90%", responsible: "مدير الإنتاج", deadline: "6 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "زيادة إعادة التدوير",
+      "تعزيز كفاءة الطاقة"
+    ]
+  },
+
+  "مصنع ورق": { 
+    icon: "📄", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Primary Clarifiers", status: "compliant", details: "تعمل بكفاءة" },
+      { area: "Biological Treatment", status: "partial", details: "كفاءة 85%" },
+      { area: "Sludge Dewatering", status: "non-compliant", details: "لا يوجد نظام" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب الكلور المستخدم في التبييض، ولا تتوفر معدات احتواء متخصصة للكلور أو معدات وقاية من المستوى A" }
+    ],
+    gaps: [
+      { requirement: "تركيب Sludge Dewatering", current: "لا يوجد", gap: "تراكم الحمأة", priority: "high" },
+      { requirement: "رفع كفاءة المعالجة البيولوجية", current: "85%", gap: "BOD/COD عالي", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم وجود نظام تجفيف الحمأة", severity: "high", action: "تركيب Filter Press" },
+      { number: "NCR-002", description: "كفاءة المعالجة البيولوجية منخفضة", severity: "high", action: "تحسين المعالجة" }
+    ],
+    cap: [
+      { action: "تركيب نظام تجفيف الحمأة", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "مخطط" },
+      { action: "تحسين المعالجة البيولوجية", responsible: "مدير العمليات", deadline: "4 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "الاستثمار في تجفيف الحمأة",
+      "تحسين المعالجة البيولوجية"
+    ]
+  },
+
+  "فنادق ومجمعات سكنية": { 
+    icon: "🏨", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Greywater Recycling", status: "partial", details: "كفاءة 60%" },
+      { area: "Grease Traps", status: "compliant", details: "تنظيف دوري" },
+      { area: "Composting", status: "non-compliant", details: "لا يوجد" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد كاشفات دخان وطفايات، لكن لا توجد خطة موثقة لطفح مصائد الشحوم أو تسرب غاز الطبخ في المطابخ المركزية" }
+    ],
+    gaps: [
+      { requirement: "تحسين Greywater Recycling", current: "60%", gap: "هدر مائي", priority: "medium" },
+      { requirement: "تطبيق Composting", current: "لا يوجد", gap: "نفايات عضوية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة إعادة تدوير المياه الرمادية منخفضة", severity: "medium", action: "تحسين النظام" },
+      { number: "NCR-002", description: "عدم وجود نظام تسميد", severity: "medium", action: "تطبيق Composting" }
+    ],
+    cap: [
+      { action: "تحسين Greywater Recycling", responsible: "مدير الهندسة", deadline: "4 أشهر", status: "قيد التصميم" },
+      { action: "تطبيق نظام التسميد", responsible: "مدير البيئة", deadline: "3 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "تحسين إعادة تدوير المياه",
+      "تطبيق التسميد العضوي"
+    ]
+  },
+
+  "محطة صرف صحي": { 
+    icon: "🚰", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Biofilters", status: "compliant", details: "تعمل بكفاءة" },
+      { area: "Anaerobic Digestion", status: "partial", details: "كفاءة 70%" },
+      { area: "UV Disinfection", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لعطل المضخات الرئيسية أو طفح الصرف للمناطق المحيطة، وأجهزة كشف غاز H2S غير متوفرة في الأحواض المغلقة" }
+    ],
+    gaps: [
+      { requirement: "تحسين Anaerobic Digestion", current: "70%", gap: "إنتاج Biogas منخفض", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة الهضم اللاهوائي منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Anaerobic Digestion", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين الهضم اللاهوائي",
+      "تعزيز إنتاج Biogas"
+    ]
+  },
+
+  "مطار": { 
+    icon: "✈️", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Glycol Recovery", status: "partial", details: "كفاءة 75%" },
+      { area: "Noise Abatement", status: "compliant", details: "مطبق" },
+      { area: "Secondary Containment", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد خطة طوارئ عامة للمطار، لكن لا تتضمن بنداً خاصاً بتسرب وقود الطائرات (Jet Fuel) في مناطق الصيانة والتزود بالوقود" }
+    ],
+    gaps: [
+      { requirement: "تحسين Glycol Recovery", current: "75%", gap: "فقدان Glycol", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد Glycol منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Glycol Recovery", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين استرداد Glycol",
+      "تعزيز إجراءات تخفيف الضوضاء"
+    ]
+  },
+
+  "ميناء بحري": { 
+    icon: "⚓", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Ballast Water Treatment", status: "compliant", details: "مطبق" },
+      { area: "Oil Booms", status: "compliant", details: "جاهزة" },
+      { area: "Dust Suppression", status: "partial", details: "يحتاج تحسين" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة استجابة موثقة لتسرب زيتي من سفينة، ولا تتوفر حواجز زيتية عائمة (Oil Booms) جاهزة للنشر الفوري" }
+    ],
+    gaps: [
+      { requirement: "تحسين Dust Suppression", current: "جزئي", gap: "غبار من البضائع", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "قمع الغبار غير كافٍ", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Dust Suppression", responsible: "مدير العمليات", deadline: "4 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين قمع الغبار",
+      "تعزيز الاستجابة للتلوث البحري"
+    ]
+  },
+
+  "مزرعة أبقار/أغنام": { 
+    icon: "🐄", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Anaerobic Digestion", status: "partial", details: "كفاءة 65%" },
+      { area: "Covered Lagoons", status: "non-compliant", details: "غير مغطاة" },
+      { area: "Water Recycling", status: "partial", details: "كفاءة 40%" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب عصارة الروث لمجرى مائي أو نفوق جماعي بسبب مرض معدٍ، ولا بروتوكول تطهير أو إخطار بيطري معتمد" }
+    ],
+    gaps: [
+      { requirement: "تغطية البحيرات", current: "مكشوفة", gap: "روائح وCH4", priority: "high" },
+      { requirement: "تحسين Anaerobic Digestion", current: "65%", gap: "إنتاج Biogas منخفض", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "بحيرات الروث غير مغطاة", severity: "high", action: "تغطية البحيرات" },
+      { number: "NCR-002", description: "كفاءة الهضم اللاهوائي منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تغطية بحيرات الروث", responsible: "مدير المزرعة", deadline: "4 أشهر", status: "مخطط" },
+      { action: "تحسين Anaerobic Digestion", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تغطية بحيرات الروث",
+      "تحسين الهضم اللاهوائي"
+    ]
+  },
+
+  "مصنع زجاج": { 
+    icon: "🪟", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "SCR & FGD", status: "compliant", details: "تعمل بكفاءة" },
+      { area: "Bag Filters", status: "partial", details: "تحتاج استبدال" },
+      { area: "Heat Recovery", status: "partial", details: "كفاءة 70%" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات إيقاف إمداد الغاز، لكن لا توجد خطة موثقة لسيناريو كسر فرن الصهر أثناء التشغيل" }
+    ],
+    gaps: [
+      { requirement: "استبدال Bag Filters", current: "قديمة", gap: "غبار سيليكا", priority: "high" },
+      { requirement: "تحسين Heat Recovery", current: "70%", gap: "فقدان طاقة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "فلاتر الأكياس قديمة", severity: "high", action: "استبدال الفلاتر" },
+      { number: "NCR-002", description: "كفاءة استرداد الحرارة منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "استبدال Bag Filters", responsible: "مدير الصيانة", deadline: "3 أشهر", status: "مطلوب" },
+      { action: "تحسين Heat Recovery", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "استبدال الفلاتر فوراً",
+      "تحسين استرداد الحرارة"
+    ]
+  },
+
+  "محطة طاقة شمسية": { 
+    icon: "☀️", 
+    classification: { egypt: "قائمة (ج) - أثر بيئي محدود", saudi: "الفئة الأولى - نشاط منخفض الخطورة" },
+    auditAreas: [
+      { area: "Land Use", status: "compliant", details: "مخطط جيد" },
+      { area: "Recycling", status: "non-compliant", details: "لا يوجد برنامج" },
+      { area: "Cleaning", status: "partial", details: "يستخدم مياه" },
+      { area: "خطة الطوارئ", status: "compliant", details: "خطة موثقة لحريق الألواح/المحولات مع إجراءات إيقاف كهربائي فوري، اختُبرت خلال آخر 6 أشهر" }
+    ],
+    gaps: [
+      { requirement: "تطبيق Recycling Program", current: "لا يوجد", gap: "نفايات إلكترونية", priority: "medium" },
+      { requirement: "Waterless Cleaning", current: "يستخدم مياه", gap: "استهلاك مائي", priority: "low" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم وجود برنامج إعادة تدوير", severity: "medium", action: "تطبيق Recycling Program" }
+    ],
+    cap: [
+      { action: "تطبيق برنامج إعادة تدوير الألواح", responsible: "مدير البيئة", deadline: "6 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "تطبيق برنامج إعادة التدوير",
+      "التحول للتنظيف الجاف"
+    ]
+  },
+
+  "مصنع أسمدة": { 
+    icon: "🌱", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Ammonia Scrubbers", status: "compliant", details: "كفاءة 95%" },
+      { area: "Bag Filters", status: "compliant", details: "تعمل بكفاءة" },
+      { area: "Nutrient Removal", status: "partial", details: "كفاءة 80%" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب غاز الأمونيا (سام وقابل للاشتعال)، ولا تتوفر أجهزة كشف أمونيا ثابتة في مناطق الإنتاج والتخزين" }
+    ],
+    gaps: [
+      { requirement: "تحسين Nutrient Removal", current: "80%", gap: "نيتروجين وفوسفور في الصرف", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة إزالة المغذيات منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Nutrient Removal", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين إزالة المغذيات",
+      "تعزيز Scrubbers"
+    ]
+  },
+
+  "مزرعة أسماك": { 
+    icon: "🐟", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "RAS", status: "partial", details: "كفاءة 85%" },
+      { area: "Biological Filtration", status: "compliant", details: "تعمل بكفاءة" },
+      { area: "Settling Ponds", status: "compliant", details: "مطبقة" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات لعزل الأحواض المتأثرة، لكن لا توجد خطة موثقة للنفوق الجماعي الناتج عن نقص أكسجين مفاجئ أو تسرب كيميائي" }
+    ],
+    gaps: [
+      { requirement: "تحسين RAS", current: "85%", gap: "استهلاك مائي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة RAS أقل من المستهدف", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين RAS لرفع الكفاءة إلى 95%", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين RAS",
+      "تعزيز المرشحات البيولوجية"
+    ]
+  },
+
+  "مصنع سيراميك": { 
+    icon: "🏺", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Bag Filters", status: "compliant", details: "تعمل بكفاءة" },
+      { area: "Water Recycling", status: "partial", details: "كفاءة 60%" },
+      { area: "Clay Recycling", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد التهوية الطارئة، لكن لا توجد خطة موثقة لتسرب الغاز الطبيعي المغذي للأفران" }
+    ],
+    gaps: [
+      { requirement: "تحسين Water Recycling", current: "60%", gap: "استهلاك مائي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة إعادة تدوير المياه منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Water Recycling", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين إعادة تدوير المياه",
+      "تعزيز فلاتر الأكياس"
+    ]
+  },
+
+  "محطة طاقة رياح": { 
+    icon: "💨", 
+    classification: { egypt: "قائمة (ج) - أثر بيئي محدود", saudi: "الفئة الأولى - نشاط منخفض الخطورة" },
+    auditAreas: [
+      { area: "Bird Detection", status: "partial", details: "رادار قديم" },
+      { area: "Noise Reduction", status: "compliant", details: "توربينات حديثة" },
+      { area: "Visual Impact", status: "compliant", details: "دراسة مكتملة" },
+      { area: "خطة الطوارئ", status: "compliant", details: "خطة موثقة لحريق التوربين وإيقافه عن بعد، مع بروتوكول إخلاء المنطقة المحيطة، اختُبرت حديثاً" }
+    ],
+    gaps: [
+      { requirement: "تحديث Bird Detection", current: "رادار قديم", gap: "خطر على الطيور", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "رادار كشف الطيور قديم", severity: "medium", action: "تحديث الرادار" }
+    ],
+    cap: [
+      { action: "تحديث نظام كشف الطيور", responsible: "مدير الصيانة", deadline: "4 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "تحديث رادار كشف الطيور",
+      "تعزيز الصيانة الدورية"
+    ]
+  },
+
+  "مصنع مواد غذائية معلبة": { 
+    icon: "🥫", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Biological Treatment", status: "compliant", details: "كفاءة 90%" },
+      { area: "Energy Recovery", status: "partial", details: "كفاءة 65%" },
+      { area: "Composting", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات لإيقاف خط الإنتاج، لكن لا توجد خطة موثقة لتسرب مواد التعقيم الكيميائية المستخدمة في الأوتوكلاف" }
+    ],
+    gaps: [
+      { requirement: "تحسين Energy Recovery", current: "65%", gap: "فقدان طاقة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد الطاقة منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Energy Recovery", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين استرداد الطاقة",
+      "تعزيز المعالجة البيولوجية"
+    ]
+  },
+
+  "مرفأ نفطي": { 
+    icon: "🛢️", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Oil Spill Response", status: "compliant", details: "جاهزية عالية" },
+      { area: "VRU", status: "partial", details: "كفاءة 80%" },
+      { area: "Ballast Water", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة استجابة موثقة لتسرب نفطي كبير أثناء الشحن/التفريغ، ولا فريق استجابة مدرب على النشر الفوري للحواجز الزيتية" }
+    ],
+    gaps: [
+      { requirement: "تحسين VRU", current: "80%", gap: "انبعاثات VOCs", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة VRU منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين VRU", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين VRU",
+      "تعزيز الاستجابة للتلوث النفطي"
+    ]
+  },
+
+  "مصنع كيماويات": { 
+    icon: "⚗️", 
+    classification: { egypt: "قائمة (أ) - القائمة السوداء", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Scrubbers", status: "compliant", details: "كفاءة 95%" },
+      { area: "Chemical Treatment", status: "partial", details: "كفاءة 85%" },
+      { area: "Incineration", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة معتمدة لتسرب كيميائي كبير أو تفاعل غير مسيطر عليه؛ لا يوجد فريق HAZMAT مدرب ولا معدات وقاية من المستوى A بالموقع" }
+    ],
+    gaps: [
+      { requirement: "تحسين Chemical Treatment", current: "85%", gap: "ملوثات متبقية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة المعالجة الكيميائية منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Chemical Treatment", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين المعالجة الكيميائية",
+      "تعزيز Scrubbers"
+    ]
+  },
+
+  "مزرعة نخيل": { 
+    icon: "🌴", 
+    classification: { egypt: "قائمة (ج) - أثر بيئي محدود", saudi: "الفئة الأولى - نشاط منخفض الخطورة" },
+    auditAreas: [
+      { area: "Drip Irrigation", status: "compliant", details: "مطبق" },
+      { area: "Composting", status: "partial", details: "كفاءة 70%" },
+      { area: "IPM", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات أساسية، لكن لا توجد خطة موثقة لتسرب مبيدات أثناء عمليات الرش" }
+    ],
+    gaps: [
+      { requirement: "تحسين Composting", current: "70%", gap: "مخلفات زراعية", priority: "low" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة التسميد منخفضة", severity: "low", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Composting", responsible: "مدير المزرعة", deadline: "4 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "تحسين التسميد العضوي",
+      "تعزيز الري بالتنقيط"
+    ]
+  },
+
+  "محطة معالجة نفايات": { 
+    icon: "♻️", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Biofilters", status: "compliant", details: "كفاءة 90%" },
+      { area: "Leachate Treatment", status: "partial", details: "كفاءة 80%" },
+      { area: "Air Pollution Control", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لحريق في منطقة تخزين النفايات أو تسرب العصارة (Leachate) شديدة التركيز نحو التربة أو المياه الجوفية" }
+    ],
+    gaps: [
+      { requirement: "تحسين Leachate Treatment", current: "80%", gap: "عصارة ملوثة", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة معالجة العصارة منخفضة", severity: "high", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Leachate Treatment", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين معالجة العصارة",
+      "تعزيز المرشحات الحيوية"
+    ]
+  },
+
+  "مصنع إلكترونيات": { 
+    icon: "💻", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Chemical Substitution", status: "partial", details: "70% تم" },
+      { area: "E-Waste Recycling", status: "compliant", details: "مطبق" },
+      { area: "Energy Efficiency", status: "partial", details: "كفاءة 75%" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات CO2، لكن لا توجد خطة موثقة لتسرب المواد الكيميائية المستخدمة في التصنيع (أحماض الحفر/المذيبات)" }
+    ],
+    gaps: [
+      { requirement: "إكمال Chemical Substitution", current: "70%", gap: "مواد خطرة متبقية", priority: "medium" },
+      { requirement: "تحسين Energy Efficiency", current: "75%", gap: "استهلاك طاقة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "استبدال المواد الكيميائية غير مكتمل", severity: "medium", action: "إكمال الاستبدال" }
+    ],
+    cap: [
+      { action: "إكمال استبدال المواد الكيميائية", responsible: "مدير R&D", deadline: "6 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "إكمال استبدال المواد الخطرة",
+      "تحسين كفاءة الطاقة"
+    ]
+  },
+
+  "محجر رخام": { 
+    icon: "🪨", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Wet Cutting", status: "compliant", details: "مطبق" },
+      { area: "Sedimentation Ponds", status: "partial", details: "تحتاج تنظيف" },
+      { area: "Acoustic Enclosures", status: "non-compliant", details: "لا توجد" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لسيناريو انهيار جبهة المحجر أو تسرب وقود المعدات الثقيلة، ولا تقييم دوري للاستقرار الهيكلي للجبهات" }
+    ],
+    gaps: [
+      { requirement: "تنظيف Sedimentation Ponds", current: "متسخة", gap: "كفاءة منخفضة", priority: "medium" },
+      { requirement: "تركيب Acoustic Enclosures", current: "لا توجد", gap: "ضوضاء عالية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "أحواض الترسيب تحتاج تنظيف", severity: "medium", action: "تنظيف الأحواض" },
+      { number: "NCR-002", description: "عدم وجود عوازل صوتية", severity: "medium", action: "تركيب عوازل" }
+    ],
+    cap: [
+      { action: "تنظيف أحواض الترسيب", responsible: "مدير العمليات", deadline: "شهر", status: "مجدول" },
+      { action: "تركيب عوازل صوتية", responsible: "مدير الهندسة", deadline: "4 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "تنظيف الأحواض دورياً",
+      "تركيب عوازل صوتية"
+    ]
+  },
+
+  "مصنع مواد بناء": { 
+    icon: "🧱", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Dust Collection", status: "compliant", details: "كفاءة 95%" },
+      { area: "Energy Recovery", status: "partial", details: "كفاءة 60%" },
+      { area: "Waste Recycling", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات مناسبة، لكن لا توجد خطة موثقة لحريق في مخزون المواد الخام القابلة للاشتعال" }
+    ],
+    gaps: [
+      { requirement: "تحسين Energy Recovery", current: "60%", gap: "فقدان طاقة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد الطاقة منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Energy Recovery", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين استرداد الطاقة",
+      "تعزيز جمع الغبار"
+    ]
+  },
+
+  "مصنع تعبئة مياه معدنية": { 
+    icon: "💧", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Groundwater Monitoring", status: "compliant", details: "آبار مراقبة" },
+      { area: "PET Recycling", status: "partial", details: "كفاءة 65%" },
+      { area: "Water Recycling", status: "partial", details: "كفاءة 50%" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات نظافة أساسية، لكن لا توجد خطة موثقة لتلوث مصدر المياه الجوفية أو تسرب مواد التعقيم (الأوزون/الكلور)" }
+    ],
+    gaps: [
+      { requirement: "تحسين PET Recycling", current: "65%", gap: "نفايات بلاستيكية", priority: "medium" },
+      { requirement: "تحسين Water Recycling", current: "50%", gap: "استهلاك مائي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة إعادة تدوير PET منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين PET Recycling", responsible: "مدير الإنتاج", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين إعادة تدوير PET",
+      "تعزيز إعادة تدوير المياه"
+    ]
+  },
+
+  "مصنع منظفات": { 
+    icon: "🧼", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Biological Treatment", status: "partial", details: "كفاءة 80%" },
+      { area: "Neutralization", status: "compliant", details: "نظام آلي" },
+      { area: "Dust Collection", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتفاعل غير متوافق بين مواد كيميائية (مثل الكلور مع الأحماض) قد ينتج غازات سامة، ولا فصل فعلي لمناطق التخزين المتعارضة" }
+    ],
+    gaps: [
+      { requirement: "تحسين Biological Treatment", current: "80%", gap: "COD عالي", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة المعالجة البيولوجية منخفضة", severity: "high", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Biological Treatment", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين المعالجة البيولوجية",
+      "تعزيز المعادلة الكيميائية"
+    ]
+  },
+
+  "مصنع أعلاف حيوانية": { 
+    icon: "🌾", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Dust Collection", status: "compliant", details: "كفاءة 95%" },
+      { area: "Biofilters", status: "partial", details: "كفاءة 75%" },
+      { area: "Organic Recycling", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات أساسية، لكن لا توجد خطة موثقة لانفجار الغبار (Dust Explosion) في صوامع التخزين والطحن" }
+    ],
+    gaps: [
+      { requirement: "تحسين Biofilters", current: "75%", gap: "روائح متبقية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة المرشحات الحيوية منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Biofilters", responsible: "مدير البيئة", deadline: "4 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين المرشحات الحيوية",
+      "تعزيز جمع الغبار"
+    ]
+  },
+
+  "محطة شحن سيارات كهربائية": { 
+    icon: "🔌", 
+    classification: { egypt: "قائمة (ج) - أثر بيئي محدود", saudi: "الفئة الأولى - نشاط منخفض الخطورة" },
+    auditAreas: [
+      { area: "Smart Grid", status: "compliant", details: "مدمج" },
+      { area: "Battery Recycling", status: "non-compliant", details: "لا يوجد" },
+      { area: "Solar Integration", status: "partial", details: "30% فقط" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لسيناريو حريق بطارية ليثيوم (Thermal Runaway)، ولا تتوفر طفايات أو رمال متخصصة لحرائق البطاريات" }
+    ],
+    gaps: [
+      { requirement: "تطبيق Battery Recycling", current: "لا يوجد", gap: "نفايات بطاريات", priority: "high" },
+      { requirement: "زيادة Solar Integration", current: "30%", gap: "اعتماد على الشبكة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم وجود برنامج إعادة تدوير بطاريات", severity: "high", action: "تطبيق Recycling Program" }
+    ],
+    cap: [
+      { action: "تطبيق برنامج إعادة تدوير بطاريات الليثيوم", responsible: "مدير البيئة", deadline: "6 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "تطبيق إعادة تدوير البطاريات",
+      "زيادة الطاقة الشمسية"
+    ]
+  },
+
+  "مصنع نسيج": { 
+    icon: "🧵", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Dye Removal", status: "partial", details: "كفاءة 75%" },
+      { area: "Acoustic Enclosures", status: "compliant", details: "مطبقة" },
+      { area: "Fiber Dust Collection", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب أصباغ كيميائية أو حريق في مخازن الأقمشة القابلة للاشتعال" }
+    ],
+    gaps: [
+      { requirement: "تحسين Dye Removal", current: "75%", gap: "أصباغ في الصرف", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة إزالة الأصباغ منخفضة", severity: "high", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Dye Removal", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين إزالة الأصباغ",
+      "تعزيز العوازل الصوتية"
+    ]
+  },
+
+  "مصنع جلود (أحذية وحقائب)": { 
+    icon: "👟", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "VOC Recovery", status: "partial", details: "كفاءة 70%" },
+      { area: "Leather Recycling", status: "compliant", details: "مطبق" },
+      { area: "Chemical Treatment", status: "partial", details: "كفاءة 80%" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات أساسية، لكن لا توجد خطة موثقة لتسرب الغراء والمذيبات العضوية المتطايرة (VOCs) في خطوط التجميع" }
+    ],
+    gaps: [
+      { requirement: "تحسين VOC Recovery", current: "70%", gap: "انبعاثات VOCs", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد المذيبات منخفضة", severity: "high", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين VOC Recovery", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين استرداد المذيبات",
+      "تعزيز إعادة تدوير الجلود"
+    ]
+  },
+
+  "مصنع مواد تجميل": { 
+    icon: "💄", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Advanced Treatment", status: "partial", details: "كفاءة 85%" },
+      { area: "Packaging Recycling", status: "compliant", details: "مطبق" },
+      { area: "Green Chemistry", status: "partial", details: "60% تم" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات نظافة، لكن لا توجد خطة موثقة لحريق الكحوليات المستخدمة كمذيبات أو تسرب مواد خام كيميائية" }
+    ],
+    gaps: [
+      { requirement: "تحسين Advanced Treatment", current: "85%", gap: "مواد عضوية متبقية", priority: "medium" },
+      { requirement: "إكمال Green Chemistry", current: "60%", gap: "مواد كيميائية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة المعالجة المتقدمة منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Advanced Treatment", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين المعالجة المتقدمة",
+      "إكمال التحول للكيمياء الخضراء"
+    ]
+  },
+
+  "محطة طاقة حرارية أرضية": { 
+    icon: "🌋", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "H2S Scrubbing", status: "compliant", details: "كفاءة 95%" },
+      { area: "Reinjection", status: "compliant", details: "مطبق" },
+      { area: "Closed-Loop Cooling", status: "partial", details: "كفاءة 80%" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب غاز H2S السام المصاحب للبخار الجوفي، ولا أجهزة كشف غاز ثابتة عند فوهات الآبار" }
+    ],
+    gaps: [
+      { requirement: "تحسين Closed-Loop Cooling", current: "80%", gap: "استهلاك مائي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة التبريد المغلق منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Closed-Loop Cooling", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين التبريد المغلق",
+      "تعزيز Scrubbing"
+    ]
+  },
+
+  "مصنع أسلحة وذخيرة": { 
+    icon: "🔫", 
+    classification: { egypt: "قائمة (أ) - القائمة السوداء", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Lead Recovery", status: "partial", details: "كفاءة 75%" },
+      { area: "Explosion-Proof", status: "compliant", details: "مطبق" },
+      { area: "Incineration", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة موثقة ومعتمدة أمنياً لانفجار غير مقصود أو تسرب مواد متفجرة؛ هذا النوع من المنشآت يتطلب خطة طوارئ خاضعة لإشراف جهات أمنية مختصة غير موجودة حالياً" }
+    ],
+    gaps: [
+      { requirement: "تحسين Lead Recovery", current: "75%", gap: "رصاص في الصرف", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد الرصاص منخفضة", severity: "high", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Lead Recovery", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين استرداد الرصاص",
+      "تعزيز معايير ATEX"
+    ]
+  },
+
+  "مركز بيانات (Data Center)": { 
+    icon: "💻", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Energy Efficiency", status: "partial", details: "كفاءة 70%" },
+      { area: "Water Recycling", status: "partial", details: "كفاءة 60%" },
+      { area: "E-Waste Recycling", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد أنظمة إطفاء غازي (FM-200/Novec)، لكن لا توجد خطة موثقة لتسرب مبردات النظام أو حريق بطاريات UPS" }
+    ],
+    gaps: [
+      { requirement: "تحسين Energy Efficiency", current: "70%", gap: "استهلاك طاقة", priority: "high" },
+      { requirement: "تحسين Water Recycling", current: "60%", gap: "استهلاك مائي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة الطاقة منخفضة", severity: "high", action: "تحسين الأنظمة" }
+    ],
+    cap: [
+      { action: "تحسين Energy Efficiency", responsible: "مدير IT", deadline: "8 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين كفاءة الطاقة",
+      "تعزيز إعادة تدوير المياه"
+    ]
+  },
+
+  "مصنع خرسانة جاهزة": { 
+    icon: "🏗️", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Dust Collection", status: "compliant", details: "كفاءة 95%" },
+      { area: "Wastewater Recycling", status: "partial", details: "كفاءة 70%" },
+      { area: "Noise Barriers", status: "compliant", details: "مطبقة" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات أساسية، لكن لا توجد خطة موثقة لتسرب مياه غسيل الخلاطات القلوية (pH مرتفع) نحو مجاري الصرف" }
+    ],
+    gaps: [
+      { requirement: "تحسين Wastewater Recycling", current: "70%", gap: "استهلاك مائي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة إعادة تدوير المياه منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Wastewater Recycling", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين إعادة تدوير المياه",
+      "تعزيز جمع الغبار"
+    ]
+  },
+
+  "محطة غاز طبيعي (CNG/LNG)": { 
+    icon: "⛽", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Methane Detection", status: "compliant", details: "حساسة" },
+      { area: "Explosion-Proof", status: "compliant", details: "مطبق" },
+      { area: "Acoustic Enclosures", status: "partial", details: "كفاءة 80%" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة معتمدة لتسرب غاز مضغوط/مسال قابل للانفجار، ولا مسافات أمان أو أنظمة إطفاء متخصصة موثقة" }
+    ],
+    gaps: [
+      { requirement: "تحسين Acoustic Enclosures", current: "80%", gap: "ضوضاء عالية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة العوازل الصوتية منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Acoustic Enclosures", responsible: "مدير الهندسة", deadline: "4 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين العوازل الصوتية",
+      "تعزيز كشف الميثان"
+    ]
+  },
+
+  "مصنع طوب وأسمنت رمل": { 
+    icon: "🧱", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Bag Filters", status: "compliant", details: "كفاءة 95%" },
+      { area: "Energy Recovery", status: "partial", details: "كفاءة 65%" },
+      { area: "SCR", status: "partial", details: "كفاءة 80%" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد التهوية الطارئة، لكن لا توجد خطة موثقة لعطل الأفران أو تسرب وقود المعدات" }
+    ],
+    gaps: [
+      { requirement: "تحسين Energy Recovery", current: "65%", gap: "فقدان طاقة", priority: "medium" },
+      { requirement: "تحسين SCR", current: "80%", gap: "NOx متبقي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد الطاقة منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Energy Recovery", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين استرداد الطاقة",
+      "تحسين SCR"
+    ]
+  },
+
+  "مزرعة عسل نحل": { 
+    icon: "🐝", 
+    classification: { egypt: "قائمة (ج) - أثر بيئي محدود", saudi: "الفئة الأولى - نشاط منخفض الخطورة" },
+    auditAreas: [
+      { area: "Sustainable Practices", status: "compliant", details: "مطبقة" },
+      { area: "IPM", status: "compliant", details: "مطبق" },
+      { area: "Beeswax Recycling", status: "partial", details: "كفاءة 70%" },
+      { area: "خطة الطوارئ", status: "compliant", details: "خطة بسيطة موثقة للتعامل مع حريق محدود في مناحل التخزين، مناسبة لحجم المخاطر المنخفض لهذا النشاط" }
+    ],
+    gaps: [
+      { requirement: "تحسين Beeswax Recycling", current: "70%", gap: "مخلفات شمع", priority: "low" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة إعادة تدوير الشمع منخفضة", severity: "low", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Beeswax Recycling", responsible: "مدير المزرعة", deadline: "4 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "تحسين إعادة تدوير الشمع",
+      "تعزيز الممارسات المستدامة"
+    ]
+  },
+
+  "محطة إعادة تدوير مخلفات البناء": { 
+    icon: "♻️", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Wet Crushing", status: "compliant", details: "كفاءة 95%" },
+      { area: "Acoustic Enclosures", status: "compliant", details: "مطبقة" },
+      { area: "Hazardous Separation", status: "partial", details: "كفاءة 80%" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات أساسية، لكن لا توجد خطة موثقة لانفجار غبار ناعم أو حريق في أكوام المخلفات الخشبية" }
+    ],
+    gaps: [
+      { requirement: "تحسين Hazardous Separation", current: "80%", gap: "مواد خطرة مختلطة", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة فصل المواد الخطرة منخفضة", severity: "high", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Hazardous Separation", responsible: "مدير العمليات", deadline: "4 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين فصل المواد الخطرة",
+      "تعزيز التكسير الرطب"
+    ]
+  },
+
+  "مصنع ألومنيوم": { 
+    icon: "🔩", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Fluoride Scrubbing", status: "compliant", details: "كفاءة 95%" },
+      { area: "Energy Recovery", status: "partial", details: "كفاءة 70%" },
+      { area: "Metal Recovery", status: "partial", details: "كفاءة 75%" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لسيناريو تسرب معدن منصهر أو انفجار ناتج عن ملامسة الألومنيوم المنصهر للماء (خطر تفجيري معروف في هذه الصناعة)" }
+    ],
+    gaps: [
+      { requirement: "تحسين Energy Recovery", current: "70%", gap: "فقدان طاقة", priority: "medium" },
+      { requirement: "تحسين Metal Recovery", current: "75%", gap: "ألومنيوم في الصرف", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد الألومنيوم منخفضة", severity: "high", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Metal Recovery", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين استرداد الألومنيوم",
+      "تعزيز Scrubbing"
+    ]
+  },
+
+  "محطة تحلية صغيرة (RO Plant)": { 
+    icon: "💧", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Brine Dilution", status: "compliant", details: "مطبق" },
+      { area: "Energy Recovery", status: "partial", details: "كفاءة 75%" },
+      { area: "Membrane Recycling", status: "non-compliant", details: "لا يوجد" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات أساسية لإيقاف الضخ، لكن لا توجد خطة موثقة لتسرب مواد التعقيم المسبق (الكلور)" }
+    ],
+    gaps: [
+      { requirement: "تطبيق Membrane Recycling", current: "لا يوجد", gap: "نفايات أغشية", priority: "medium" },
+      { requirement: "تحسين Energy Recovery", current: "75%", gap: "استهلاك طاقة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم وجود برنامج إعادة تدوير أغشية", severity: "medium", action: "تطبيق Recycling Program" }
+    ],
+    cap: [
+      { action: "تطبيق برنامج إعادة تدوير أغشية RO", responsible: "مدير البيئة", deadline: "5 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "تطبيق إعادة تدوير الأغشية",
+      "تحسين استرداد الطاقة"
+    ]
+  },
+
+  "مصنع إسفنج وفوم": { 
+    icon: "🧽", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Isocyanate Scrubbing", status: "compliant", details: "كفاءة 95%" },
+      { area: "RTO", status: "compliant", details: "كفاءة 99%" },
+      { area: "Foam Recycling", status: "partial", details: "كفاءة 70%" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لحريق سريع الانتشار في مخزون الإسفنج (مادة شديدة الاشتعال) رغم كونه الخطر الأول في هذا النشاط" }
+    ],
+    gaps: [
+      { requirement: "تحسين Foam Recycling", current: "70%", gap: "نفايات فوم", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة إعادة تدوير الفوم منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Foam Recycling", responsible: "مدير الإنتاج", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين إعادة تدوير الفوم",
+      "تعزيز Scrubbing"
+    ]
+  },
+
+  "مرفأ صيد": { 
+    icon: "🎣", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Fishing Waste Collection", status: "partial", details: "كفاءة 75%" },
+      { area: "Organic Treatment", status: "compliant", details: "مطبق" },
+      { area: "Fuel Spill Prevention", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات أساسية، لكن لا توجد خطة موثقة لتسرب وقود من قوارب الصيد أو تراكم مخلفات الأسماك المتعفنة" }
+    ],
+    gaps: [
+      { requirement: "تحسين Fishing Waste Collection", current: "75%", gap: "نفايات صيد", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة جمع نفايات الصيد منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Fishing Waste Collection", responsible: "مدير المرفأ", deadline: "4 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين جمع نفايات الصيد",
+      "تعزيز المعالجة العضوية"
+    ]
+  },
+
+  "مصنع عطور": { 
+    icon: "🌸", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "VOC Recovery", status: "partial", details: "كفاءة 75%" },
+      { area: "Biofilters", status: "compliant", details: "كفاءة 90%" },
+      { area: "Chemical Treatment", status: "partial", details: "كفاءة 80%" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لحريق الكحول الإيثيلي (المذيب الأساسي عالي الاشتعال) في مناطق التصنيع والتخزين" }
+    ],
+    gaps: [
+      { requirement: "تحسين VOC Recovery", current: "75%", gap: "VOCs متبقية", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد VOCs منخفضة", severity: "high", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين VOC Recovery", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين استرداد VOCs",
+      "تعزيز المرشحات الحيوية"
+    ]
+  },
+
+  "مصنع جبن وألبان": { 
+    icon: "🧀", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "مياه الصرف", status: "partial", details: "BOD مرتفع (450 mg/L) يتجاوز الحد المسموح (250 mg/L)" },
+      { area: "إدارة النفايات", status: "compliant", details: "نظام فصل النفايات موجود ومطبق" },
+      { area: "الانبعاثات الهوائية", status: "compliant", details: "لا توجد انبعاثات هوائية ذات أهمية" },
+      { area: "استهلاك الطاقة", status: "non-compliant", details: "لا توجد أنظمة كفاءة طاقة" },
+      { area: "التصاريح البيئية", status: "partial", details: "التصريح البيئي ساري لكن يحتاج تحديث" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات نظافة، لكن لا توجد خطة موثقة لتسرب الأمونيا المستخدمة في أنظمة التبريد الصناعية" }
+    ],
+    gaps: [
+      { requirement: "تركيب محطة معالجة بيولوجية", current: "لا توجد محطة معالجة", gap: "عدم معالجة مياه الصرف", priority: "high" },
+      { requirement: "نظام إدارة الطاقة ISO 50001", current: "لا يوجد نظام", gap: "استهلاك طاقة عالي", priority: "medium" },
+      { requirement: "تدوير مياه الغسيل", current: "صرف مباشر", gap: "هدر مائي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "تصريف مياه صرف غير معالجة تحتوي على BOD عالي", severity: "high", action: "تركيب محطة معالجة بيولوجية بسعة 50 م³/يوم" },
+      { number: "NCR-002", description: "عدم وجود نظام لمراقبة استهلاك الطاقة", severity: "medium", action: "تركيب عدادات ذكية ونظام مراقبة" },
+      { number: "NCR-003", description: "عدم تحديث التصريح البيئي", severity: "medium", action: "تقديم طلب تحديث التصريح خلال 30 يوم" }
+    ],
+    cap: [
+      { action: "تصميم وتركيب محطة معالجة بيولوجية", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التنفيذ" },
+      { action: "تركيب عدادات طاقة ذكية", responsible: "مدير الصيانة", deadline: "3 أشهر", status: "مخطط" },
+      { action: "تقديم طلب تحديث التصريح البيئي", responsible: "مدير البيئة", deadline: "30 يوم", status: "قيد الإعداد" },
+      { action: "تطبيق نظام إدارة الطاقة", responsible: "مدير الجودة", deadline: "12 شهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "الاستثمار في محطة معالجة بيولوجية ك أولوية قصوى",
+      "تطبيق نظام إدارة الطاقة ISO 50001",
+      "إعادة تدوير مياه الغسيل لتقليل الاستهلاك",
+      "تدريب العاملين على الممارسات البيئية السليمة"
+    ]
+  },
+
+  "معمل تحاليل طبية": { 
+    icon: "🧪", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "النفايات الطبية", status: "partial", details: "فصل جزئي للنفايات لكن لا توجد محارق" },
+      { area: "المواد الكيميائية", status: "non-compliant", details: "تخزين غير آمن لبعض الكيماويات" },
+      { area: "مياه الصرف", status: "compliant", details: "نظام تعقيم بالكلور موجود" },
+      { area: "التهوية", status: "partial", details: "كابينة سحب الأبخرة تحتاج صيانة" },
+      { area: "التدريب", status: "non-compliant", details: "لا توجد سجلات تدريب بيئي" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لانسكاب عينات بيولوجية معدية أو تسرب كواشف كيميائية، ولا بروتوكول للتخلص من المخلفات الحادة في حالات الطوارئ" }
+    ],
+    gaps: [
+      { requirement: "التعاقد مع شركة معالجة نفايات طبية معتمدة", current: "لا يوجد عقد", gap: "تراكم النفايات الخطرة", priority: "high" },
+      { requirement: "خزنة مواد كيميائية آمنة", current: "تخزين عشوائي", gap: "خطر تسرب كيميائي", priority: "high" },
+      { requirement: "برنامج تدريب بيئي سنوي", current: "لا يوجد", gap: "نقص الوعي البيئي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "تخزين غير آمن للمواد الكيميائية الخطرة", severity: "high", action: "توفير خزنة كيماويات مع تهوية مناسبة" },
+      { number: "NCR-002", description: "عدم وجود عقد مع معالج نفايات طبية معتمد", severity: "high", action: "التعاقد مع شركة معتمدة خلال 60 يوم" },
+      { number: "NCR-003", description: "صيانة كابينة سحب الأبخرة", severity: "medium", action: "صيانة فورية للكابينة" }
+    ],
+    cap: [
+      { action: "توفير خزنة مواد كيميائية آمنة", responsible: "مدير المختبر", deadline: "30 يوم", status: "عاجل" },
+      { action: "التعاقد مع معالج نفايات طبية", responsible: "مدير المشتريات", deadline: "60 يوم", status: "قيد التفاوض" },
+      { action: "صيانة كابينة سحب الأبخرة", responsible: "مدير الصيانة", deadline: "15 يوم", status: "مجدول" },
+      { action: "تطوير برنامج تدريب بيئي", responsible: "مدير HR", deadline: "90 يوم", status: "قيد التطوير" }
+    ],
+    recommendations: [
+      "أولوية قصوى لتأمين تخزين المواد الكيميائية",
+      "التعاقد الفوري مع معالج نفايات طبية معتمد",
+      "تطوير برنامج تدريب بيئي شامل",
+      "تطبيق نظام إدارة النفايات الطبية حسب WHO"
+    ]
+  },
+
+  "محطة وقود حيوي": { 
+    icon: "⛽", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "الانبعاثات", status: "compliant", details: "انبعاثات ضمن الحدود المسموحة" },
+      { area: "إدارة المخلفات الزراعية", status: "partial", details: "部分 المخلفات تُستخدم والباقي يُحرق" },
+      { area: "استهلاك المياه", status: "non-compliant", details: "استهلاك مائي عالي بدون إعادة تدوير" },
+      { area: "السلامة الكيميائية", status: "compliant", details: "نظام SDS موجود ومحدث" },
+      { area: "الرصد البيئي", status: "partial", details: "رصد دوري لكن غير منتظم" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب الميثانول (سام وقابل للاشتعال) المستخدم في عملية الإستيرة أو حريق مخازن الزيوت" }
+    ],
+    gaps: [
+      { requirement: "نظام إعادة تدوير المياه", current: "صرف مباشر", gap: "هدر مائي", priority: "high" },
+      { requirement: "محطة معالجة للمخلفات السائلة", current: "لا توجد", gap: "تلوث محتمل", priority: "high" },
+      { requirement: "نظام رصد مستمر للانبعاثات", current: "رصد يدوي", gap: "بيانات غير دقيقة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم وجود نظام إعادة تدوير للمياه", severity: "high", action: "تصميم نظام معالجة وإعادة استخدام" },
+      { number: "NCR-002", description: "حرق المخلفات الزراعية في العراء", severity: "medium", action: "التوقف عن الحرق واستخدام المخلفات كوقود" }
+    ],
+    cap: [
+      { action: "تصميم نظام إعادة تدوير المياه", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" },
+      { action: "التوقف عن حرق المخلفات", responsible: "مدير الإنتاج", deadline: "فوري", status: "تم" },
+      { action: "تركيب نظام رصد مستمر", responsible: "مدير البيئة", deadline: "4 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "الاستثمار في نظام إعادة تدوير المياه",
+      "تحويل جميع المخلفات الزراعية إلى وقود",
+      "تركيب نظام رصد مستمر للانبعاثات",
+      "الحصول على شهادة الكربون الأخضر"
+    ]
+  },
+
+  "مصنع ورق مقوى": { 
+    icon: "📦", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "مياه الصرف", status: "non-compliant", details: "COD عالي جداً (1200 mg/L)" },
+      { area: "الانبعاثات الهوائية", status: "partial", details: "فلاتر قديمة تحتاج استبدال" },
+      { area: "إدارة الحمأة", status: "non-compliant", details: "تراكم الحمأة بدون معالجة" },
+      { area: "استهلاك الطاقة", status: "partial", details: "لا توجد أنظمة استرداد حرارة" },
+      { area: "التصاريح", status: "compliant", details: "جميع التصاريح سارية" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات أساسية، لكن لا توجد خطة موثقة لتراكم غاز الميثان في أحواض المعالجة اللاهوائية" }
+    ],
+    gaps: [
+      { requirement: "محطة معالجة ثلاثية", current: "معالجة أولية فقط", gap: "صرف ملوث", priority: "high" },
+      { requirement: "نظام تجفيف الحمأة", current: "تخزين مؤقت", gap: "تراكم النفايات", priority: "high" },
+      { requirement: "استبدال الفلاتر", current: "فلاتر قديمة", gap: "كفاءة منخفضة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "صرف مياه عالية COD بدون معالجة كافية", severity: "high", action: "ترقية المحطة لمعالجة ثلاثية" },
+      { number: "NCR-002", description: "تراكم الحمأة بدون خطة التخلص", severity: "high", action: "توريد نظام تجفيف حمأة" },
+      { number: "NCR-003", description: "فلاتر هواء قديمة", severity: "medium", action: "استبدال الفلاتر" }
+    ],
+    cap: [
+      { action: "ترقية محطة المعالجة لثلاثية", responsible: "مدير الهندسة", deadline: "8 أشهر", status: "قيد المناقصة" },
+      { action: "توريد نظام تجفيف حمأة", responsible: "مدير المشتريات", deadline: "6 أشهر", status: "قيد التفاوض" },
+      { action: "استبدال فلاتر الهواء", responsible: "مدير الصيانة", deadline: "3 أشهر", status: "مطلوب" }
+    ],
+    recommendations: [
+      "أولوية قصوى لترقية محطة المعالجة",
+      "الاستثمار في نظام تجفيف الحمأة",
+      "تطبيق نظام استرداد الحرارة",
+      "إعادة تدوير المياه المعالجة"
+    ]
+  },
+
+  "محطة معالجة مياه صناعية": { 
+    icon: "🏭", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "كفاءة المعالجة", status: "partial", details: "إزالة BOD 85% (المطلوب 95%)" },
+      { area: "إدارة الحمأة", status: "compliant", details: "نظام تجفيف وعقد مع معالج" },
+      { area: "الرصد المستمر", status: "compliant", details: "أجهزة CEMS تعمل بكفاءة" },
+      { area: "السلامة الكيميائية", status: "partial", details: "بعض SDS قديمة" },
+      { area: "التدريب", status: "compliant", details: "برنامج تدريبي سنوي نشط" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب مواد المعالجة الكيميائية (كلور/بوليمرات) أو عطل مفاجئ يؤدي لصرف غير معالج" }
+    ],
+    gaps: [
+      { requirement: "رفع كفاءة إزالة BOD إلى 95%", current: "85% فقط", gap: "عدم الامتثال الكامل", priority: "high" },
+      { requirement: "تحديث جميع SDS", current: "30% قديمة", gap: "مخاطر سلامة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة المعالجة أقل من المطلوب", severity: "high", action: "إضافة مرحلة معالجة متقدمة" },
+      { number: "NCR-002", description: "SDS قديمة لبعض المواد", severity: "medium", action: "تحديث جميع SDS" }
+    ],
+    cap: [
+      { action: "إضافة مرحلة AOP للمعالجة", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" },
+      { action: "تحديث جميع SDS", responsible: "مدير HSE", deadline: "30 يوم", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "الاستثمار في تقنية AOP لرفع الكفاءة",
+      "تحديث شامل لملفات SDS",
+      "تطبيق نظام إدارة متكامل ISO 14001",
+      "زيادة تردد الرصد البيئي"
+    ]
+  },
+
+  "مصنع رقائق معدنية": { 
+    icon: "🔩", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "المعادن الثقيلة في الصرف", status: "non-compliant", details: "زنك 2.5 mg/L (الحد 1 mg/L)" },
+      { area: "الضوضاء", status: "partial", details: "تجاوز في بعض المناطق" },
+      { area: "إدارة النفايات المعدنية", status: "compliant", details: "إعادة تدوير 90%" },
+      { area: "السلامة المهنية", status: "compliant", details: "PPE متوفر ومستخدم" },
+      { area: "التصاريح", status: "compliant", details: "سارية" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات أساسية، لكن لا توجد خطة موثقة لحريق زيوت التبريد المستخدمة في عمليات الدرفلة" }
+    ],
+    gaps: [
+      { requirement: "معالجة المعادن الثقيلة", current: "صرف مباشر", gap: "تلوث مائي", priority: "high" },
+      { requirement: "عوازل صوتية", current: "جزئية", gap: "تأثير على الجيران", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "تجاوز حد الزنك في الصرف", severity: "high", action: "تركيب وحدة ترسيب كيميائي" },
+      { number: "NCR-002", description: "ضوضاء زائدة في منطقة التشكيل", severity: "medium", action: "تركيب عوازل صوتية" }
+    ],
+    cap: [
+      { action: "تركيب وحدة ترسيب كيميائي", responsible: "مدير الهندسة", deadline: "4 أشهر", status: "قيد التصميم" },
+      { action: "تركيب عوازل صوتية", responsible: "مدير الصيانة", deadline: "3 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "أولوية قصوى لمعالجة المعادن الثقيلة",
+      "تطبيق نظام Zero Liquid Discharge",
+      "زيادة إعادة التدوير إلى 95%",
+      "مراقبة صحية دورية للعاملين"
+    ]
+  },
+
+  "مزرعة أرانب": { 
+    icon: "🐰", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "إدارة الروث", status: "partial", details: "部分 يُستخدم كسماد والباقي يُخزن" },
+      { area: "الروائح", status: "non-compliant", details: "شكاوى من الجيران" },
+      { area: "استهلاك المياه", status: "partial", details: "لا توجد أنظمة ترشيد" },
+      { area: "النفايات البيولوجية", status: "compliant", details: "التخلص الآمن من النافق" },
+      { area: "التصاريح", status: "compliant", details: "سارية" },
+      { area: "خطة الطوارئ", status: "compliant", details: "خطة بسيطة موثقة مناسبة لحجم المخاطر المحدود لهذا النشاط (نفوق محدود/عصارة روث بسيطة)" }
+    ],
+    gaps: [
+      { requirement: "نظام معالجة الروائح", current: "لا يوجد", gap: "شكاوى مجتمعية", priority: "high" },
+      { requirement: "نظام هضم لاهوائي", current: "لا يوجد", gap: "فقدان طاقة", priority: "medium" },
+      { requirement: "نظام ترشيد المياه", current: "ري تقليدي", gap: "هدر مائي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "شكاوى متكررة من الروائح", severity: "high", action: "تركيب مرشحات حيوية" },
+      { number: "NCR-002", description: "عدم استخدام الروث كطاقة", severity: "medium", action: "دراسة جدوى للهضم اللاهوائي" }
+    ],
+    cap: [
+      { action: "تركيب مرشحات حيوية", responsible: "مدير المزرعة", deadline: "4 أشهر", status: "قيد التصميم" },
+      { action: "دراسة جدوى للهضم اللاهوائي", responsible: "مستشار بيئي", deadline: "3 أشهر", status: "قيد الإعداد" },
+      { action: "تطبيق نظام ري بالتنقيط", responsible: "مدير العمليات", deadline: "6 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "الاستثمار في المرشحات الحيوية للروائح",
+      "دراسة تحويل الروث إلى طاقة",
+      "تطبيق نظام ري حديث",
+      "تعزيز العزل البيئي للمزرعة"
+    ]
+  },
+
+  "مصنع عطور وبخور": { 
+    icon: "🌸", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "VOCs", status: "non-compliant", details: "انبعاثات عالية من المذيبات" },
+      { area: "الروائح", status: "non-compliant", details: "تأثير على المنطقة المحيطة" },
+      { area: "إدارة المذيبات", status: "partial", details: "تخزين جيد لكن لا استرداد" },
+      { area: "مياه الصرف", status: "compliant", details: "معالجة مناسبة" },
+      { area: "السلامة", status: "partial", details: "PPE متوفر لكن التدريب ناقص" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لحريق المواد العطرية القابلة للاشتعال أو المذيبات الكحولية" }
+    ],
+    gaps: [
+      { requirement: "نظام استرداد المذيبات", current: "لا يوجد", gap: "هدر مادي وبيئي", priority: "high" },
+      { requirement: "معالجة الروائح", current: "لا توجد", gap: "شكاوى مجتمعية", priority: "high" },
+      { requirement: "برنامج تدريب HSE", current: "جزئي", gap: "مخاطر سلامة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "انبعاثات VOCs عالية", severity: "high", action: "تركيب نظام استرداد مذيبات" },
+      { number: "NCR-002", description: "شكاوى من الروائح", severity: "high", action: "تركيب مرشحات كربون نشط" },
+      { number: "NCR-003", description: "نقص التدريب على HSE", severity: "medium", action: "تطوير برنامج تدريبي" }
+    ],
+    cap: [
+      { action: "تركيب نظام استرداد مذيبات", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" },
+      { action: "تركيب مرشحات كربون نشط", responsible: "مدير البيئة", deadline: "4 أشهر", status: "مطلوب" },
+      { action: "تطوير برنامج تدريبي HSE", responsible: "مدير HR", deadline: "3 أشهر", status: "قيد التطوير" }
+    ],
+    recommendations: [
+      "الاستثمار في نظام استرداد المذيبات",
+      "تركيب مرشحات متقدمة للروائح",
+      "تطوير ثقافة السلامة المهنية",
+      "التحول لمذيبات صديقة للبيئة"
+    ]
+  },
+
+  "محطة تخزين غاز البترول المسال": { 
+    icon: "🔥", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "السلامة من الحريق", status: "compliant", details: "أنظمة إطفاء متطورة" },
+      { area: "كشف التسرب", status: "partial", details: "أجهزة قديمة تحتاج تحديث" },
+      { area: "الاحتواء الثانوي", status: "compliant", details: "أحواض عازلة موجودة" },
+      { area: "خطة الطوارئ", status: "partial", details: "موجودة لكن لم تُختبر حديثاً" },
+      { area: "التدريب", status: "compliant", details: "تدريب دوري على الطوارئ" }
+    ],
+    gaps: [
+      { requirement: "تحديث أجهزة كشف التسرب", current: "أجهزة قديمة", gap: "خطر عدم الكشف", priority: "high" },
+      { requirement: "اختبار خطة الطوارئ", current: "آخر اختبار منذ سنتين", gap: "عدم الجاهزية", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "أجهزة كشف تسرب قديمة", severity: "high", action: "استبدال بأجهزة حديثة" },
+      { number: "NCR-002", description: "عدم اختبار خطة الطوارئ", severity: "high", action: "إجراء تمرين طوارئ شامل" }
+    ],
+    cap: [
+      { action: "استبدال أجهزة كشف التسرب", responsible: "مدير الصيانة", deadline: "3 أشهر", status: "عاجل" },
+      { action: "إجراء تمرين طوارئ شامل", responsible: "مدير HSE", deadline: "شهر", status: "مجدول" },
+      { action: "تحديث خطة الطوارئ", responsible: "مدير العمليات", deadline: "شهرين", status: "قيد المراجعة" }
+    ],
+    recommendations: [
+      "أولوية قصوى لتحديث أنظمة الكشف",
+      "اختبار خطة الطوارئ كل 6 أشهر",
+      "تطبيق نظام إدارة السلامة ISO 45001",
+      "تدريب مكثف على التعامل مع الطوارئ"
+    ]
+  },
+
+  "مصنع أدوات جراحية": { 
+    icon: "💉", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "التعقيم", status: "compliant", details: "أنظمة تعقيم متطورة" },
+      { area: "المواد الكيميائية", status: "partial", details: "تخزين جيد لكن SDS ناقصة" },
+      { area: "مياه الصرف", status: "compliant", details: "معالجة مناسبة" },
+      { area: "النفايات الطبية", status: "non-compliant", details: "اختلاط نفايات حادة مع عامة" },
+      { area: "GMP", status: "partial", details: "部分 مطابق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات تعقيم، لكن لا توجد خطة موثقة لتسرب مواد التعقيم الكيميائية (إثيلين أوكسيد) شديدة السمية" }
+    ],
+    gaps: [
+      { requirement: "فصل النفايات الحادة", current: "اختلاط", gap: "مخاطر صحية", priority: "high" },
+      { requirement: "استكمال SDS", current: "40% ناقصة", gap: "مخاطر كيميائية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "اختلاط النفايات الحادة", severity: "high", action: "تطبيق فصل صارم من المصدر" },
+      { number: "NCR-002", description: "نقص SDS", severity: "medium", action: "استكمال جميع SDS" }
+    ],
+    cap: [
+      { action: "تطبيق نظام فصل النفايات", responsible: "مدير الإنتاج", deadline: "شهر", status: "عاجل" },
+      { action: "استكمال SDS", responsible: "مدير الجودة", deadline: "شهرين", status: "قيد التنفيذ" },
+      { action: "تدريب العاملين على الفصل", responsible: "مدير HSE", deadline: "شهر", status: "مجدول" }
+    ],
+    recommendations: [
+      "أولوية قصوى لفصل النفايات الحادة",
+      "استكمال ملفات SDS",
+      "تطبيق ISO 13485 للأجهزة الطبية",
+      "تعزيز ثقافة الجودة والسلامة"
+    ]
+  },
+
+  "محجر حصى وركام": { 
+    icon: "🪨", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "الغبار", status: "non-compliant", details: "تجاوز حدود PM10" },
+      { area: "الضوضاء", status: "partial", details: "تجاوز في أوقات محددة" },
+      { area: "إعادة التأهيل", status: "non-compliant", details: "لا توجد خطة إعادة تأهيل" },
+      { area: "استهلاك المياه", status: "partial", details: "رش مائي لكن غير كافٍ" },
+      { area: "التصاريح", status: "compliant", details: "سارية" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لانهيار جبهة الحفر أو حوادث التفجير، ولا مسافات أمان موثقة للعاملين والمناطق المجاورة" }
+    ],
+    gaps: [
+      { requirement: "نظام قمع غبار متقدم", current: "رش مائي فقط", gap: "تلوث هوائي", priority: "high" },
+      { requirement: "خطة إعادة تأهيل", current: "لا توجد", gap: "تدهور بيئي", priority: "high" },
+      { requirement: "حواجز صوتية", current: "لا توجد", gap: "إزعاج مجتمعي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "تجاوز حدود الغبار", severity: "high", action: "تركيب أنظمة قمع متقدمة" },
+      { number: "NCR-002", description: "عدم وجود خطة إعادة تأهيل", severity: "high", action: "إعداد خطة إعادة تأهيل شاملة" },
+      { number: "NCR-003", description: "ضوضاء زائدة", severity: "medium", action: "تركيب حواجز صوتية" }
+    ],
+    cap: [
+      { action: "تركيب أنظمة قمع غبار متقدمة", responsible: "مدير العمليات", deadline: "4 أشهر", status: "قيد التصميم" },
+      { action: "إعداد خطة إعادة تأهيل", responsible: "مستشار بيئي", deadline: "3 أشهر", status: "قيد الإعداد" },
+      { action: "تركيب حواجز صوتية", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "الاستثمار في أنظمة قمع الغبار",
+      "إعداد خطة إعادة تأهيل شاملة",
+      "تطبيق نظام إدارة بيئية ISO 14001",
+      "تعزيز العلاقات المجتمعية"
+    ]
+  },
+
+  "مصنع أعلاف أسماك": { 
+    icon: "🐟", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "الغبار العضوي", status: "partial", details: "فلاتر موجودة لكن تحتاج صيانة" },
+      { area: "الروائح", status: "non-compliant", details: "شكاوى متكررة" },
+      { area: "إدارة النفايات", status: "compliant", details: "إعادة تدوير جيدة" },
+      { area: "السلامة من الحريق", status: "partial", details: "أنظمة موجودة لكن قديمة" },
+      { area: "التصاريح", status: "compliant", details: "سارية" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات أساسية، لكن لا توجد خطة موثقة لانفجار غبار الطحن في الصوامع" }
+    ],
+    gaps: [
+      { requirement: "معالجة الروائح", current: "لا توجد", gap: "شكاوى مجتمعية", priority: "high" },
+      { requirement: "صيانة الفلاتر", current: "متأخرة", gap: "كفاءة منخفضة", priority: "medium" },
+      { requirement: "تحديث أنظمة الحريق", current: "قديمة", gap: "مخاطر سلامة", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "شكاوى من الروائح", severity: "high", action: "تركيب مرشحات حيوية" },
+      { number: "NCR-002", description: "أنظمة حريق قديمة", severity: "high", action: "تحديث شامل" },
+      { number: "NCR-003", description: "صيانة الفلاتر متأخرة", severity: "medium", action: "صيانة فورية" }
+    ],
+    cap: [
+      { action: "تركيب مرشحات حيوية", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" },
+      { action: "تحديث أنظمة الحريق", responsible: "مدير السلامة", deadline: "4 أشهر", status: "عاجل" },
+      { action: "صيانة الفلاتر", responsible: "مدير الصيانة", deadline: "شهر", status: "مجدول" }
+    ],
+    recommendations: [
+      "الاستثمار في معالجة الروائح",
+      "تحديث أنظمة السلامة من الحريق",
+      "تطبيق نظام صيانة وقائية",
+      "تعزيز العزل البيئي"
+    ]
+  },
+
+  "محطة طاقة كتلة حيوية": { 
+    icon: "🌱", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "الانبعاثات", status: "compliant", details: "ضمن الحدود" },
+      { area: "إدارة المخلفات الزراعية", status: "partial", details: "部分 مستورد وجزئي محلي" },
+      { area: "كفاءة الطاقة", status: "compliant", details: "كفاءة عالية" },
+      { area: "الضوضاء", status: "partial", details: "تجاوز طفيف" },
+      { area: "التصاريح", status: "compliant", details: "سارية" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتراكم غاز الميثان القابل للانفجار في مفاعلات الهضم اللاهوائي أو حريق مخزون الكتلة الحيوية" }
+    ],
+    gaps: [
+      { requirement: "زيادة المحتوى المحلي للمخلفات", current: "50% مستورد", gap: "تكلفة عالية", priority: "medium" },
+      { requirement: "تخفيف الضوضاء", current: "جزئي", gap: "إزعاج", priority: "low" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "اعتماد كبير على المخلفات المستوردة", severity: "medium", action: "تطوير سلاسل توريد محلية" }
+    ],
+    cap: [
+      { action: "تطوير سلاسل توريد محلية", responsible: "مدير المشتريات", deadline: "12 شهر", status: "قيد التطوير" },
+      { action: "تركيب عوازل صوتية إضافية", responsible: "مدير الصيانة", deadline: "6 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "تعزيز المحتوى المحلي للمخلفات",
+      "الاستثمار في تخزين المخلفات",
+      "تطبيق نظام إدارة الطاقة",
+      "تعزيز العلاقات مع المزارعين المحليين"
+    ]
+  },
+
+  "مصنع بلاستيك طبي": { 
+    icon: "💊", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "النظافة الصناعية", status: "compliant", details: "مطابق لـ GMP" },
+      { area: "المواد الخام", status: "partial", details: "بعض المواد تحتاج بدائل" },
+      { area: "مياه الصرف", status: "compliant", details: "معالجة مناسبة" },
+      { area: "إدارة النفايات", status: "non-compliant", details: "اختلاط نفايات طبية مع بلاستيكية" },
+      { area: "التصاريح", status: "compliant", details: "سارية" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة معتمدة لتلوث دفعة إنتاج معقمة (تهدد سلامة المرضى) أو حريق في غرف التعقيم" }
+    ],
+    gaps: [
+      { requirement: "فصل النفايات الطبية", current: "اختلاط", gap: "مخاطر صحية", priority: "high" },
+      { requirement: "استبدال مواد ضارة", current: "部分 مستخدمة", gap: "مخاطر بيئية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "اختلاط النفايات الطبية", severity: "high", action: "تطبيق فصل صارم" },
+      { number: "NCR-002", description: "استخدام مواد ضارة", severity: "medium", action: "البحث عن بدائل" }
+    ],
+    cap: [
+      { action: "تطبيق نظام فصل النفايات", responsible: "مدير الإنتاج", deadline: "شهر", status: "عاجل" },
+      { action: "تقييم بدائل المواد", responsible: "مدير R&D", deadline: "6 أشهر", status: "قيد التقييم" }
+    ],
+    recommendations: [
+      "أولوية قصوى لفصل النفايات",
+      "البحث عن مواد صديقة للبيئة",
+      "تطبيق ISO 13485",
+      "تعزيز ثقافة الجودة"
+    ]
+  },
+
+  "مرفأ حاويات": { 
+    icon: "🚢", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "جودة الهواء", status: "partial", details: "انبعاثات من المعدات" },
+      { area: "جودة المياه", status: "compliant", details: "رصد منتظم" },
+      { area: "إدارة النفايات", status: "partial", details: "فصل جزئي" },
+      { area: "الضوضاء", status: "non-compliant", details: "تجاوز الحدود" },
+      { area: "التصاريح", status: "compliant", details: "سارية" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات تشغيل أساسية، لكن لا توجد خطة موثقة لتسرب حاوية تحتوي مواد خطرة (IMDG) أو سقوطها" }
+    ],
+    gaps: [
+      { requirement: "تقليل انبعاثات المعدات", current: "معدات قديمة", gap: "تلوث هوائي", priority: "high" },
+      { requirement: "معالجة الضوضاء", current: "لا توجد", gap: "إزعاج مجتمعي", priority: "high" },
+      { requirement: "تحسين إدارة النفايات", current: "فصل جزئي", gap: "هدر", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "انبعاثات عالية من المعدات", severity: "high", action: "تحديث المعدات" },
+      { number: "NCR-002", description: "ضوضاء زائدة", severity: "high", action: "تركيب حواجز صوتية" },
+      { number: "NCR-003", description: "إدارة نفايات غير كافية", severity: "medium", action: "تطبيق نظام فصل شامل" }
+    ],
+    cap: [
+      { action: "تحديث المعدات القديمة", responsible: "مدير العمليات", deadline: "24 شهر", status: "مخطط" },
+      { action: "تركيب حواجز صوتية", responsible: "مدير الهندسة", deadline: "8 أشهر", status: "قيد التصميم" },
+      { action: "تطبيق نظام فصل النفايات", responsible: "مدير البيئة", deadline: "6 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "الاستثمار في معدات حديثة",
+      "تطبيق نظام إدارة بيئية شامل",
+      "تعزيز العلاقات المجتمعية",
+      "الحصول على شهادة الموانئ الخضراء"
+    ]
+  },
+
+  "مصنع إطارات سيارات": { 
+    icon: "🏭", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Carbon Black Filters", status: "partial", details: "كفاءة 85%" },
+      { area: "RTO", status: "compliant", details: "كفاءة 99%" },
+      { area: "Acoustic Enclosures", status: "partial", details: "جزئية" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لحريق المطاط الخام (يصعب إخماده ويولد دخاناً سامًا كثيفاً)، وهو الخطر الأبرز في هذه الصناعة" }
+    ],
+    gaps: [
+      { requirement: "تحسين Carbon Black Filters", current: "85%", gap: "جسيمات متبقية", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة فلاتر الكربون الأسود منخفضة", severity: "high", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Carbon Black Filters", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين فلاتر الكربون الأسود",
+      "تعزيز العوازل الصوتية"
+    ]
+  },
+
+  "مصنع مواد لاصقة وغراء": { 
+    icon: "🧴", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "VOC Recovery", status: "partial", details: "كفاءة 70%" },
+      { area: "Biofilters", status: "compliant", details: "كفاءة 90%" },
+      { area: "Wastewater Treatment", status: "partial", details: "كفاءة 80%" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لحريق المذيبات العضوية عالية التطاير المستخدمة في تصنيع الغراء" }
+    ],
+    gaps: [
+      { requirement: "تحسين VOC Recovery", current: "70%", gap: "VOCs عالية", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد VOCs منخفضة", severity: "high", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين VOC Recovery", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين استرداد VOCs",
+      "تعزيز المعالجة المتقدمة"
+    ]
+  },
+
+  "مصنع رخام وجرانيت": { 
+    icon: "🪨", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Wet Cutting", status: "compliant", details: "مطبق" },
+      { area: "Sedimentation Ponds", status: "partial", details: "تحتاج تنظيف" },
+      { area: "Acoustic Enclosures", status: "non-compliant", details: "لا توجد" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد أنظمة تقطيع رطبة، لكن لا توجد خطة موثقة لانهيار كتل حجرية كبيرة أثناء المناولة" }
+    ],
+    gaps: [
+      { requirement: "تنظيف Sedimentation Ponds", current: "متسخة", gap: "كفاءة منخفضة", priority: "medium" },
+      { requirement: "تركيب Acoustic Enclosures", current: "لا توجد", gap: "ضوضاء عالية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "أحواض الترسيب تحتاج تنظيف", severity: "medium", action: "تنظيف الأحواض" },
+      { number: "NCR-002", description: "عدم وجود عوازل صوتية", severity: "medium", action: "تركيب عوازل" }
+    ],
+    cap: [
+      { action: "تنظيف أحواض الترسيب", responsible: "مدير العمليات", deadline: "شهر", status: "مجدول" },
+      { action: "تركيب عوازل صوتية", responsible: "مدير الهندسة", deadline: "4 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "تنظيف الأحواض دورياً",
+      "تركيب عوازل صوتية"
+    ]
+  },
+
+  "مصنع أسلاك وكابلات": { 
+    icon: "🔌", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "VOC Recovery", status: "partial", details: "كفاءة 75%" },
+      { area: "Metal Recycling", status: "compliant", details: "مطبق" },
+      { area: "Energy Efficiency", status: "partial", details: "كفاءة 70%" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات أساسية، لكن لا توجد خطة موثقة لحريق عزل PVC (يصدر غاز كلوريد الهيدروجين السام عند الاحتراق)" }
+    ],
+    gaps: [
+      { requirement: "تحسين VOC Recovery", current: "75%", gap: "VOCs متبقية", priority: "medium" },
+      { requirement: "تحسين Energy Efficiency", current: "70%", gap: "استهلاك طاقة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد VOCs منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين VOC Recovery", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين استرداد VOCs",
+      "تعزيز كفاءة الطاقة"
+    ]
+  },
+
+  "مصنع ثلج": { 
+    icon: "❄️", 
+    classification: { egypt: "قائمة (ج) - أثر بيئي محدود", saudi: "الفئة الأولى - نشاط منخفض الخطورة" },
+    auditAreas: [
+      { area: "Energy Efficiency", status: "partial", details: "كفاءة 75%" },
+      { area: "Water Recycling", status: "compliant", details: "مطبق" },
+      { area: "Refrigerant Recovery", status: "partial", details: "كفاءة 80%" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب غاز الأمونيا (نظام التبريد الأساسي، سام وقابل للاشتعال)، ولا أجهزة كشف غاز ثابتة" }
+    ],
+    gaps: [
+      { requirement: "تحسين Energy Efficiency", current: "75%", gap: "استهلاك طاقة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة الطاقة منخفضة", severity: "medium", action: "تحسين الأنظمة" }
+    ],
+    cap: [
+      { action: "تحسين Energy Efficiency", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين كفاءة الطاقة",
+      "تعزيز استرداد المبردات"
+    ]
+  },
+
+  "مسلخ أسماك": { 
+    icon: "🐟", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Biological Treatment", status: "partial", details: "كفاءة 80%" },
+      { area: "Biofilters", status: "non-compliant", details: "لا توجد" },
+      { area: "Organic Waste", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات نظافة أساسية، لكن لا توجد خطة موثقة لتراكم مخلفات عضوية متعفنة أو تسرب مياه صرف عالية التركيز" }
+    ],
+    gaps: [
+      { requirement: "تركيب Biofilters", current: "لا توجد", gap: "روائح نفاذة", priority: "high" },
+      { requirement: "تحسين Biological Treatment", current: "80%", gap: "BOD عالي", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم وجود مرشحات حيوية", severity: "high", action: "تركيب Biofilters" },
+      { number: "NCR-002", description: "كفاءة المعالجة البيولوجية منخفضة", severity: "high", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تركيب مرشحات حيوية", responsible: "مدير البيئة", deadline: "4 أشهر", status: "مخطط" },
+      { action: "تحسين المعالجة البيولوجية", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "الاستثمار في Biofilters",
+      "تحسين المعالجة البيولوجية"
+    ]
+  },
+
+  "مصنع سوائل غسيل سيارات": { 
+    icon: "🧴", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Biological Treatment", status: "partial", details: "كفاءة 80%" },
+      { area: "Neutralization", status: "compliant", details: "نظام آلي" },
+      { area: "Packaging Recycling", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتفاعل كيميائي غير متوافق بين مواد التنظيف الحمضية والقلوية المخزنة معاً" }
+    ],
+    gaps: [
+      { requirement: "تحسين Biological Treatment", current: "80%", gap: "COD عالي", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة المعالجة البيولوجية منخفضة", severity: "high", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين Biological Treatment", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين المعالجة البيولوجية",
+      "تعزيز المعادلة الكيميائية"
+    ]
+  },
+
+  "مصنع زجاجات وعبوات زجاجية": { 
+    icon: "🍾", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "SCR & FGD", status: "compliant", details: "تعمل بكفاءة" },
+      { area: "Bag Filters", status: "partial", details: "تحتاج استبدال" },
+      { area: "Heat Recovery", status: "partial", details: "كفاءة 70%" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات إيقاف الغاز، لكن لا توجد خطة موثقة لكسر فرن الصهر عالي الحرارة" }
+    ],
+    gaps: [
+      { requirement: "استبدال Bag Filters", current: "قديمة", gap: "غبار زجاجي", priority: "high" },
+      { requirement: "تحسين Heat Recovery", current: "70%", gap: "فقدان طاقة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "فلاتر الأكياس قديمة", severity: "high", action: "استبدال الفلاتر" },
+      { number: "NCR-002", description: "كفاءة استرداد الحرارة منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "استبدال Bag Filters", responsible: "مدير الصيانة", deadline: "3 أشهر", status: "مطلوب" },
+      { action: "تحسين Heat Recovery", responsible: "مدير الهندسة", deadline: "6 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "استبدال الفلاتر فوراً",
+      "تحسين استرداد الحرارة"
+    ]
+  },
+
+  "مصنع مواد تشحيم وزيوت": { 
+    icon: "🛢️", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "Secondary Containment", status: "compliant", details: "مطبق" },
+      { area: "VRU", status: "partial", details: "كفاءة 80%" },
+      { area: "Used Oil Recycling", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لحريق أو تسرب كبير للزيوت المعدنية، ولا أحواض احتواء ثانوي كافية تحت خزانات التخزين" }
+    ],
+    gaps: [
+      { requirement: "تحسين VRU", current: "80%", gap: "انبعاثات VOCs", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة VRU منخفضة", severity: "medium", action: "تحسين النظام" }
+    ],
+    cap: [
+      { action: "تحسين VRU", responsible: "مدير الهندسة", deadline: "5 أشهر", status: "قيد التصميم" }
+    ],
+    recommendations: [
+      "تحسين VRU",
+      "تعزيز الاحتواء الثانوي"
+    ]
+  },
+
+  "مصنع أجهزة طبية": { 
+    icon: "🏥", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "Chemical Substitution", status: "partial", details: "70% تم" },
+      { area: "Sterile Waste Incineration", status: "compliant", details: "مطبق" },
+      { area: "GMP", status: "compliant", details: "مطبق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات تعقيم غرف نظيفة، لكن لا توجد خطة موثقة لتسرب غاز إثيلين أوكسيد المستخدم في التعقيم" }
+    ],
+    gaps: [
+      { requirement: "إكمال Chemical Substitution", current: "70%", gap: "مواد خطرة متبقية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "استبدال المواد الكيميائية غير مكتمل", severity: "medium", action: "إكمال الاستبدال" }
+    ],
+    cap: [
+      { action: "إكمال استبدال المواد الكيميائية", responsible: "مدير R&D", deadline: "6 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "إكمال استبدال المواد الخطرة",
+      "تعزيز معايير GMP"
+    ]
+  },
+
+  "مصنع تكرير بترول": { 
+    icon: "🛢️", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "استرداد أبخرة VOCs", status: "partial", details: "وحدات VRU مركبة فى 60% من نقاط التحميل فقط" },
+      { area: "فواصل الزيوت API/DAF", status: "compliant", details: "تعمل بكفاءة وفق التصميم" },
+      { area: "استرداد غاز الشعلة (Flare)", status: "non-compliant", details: "لا يوجد نظام استرداد، حرق مستمر" },
+      { area: "خطة سلامة العمليات (PSM)", status: "partial", details: "موثقة لكن آخر تحديث لتحليل HAZOP منذ أكثر من عامين" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة معتمدة لحريق/انفجار كبير في وحدات التقطير، رغم كون هذا النشاط من أعلى فئات الخطورة على الإطلاق ويستوجب خطة HAZOP معتمدة ودورية" }
+    ],
+    gaps: [
+      { requirement: "تعميم وحدات VRU على كل نقاط التحميل", current: "60% تغطية", gap: "انبعاثات VOCs غير محتواة", priority: "high" },
+      { requirement: "تركيب نظام استرداد غاز الشعلة", current: "غير موجود", gap: "فقد طاقة وانبعاثات دفيئة", priority: "high" },
+      { requirement: "تحديث دراسة HAZOP", current: "منذ عامين", gap: "مخاطر غير محدثة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "تغطية جزئية لاسترداد الأبخرة عند التحميل", severity: "high", action: "استكمال تركيب VRU على باقي النقاط" },
+      { number: "NCR-002", description: "عدم وجود نظام استرداد لغاز الشعلة", severity: "high", action: "دراسة جدوى وتركيب نظام استرداد" }
+    ],
+    cap: [
+      { action: "استكمال تركيب VRU على 40% المتبقية", responsible: "مدير الهندسة", deadline: "8 أشهر", status: "قيد التخطيط" },
+      { action: "تحديث دراسة HAZOP الشاملة", responsible: "مدير السلامة", deadline: "3 أشهر", status: "مطلوب" }
+    ],
+    recommendations: [
+      "استكمال منظومة استرداد الأبخرة على كل نقاط التشغيل",
+      "دراسة جدوى اقتصادية لاسترداد غاز الشعلة",
+      "تحديث دوري لدراسات HAZOP كل عامين كحد أقصى"
+    ]
+  },
+
+  "حقل نفط وغاز": { 
+    icon: "⛏️", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "إعادة حقن مياه الإنتاج", status: "compliant", details: "معدل حقن يطابق المعايير" },
+      { area: "استغلال الغاز المصاحب", status: "non-compliant", details: "نسبة حرق (Flaring) تتجاوز 30% من الإنتاج" },
+      { area: "معدات منع الانفجار (BOP)", status: "compliant", details: "فحص واختبار دوري موثق" },
+      { area: "خطة استعادة الموائل", status: "partial", details: "موجودة لكن لم تُطبق على المواقع المستنفدة" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لانفجار بئر (Blowout) أو تسرب كبريتيد الهيدروجين (H2S) السام، وهو من أخطر السيناريوهات في عمليات الحفر والإنتاج" }
+    ],
+    gaps: [
+      { requirement: "خفض نسبة حرق الغاز المصاحب", current: "30%", gap: "فقد اقتصادي وانبعاثات دفيئة", priority: "high" },
+      { requirement: "تطبيق خطة استعادة الموائل", current: "غير مطبقة", gap: "مواقع متأثرة غير مستصلحة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "نسبة حرق غاز مرتفعة تتجاوز الحدود المستهدفة", severity: "high", action: "دراسة توسعة أنظمة الالتقاط والاستخدام" }
+    ],
+    cap: [
+      { action: "توسعة سعة التقاط الغاز المصاحب", responsible: "مدير الإنتاج", deadline: "12 شهر", status: "قيد الدراسة" },
+      { action: "بدء تطبيق استعادة الموائل بالمواقع المستنفدة", responsible: "مدير البيئة", deadline: "6 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "وضع هدف زمني ملزم لخفض نسبة حرق الغاز طبقاً لمبادرة الصفر حرق الروتيني",
+      "تفعيل خطة استعادة الموائل على المواقع المستنفدة فوراً"
+    ]
+  },
+
+  "مصنع سكر": { 
+    icon: "🍬", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "معالجة الصرف اللاهوائية", status: "compliant", details: "وحدة UASB تعمل بكفاءة" },
+      { area: "التوليد المشترك من مخلفات القصب", status: "partial", details: "مطبق جزئياً، لا يغطي كامل احتياج الطاقة" },
+      { area: "احتواء تخزين المولاس", status: "non-compliant", details: "الأحواض العازلة بسعة أقل من 110% المطلوبة" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات أساسية، لكن لا توجد خطة موثقة لانفجار غبار السكر في صوامع التخزين" }
+    ],
+    gaps: [
+      { requirement: "رفع سعة أحواض احتواء المولاس", current: "أقل من 110%", gap: "خطر تسرب للمجاري المائية", priority: "high" },
+      { requirement: "توسعة التوليد المشترك", current: "تغطية جزئية", gap: "اعتماد على وقود إضافي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "سعة احتواء المولاس دون الحد الأدنى المطلوب", severity: "high", action: "توسعة الأحواض العازلة فوراً" }
+    ],
+    cap: [
+      { action: "رفع سعة أحواض احتواء المولاس لـ 110%", responsible: "مدير الهندسة", deadline: "4 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "إعطاء أولوية عاجلة لرفع سعة احتواء المولاس",
+      "دراسة توسعة التوليد المشترك لتغطية كامل احتياج المصنع"
+    ]
+  },
+
+  "محطة تحويل كهرباء": { 
+    icon: "🗼", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "أحواض احتواء زيت المحولات", status: "compliant", details: "مطابقة للسعة المطلوبة" },
+      { area: "محولات خالية من PCBs", status: "partial", details: "80% من المحولات مستبدلة" },
+      { area: "الالتزام بمسافات الأمان من EMF", status: "compliant", details: "مطابق للمعايير الدولية" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لحريق زيت المحولات (Transformer Oil) أو انفجار كهربائي (Arc Flash)" }
+    ],
+    gaps: [
+      { requirement: "استبدال باقي المحولات القديمة", current: "80% مستبدل", gap: "احتمال وجود PCBs فى 20% المتبقية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "وجود محولات قديمة لم يُتحقق من خلوها من PCBs", severity: "medium", action: "فحص واستبدال المحولات المتبقية" }
+    ],
+    cap: [
+      { action: "فحص واستبدال المحولات القديمة المتبقية", responsible: "مدير الصيانة", deadline: "6 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "استكمال برنامج استبدال المحولات المحتوية على PCBs",
+      "الحفاظ على برنامج الفحص الدوري لأحواض الاحتواء"
+    ]
+  },
+
+  "مصنع سماد عضوي (كمبوست)": { 
+    icon: "🍂", 
+    classification: { egypt: "قائمة (ج) - أثر بيئي محدود", saudi: "الفئة الأولى - نشاط منخفض الخطورة" },
+    auditAreas: [
+      { area: "أرضية عازلة وتجميع الرشح", status: "compliant", details: "أرضية خرسانية مع نظام تجميع فعال" },
+      { area: "مرشحات حيوية للروائح", status: "non-compliant", details: "لا توجد معالجة للهواء الخارج" },
+      { area: "برنامج مكافحة القوارض", status: "partial", details: "مطبق بشكل غير منتظم" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات تقليب أساسية، لكن لا توجد خطة موثقة لاشتعال ذاتي (Spontaneous Combustion) في أكوام الكمبوست" }
+    ],
+    gaps: [
+      { requirement: "تركيب مرشحات حيوية للروائح", current: "غير موجودة", gap: "شكاوى روائح من الجيران", priority: "high" },
+      { requirement: "تفعيل برنامج مكافحة قوارض منتظم", current: "غير منتظم", gap: "مخاطر صحية محتملة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "غياب معالجة الروائح المنبعثة من أكوام التسبيخ", severity: "medium", action: "تركيب مرشحات حيوية" }
+    ],
+    cap: [
+      { action: "تركيب مرشحات حيوية عند مسارات التهوية", responsible: "مدير الموقع", deadline: "3 أشهر", status: "مطلوب" }
+    ],
+    recommendations: [
+      "تركيب مرشحات حيوية لمعالجة الروائح",
+      "تحويل برنامج مكافحة القوارض لجدول منتظم موثق"
+    ]
+  },
+
+  "حديقة حيوان": { 
+    icon: "🦁", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "تسبيخ المخلفات الحيوانية", status: "compliant", details: "نظام تسبيخ حراري فعال" },
+      { area: "بروتوكولات الحجر البيطري", status: "compliant", details: "مطبقة ومسجلة" },
+      { area: "أقفاص وحواجز الحيوانات الخطرة", status: "partial", details: "بعض الأقفاص القديمة تحتاج تحديث" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لهروب حيوان خطر أو تفشي مرض حيواني المصدر (Zoonotic)، وهو السيناريو الأهم لهذا النوع من المنشآت" }
+    ],
+    gaps: [
+      { requirement: "تحديث الأقفاص القديمة للحيوانات الخطرة", current: "بعضها قديم", gap: "خطر هروب محتمل", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "أقفاص قديمة لا تطابق معايير الاحتواء المزدوج الحديثة", severity: "high", action: "تحديث الأقفاص وفق المعايير الحديثة" }
+    ],
+    cap: [
+      { action: "تحديث الأقفاص القديمة للحيوانات المفترسة", responsible: "مدير الحديقة", deadline: "5 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "إعطاء أولوية لتحديث أقفاص الحيوانات عالية الخطورة",
+      "الاستمرار فى تطبيق بروتوكولات الحجر البيطري"
+    ]
+  },
+
+  "مصنع بتروكيماويات": { 
+    icon: "⚗️", 
+    classification: { egypt: "قائمة (أ) - القائمة السوداء", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "مؤكسد حراري متجدد (RTO)", status: "compliant", details: "كفاءة تدمير مطابقة للمواصفات" },
+      { area: "معالجة كيميائية بيولوجية متقدمة", status: "partial", details: "مرحلة MBBR تعمل دون الطاقة التصميمية" },
+      { area: "نظام إدارة سلامة العمليات (PSM)", status: "compliant", details: "موثق ومطبق مع تحليل HAZOP دوري" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة معتمدة لتسرب/انفجار مواد بتروكيماوية شديدة الاشتعال والسمية؛ نشاط عالي الخطورة يستوجب دراسة HAZOP محدثة وخطة استجابة معتمدة رسمياً" }
+    ],
+    gaps: [
+      { requirement: "رفع كفاءة وحدة MBBR", current: "دون الطاقة التصميمية", gap: "احتمال تجاوز حدود الصرف عند الذروة", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "أداء وحدة المعالجة البيولوجية دون المستهدف", severity: "high", action: "صيانة وتحسين تشغيل وحدة MBBR" }
+    ],
+    cap: [
+      { action: "برنامج تحسين تشغيل وحدة MBBR", responsible: "مدير المعالجة", deadline: "4 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "تحسين تشغيل وحدة المعالجة البيولوجية لضمان الأداء عند الذروة",
+      "الاستمرار فى برنامج HAZOP الدوري"
+    ]
+  },
+
+  "مسبك معادن": { 
+    icon: "🔥", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "شفط الأبخرة وفلاتر الأكياس", status: "compliant", details: "مركبة على جميع الأفران" },
+      { area: "استرداد الحرارة المهدرة", status: "non-compliant", details: "لا يوجد نظام استرداد" },
+      { area: "تجديد رمل السباكة", status: "partial", details: "يُعاد تدوير 50% فقط من الرمل" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب معدن منصهر أو انفجار ناتج عن ملامسة المعدن المنصهر للرطوبة" }
+    ],
+    gaps: [
+      { requirement: "تركيب نظام استرداد حرارة", current: "غير موجود", gap: "استهلاك طاقة زائد", priority: "medium" },
+      { requirement: "رفع نسبة تجديد رمل السباكة", current: "50%", gap: "نفايات رمل زائدة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم استرداد الحرارة المهدرة من الأفران", severity: "medium", action: "دراسة تركيب مبادل حراري" }
+    ],
+    cap: [
+      { action: "دراسة جدوى استرداد الحرارة", responsible: "مدير الهندسة", deadline: "3 أشهر", status: "قيد الدراسة" }
+    ],
+    recommendations: [
+      "دراسة تركيب نظام استرداد الحرارة لتقليل استهلاك الطاقة",
+      "رفع نسبة تجديد رمل السباكة تدريجياً"
+    ]
+  },
+
+  "مصنع طلاء كهربائي للمعادن (الجلفنة)": { 
+    icon: "🔩", 
+    classification: { egypt: "قائمة (أ) - القائمة السوداء", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "اختزال وترسيب الكروم", status: "compliant", details: "معالجة فعالة قبل التصريف" },
+      { area: "وحدة تدمير السيانيد", status: "non-compliant", details: "لا توجد معالجة متخصصة للسيانيد" },
+      { area: "غسالات أبخرة على الأحواض", status: "partial", details: "مركبة على 60% من الأحواض" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب أحماض أو سيانيدات (شديدة السمية) المستخدمة في أحواض الطلاء الكهربائي" }
+    ],
+    gaps: [
+      { requirement: "تركيب وحدة تدمير السيانيد", current: "غير موجودة", gap: "خطر تصريف سيانيد سام", priority: "high" },
+      { requirement: "تعميم غسالات الأبخرة", current: "60% تغطية", gap: "تعرض العاملين للأبخرة الحمضية", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "غياب معالجة متخصصة لمحاليل السيانيد", severity: "high", action: "تركيب وحدة أكسدة قلوية للسيانيد فوراً" },
+      { number: "NCR-002", description: "تغطية جزئية لغسالات الأبخرة", severity: "medium", action: "استكمال التركيب على باقي الأحواض" }
+    ],
+    cap: [
+      { action: "تركيب وحدة تدمير السيانيد", responsible: "مدير البيئة", deadline: "3 أشهر", status: "عاجل" },
+      { action: "استكمال غسالات الأبخرة على كل الأحواض", responsible: "مدير الهندسة", deadline: "4 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "إعطاء أولوية قصوى لتركيب وحدة معالجة السيانيد",
+      "استكمال تغطية غسالات الأبخرة على جميع الأحواض الكيميائية"
+    ]
+  },
+
+  "مطحنة دقيق": { 
+    icon: "🌾", 
+    classification: { egypt: "قائمة (ج) - أثر بيئي محدود", saudi: "الفئة الأولى - نشاط منخفض الخطورة" },
+    auditAreas: [
+      { area: "نظام منع انفجار الغبار", status: "compliant", details: "فلاتر ATEX وصمامات تفريغ مركبة" },
+      { area: "استغلال مخلفات النخالة", status: "compliant", details: "تُباع كعلف حيواني بالكامل" },
+      { area: "عزل صوتي لمعدات الطحن", status: "partial", details: "مطبق فى 50% من الخط" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لانفجار غبار الدقيق في الصوامع، وهو الخطر الأبرز والموثق عالمياً في هذه الصناعة" }
+    ],
+    gaps: [
+      { requirement: "استكمال العزل الصوتي", current: "50% تغطية", gap: "ضوضاء تتجاوز الحدود فى بعض المناطق", priority: "low" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عزل صوتي جزئي لبعض معدات الطحن", severity: "low", action: "استكمال العزل الصوتي" }
+    ],
+    cap: [
+      { action: "استكمال العزل الصوتي لباقي المعدات", responsible: "مدير الصيانة", deadline: "3 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "استكمال العزل الصوتي على باقي خط الإنتاج",
+      "الحفاظ على برنامج فحص أنظمة منع انفجار الغبار الدوري"
+    ]
+  },
+
+  "مصنع مخبوزات صناعي": { 
+    icon: "🥖", 
+    classification: { egypt: "قائمة (ج) - أثر بيئي محدود", saudi: "الفئة الأولى - نشاط منخفض الخطورة" },
+    auditAreas: [
+      { area: "فلترة عوادم الأفران", status: "compliant", details: "مرشحات دهنية مركبة وتعمل بكفاءة" },
+      { area: "استرداد الحرارة من الأفران", status: "non-compliant", details: "لا يوجد نظام استرداد" },
+      { area: "إعادة تدوير المخلفات الغذائية", status: "compliant", details: "تعاقد مع جهة متخصصة" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات أساسية، لكن لا توجد خطة موثقة لتسرب غاز الأفران أو انفجار غبار الدقيق في مناطق الخلط" }
+    ],
+    gaps: [
+      { requirement: "تركيب نظام استرداد حرارة الأفران", current: "غير موجود", gap: "فرصة توفير طاقة مهدرة", priority: "low" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم استرداد الحرارة المهدرة من عوادم الأفران", severity: "low", action: "دراسة جدوى تركيب مبادل حراري" }
+    ],
+    cap: [
+      { action: "دراسة جدوى استرداد حرارة الأفران", responsible: "مدير الإنتاج", deadline: "6 أشهر", status: "مقترح" }
+    ],
+    recommendations: [
+      "دراسة تركيب نظام استرداد الحرارة لتقليل تكاليف الطاقة",
+      "الاستمرار فى برنامج إعادة تدوير المخلفات الغذائية"
+    ]
+  },
+
+  "مصنع استخلاص زيوت نباتية": { 
+    icon: "🫒", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "نظام استرداد الهكسان", status: "partial", details: "كفاءة استرداد 90% دون المستهدف 98%" },
+      { area: "معالجة أولية للصرف الزيتي (DAF)", status: "compliant", details: "تعمل بكفاءة جيدة" },
+      { area: "تسويق كسب البذور", status: "compliant", details: "يُباع بالكامل كعلف" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب الهكسان (مذيب الاستخلاص شديد الاشتعال)، وهو الخطر الرئيسي في هذه الصناعة" }
+    ],
+    gaps: [
+      { requirement: "رفع كفاءة استرداد الهكسان إلى 98%", current: "90%", gap: "فقد مذيب وانبعاثات VOCs", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد الهكسان دون المستهدف", severity: "high", action: "صيانة وحدة التقطير ورفع الكفاءة" }
+    ],
+    cap: [
+      { action: "صيانة شاملة لوحدة استرداد الهكسان", responsible: "مدير الإنتاج", deadline: "3 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "إعطاء أولوية لرفع كفاءة استرداد المذيب لتقليل الانبعاثات والتكلفة",
+      "الاستمرار فى برنامج تسويق كسب البذور"
+    ]
+  },
+
+  "مصنع مشروبات غازية وعصائر": { 
+    icon: "🥤", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "برنامج ترشيد استهلاك المياه", status: "compliant", details: "عدادات فرعية مركبة ومراقبة" },
+      { area: "معالجة هوائية-لاهوائية للصرف", status: "compliant", details: "تعمل ضمن الحدود المسموحة" },
+      { area: "برنامج استرداد وتدوير العبوات", status: "non-compliant", details: "لا يوجد برنامج رسمي" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات نظافة، لكن لا توجد خطة موثقة لتسرب ثاني أكسيد الكربون أو الأمونيا من أنظمة التبريد/الكربنة" }
+    ],
+    gaps: [
+      { requirement: "إطلاق برنامج استرداد العبوات", current: "غير موجود", gap: "نفايات بلاستيكية متزايدة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "غياب برنامج استرداد وتدوير العبوات", severity: "medium", action: "تصميم وإطلاق برنامج استرداد" }
+    ],
+    cap: [
+      { action: "إطلاق برنامج استرداد العبوات مع الموزعين", responsible: "مدير الاستدامة", deadline: "6 أشهر", status: "قيد التخطيط" }
+    ],
+    recommendations: [
+      "إطلاق برنامج رسمي لاسترداد وتدوير العبوات",
+      "الاستمرار فى مراقبة استهلاك المياه بالعدادات الفرعية"
+    ]
+  },
+
+  "مصنع تبغ وسجائر": { 
+    icon: "🚬", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "تجميع الغبار بفلاتر الأكياس", status: "compliant", details: "مركبة عند نقاط التقطيع" },
+      { area: "مرشحات حيوية للروائح", status: "non-compliant", details: "لا توجد معالجة للروائح" },
+      { area: "تسبيخ مخلفات التبغ", status: "partial", details: "يُطبق على 50% من المخلفات فقط" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات أساسية، لكن لا توجد خطة موثقة لحريق أوراق التبغ الجافة سريعة الاشتعال" }
+    ],
+    gaps: [
+      { requirement: "تركيب مرشحات حيوية للروائح", current: "غير موجودة", gap: "شكاوى روائح من الجوار", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "غياب معالجة الروائح من غرف المعالجة والتجفيف", severity: "high", action: "تركيب مرشحات حيوية" }
+    ],
+    cap: [
+      { action: "تركيب مرشحات حيوية على مسارات التهوية", responsible: "مدير الموقع", deadline: "4 أشهر", status: "مطلوب" }
+    ],
+    recommendations: [
+      "تركيب مرشحات حيوية لمعالجة الروائح النفاذة",
+      "توسعة برنامج تسبيخ المخلفات ليشمل كامل الكمية"
+    ]
+  },
+
+  "مصنع صباغة وتجهيز منسوجات": { 
+    icon: "🎨", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "إزالة اللون بالأكسدة المتقدمة", status: "partial", details: "تعمل لكن كفاءة إزالة اللون دون 80%" },
+      { area: "إعادة تدوير مياه الصباغة", status: "non-compliant", details: "لا توجد أنظمة ترشيح غشائي" },
+      { area: "التحول لأصباغ خالية من المعادن الثقيلة", status: "partial", details: "70% من الأصباغ المستخدمة معتمدة" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب أصباغ كيميائية ومعادن ثقيلة، ولا لحريق المذيبات المستخدمة في التجهيز" }
+    ],
+    gaps: [
+      { requirement: "رفع كفاءة إزالة اللون", current: "دون 80%", gap: "صرف ملون يتجاوز الحدود البصرية", priority: "high" },
+      { requirement: "تركيب نظام ترشيح غشائي لإعادة التدوير", current: "غير موجود", gap: "استهلاك مياه مرتفع جداً", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة إزالة اللون من الصرف دون المستهدف", severity: "high", action: "ترقية وحدة الأكسدة المتقدمة" },
+      { number: "NCR-002", description: "غياب إعادة تدوير مياه الصباغة", severity: "high", action: "تركيب نظام ترشيح غشائي" }
+    ],
+    cap: [
+      { action: "ترقية وحدة إزالة اللون", responsible: "مدير المعالجة", deadline: "6 أشهر", status: "قيد التصميم" },
+      { action: "تركيب نظام ترشيح غشائي (UF)", responsible: "مدير الهندسة", deadline: "9 أشهر", status: "قيد الدراسة" }
+    ],
+    recommendations: [
+      "إعطاء أولوية لترقية وحدة إزالة اللون لتفادي مخالفات الصرف",
+      "الاستثمار فى إعادة تدوير المياه لتقليل الاستهلاك والتكلفة معاً",
+      "استكمال التحول الكامل للأصباغ الصديقة للبيئة"
+    ]
+  },
+
+  "محجر جرانيت": { 
+    icon: "⛰️", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "القطع الرطب ورش المياه", status: "partial", details: "مطبق فى مناطق التكسير فقط" },
+      { area: "تقنيات التفجير المحكوم", status: "compliant", details: "مطابقة للمعايير" },
+      { area: "إعادة تأهيل الموقع تدريجياً", status: "non-compliant", details: "لا توجد خطة مطبقة" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لانهيار جبهة الحفر أو حوادث التفجير الصخري" }
+    ],
+    gaps: [
+      { requirement: "تعميم القطع الرطب على كل مراحل التشغيل", current: "جزئي", gap: "انبعاثات غبار سيليكا فى بعض المناطق", priority: "high" },
+      { requirement: "وضع خطة استصلاح تدريجي", current: "غير موجودة", gap: "تراكم أثر بصري وبيئي", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "تغطية جزئية لتقنيات قمع الغبار", severity: "high", action: "تعميم رش المياه على كل مناطق القطع والنقل" }
+    ],
+    cap: [
+      { action: "تعميم أنظمة رش المياه", responsible: "مدير الموقع", deadline: "3 أشهر", status: "قيد التنفيذ" },
+      { action: "إعداد خطة استصلاح تدريجي", responsible: "مدير البيئة", deadline: "6 أشهر", status: "مطلوب" }
+    ],
+    recommendations: [
+      "تعميم إجراءات قمع الغبار على كافة مراحل التشغيل",
+      "إعداد وتطبيق خطة استصلاح تدريجي للمناطق المستنفدة"
+    ]
+  },
+
+  "منجم ذهب": { 
+    icon: "⚱️", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "منشأة تخزين المخلفات المبطنة", status: "compliant", details: "مطابقة لمعايير ICMC" },
+      { area: "إزالة سمية السيانيد (INCO)", status: "compliant", details: "تعمل ضمن الحدود المطلوبة" },
+      { area: "برنامج استقرار سدود المخلفات", status: "partial", details: "مراقبة غير مستمرة على مدار الساعة" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب السيانيد (المستخدم في استخلاص الذهب، شديد السمية) أو انهيار سد مخلفات المناجم (Tailings Dam)" }
+    ],
+    gaps: [
+      { requirement: "تفعيل مراقبة مستمرة لاستقرار سدود المخلفات", current: "مراقبة دورية فقط", gap: "خطر عدم اكتشاف مبكر لأي انهيار", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "غياب مراقبة مستمرة لاستقرار سد المخلفات", severity: "high", action: "تركيب أجهزة استشعار مستمرة (Geotechnical Sensors)" }
+    ],
+    cap: [
+      { action: "تركيب نظام مراقبة مستمر لسد المخلفات", responsible: "مدير الجيوتقنية", deadline: "5 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "الانتقال من المراقبة الدورية إلى المراقبة المستمرة لسدود المخلفات",
+      "الحفاظ على الالتزام بمعايير إدارة السيانيد الدولية (ICMC)"
+    ]
+  },
+
+  "منجم فوسفات": { 
+    icon: "🪨", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "قمع الغبار على طرق النقل", status: "partial", details: "رش غير منتظم" },
+      { area: "مراقبة وفصل المواد المشعة (NORM)", status: "compliant", details: "برنامج قياس دوري مطبق" },
+      { area: "استصلاح تدريجي للأراضي", status: "non-compliant", details: "لا يوجد تطبيق فعلي حتى الآن" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لانهيار سد مخلفات (Tailings) أو تسرب المواد المشعة الطبيعية المصاحبة لخام الفوسفات" }
+    ],
+    gaps: [
+      { requirement: "جدولة منتظمة لرش طرق النقل", current: "غير منتظم", gap: "انبعاثات غبار متكررة", priority: "medium" },
+      { requirement: "بدء تطبيق استصلاح الأراضي", current: "غير مطبق", gap: "تراكم مناطق متضررة بدون استصلاح", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم تطبيق خطة استصلاح الأراضي رغم وجودها موثقة", severity: "high", action: "بدء التنفيذ الفعلي فوراً" }
+    ],
+    cap: [
+      { action: "جدولة رش طرق النقل بشكل يومي منتظم", responsible: "مدير العمليات", deadline: "شهر واحد", status: "قيد التنفيذ" },
+      { action: "بدء استصلاح أول موقع مستنفد", responsible: "مدير البيئة", deadline: "6 أشهر", status: "مخطط" }
+    ],
+    recommendations: [
+      "الالتزام بجدول منتظم لرش الغبار على طرق النقل",
+      "البدء الفعلي فى تنفيذ خطة الاستصلاح التدريجي الموثقة مسبقاً"
+    ]
+  },
+
+  "محطة كهرباء تعمل بالفحم": { 
+    icon: "🏭", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "إزالة الكبريت من غازات المداخن (FGD)", status: "compliant", details: "كفاءة إزالة تتجاوز 90%" },
+      { area: "اختزال حفزي انتقائي لأكاسيد النيتروجين (SCR)", status: "partial", details: "مركب على وحدة واحدة من اثنتين" },
+      { area: "استغلال الرماد المتطاير", status: "compliant", details: "يُباع لصناعة الأسمنت" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لحريق أكوام تخزين الفحم (قابل للاشتعال الذاتي) أو تسرب رماد الفحم المتطاير" }
+    ],
+    gaps: [
+      { requirement: "تركيب SCR على الوحدة الثانية", current: "وحدة واحدة فقط", gap: "انبعاثات NOx مرتفعة من الوحدة الثانية", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم تركيب SCR على الوحدة الثانية", severity: "high", action: "استكمال تركيب SCR على كل الوحدات" }
+    ],
+    cap: [
+      { action: "تركيب SCR على الوحدة الثانية", responsible: "مدير المحطة", deadline: "12 شهر", status: "قيد التخطيط" }
+    ],
+    recommendations: [
+      "استكمال تركيب أنظمة SCR على جميع وحدات التوليد",
+      "الاستمرار فى برنامج استغلال الرماد المتطاير الناجح"
+    ]
+  },
+
+  "منجم فحم": { 
+    icon: "⛏️", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "التقاط غاز الميثان من المناجم", status: "non-compliant", details: "لا توجد أنظمة التقاط، الغاز ينطلق مباشرة" },
+      { area: "معالجة التصريف الحمضي", status: "compliant", details: "أحواض تحييد تعمل بكفاءة" },
+      { area: "رش المياه للتحكم فى الغبار", status: "compliant", details: "مطبق عند نقاط القطع" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لانفجار غاز الميثان (خطر الوفاة الأول في مناجم الفحم) أو انهيار أنفاق التعدين" }
+    ],
+    gaps: [
+      { requirement: "تركيب نظام التقاط غاز الميثان", current: "غير موجود", gap: "خطر انفجار وانبعاثات دفيئة عالية", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "غياب نظام التقاط غاز الميثان قبل التعدين", severity: "high", action: "دراسة وتركيب نظام التقاط واستخدام الميثان" }
+    ],
+    cap: [
+      { action: "دراسة جدوى نظام التقاط غاز الميثان", responsible: "مدير السلامة", deadline: "6 أشهر", status: "عاجل" }
+    ],
+    recommendations: [
+      "إعطاء أولوية قصوى لتركيب نظام التقاط غاز الميثان لتقليل مخاطر الانفجار والانبعاثات",
+      "الاستمرار فى برنامج معالجة التصريف الحمضي الفعال"
+    ]
+  },
+
+  "مصنع تدوير الإطارات": { 
+    icon: "♻️", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "حدود ارتفاع تكديس الإطارات وممرات الفصل", status: "non-compliant", details: "الأكوام تتجاوز الارتفاع الآمن المحدد" },
+      { area: "تقطيع مغلق مع تجميع الغبار", status: "compliant", details: "الوحدات مغلقة ومتصلة بفلاتر" },
+      { area: "إعادة توظيف المطاط (Rubber Crumb)", status: "compliant", details: "يُباع لملاعب رياضية" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لحريق مكدسات الإطارات (يصعب إخماده ويستمر لأيام مع دخان سام)" }
+    ],
+    gaps: [
+      { requirement: "خفض ارتفاع أكوام التخزين للحد الآمن", current: "يتجاوز الحد المسموح", gap: "خطر حريق كبير يصعب إخماده", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "أكوام تخزين إطارات تتجاوز الارتفاع الآمن المحدد", severity: "high", action: "إعادة تنظيم التخزين وفق الحدود الآمنة فوراً" }
+    ],
+    cap: [
+      { action: "إعادة تنظيم مناطق التخزين وفق الارتفاعات الآمنة", responsible: "مدير الموقع", deadline: "شهرين", status: "عاجل" }
+    ],
+    recommendations: [
+      "إعادة تنظيم التخزين فوراً لتقليل مخاطر الحريق الكارثي",
+      "الاستمرار فى برنامج إعادة توظيف المطاط الناجح"
+    ]
+  },
+
+  "مصنع تدوير البلاستيك": { 
+    icon: "♻️", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "شفط الأبخرة عند خطوط البثق", status: "compliant", details: "مركبة وتعمل بكفاءة" },
+      { area: "إعادة تدوير مياه الغسيل", status: "partial", details: "يُعاد تدوير 40% فقط" },
+      { area: "تحسين فرز المخلفات", status: "compliant", details: "نظام فرز آلي مطبق" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات CO2، لكن لا توجد خطة موثقة لانبعاثات سامة ناتجة عن حريق مخزون البلاستيك المفروم" }
+    ],
+    gaps: [
+      { requirement: "رفع نسبة إعادة تدوير مياه الغسيل", current: "40%", gap: "استهلاك مياه زائد", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "نسبة منخفضة لإعادة تدوير مياه الغسيل", severity: "medium", action: "توسعة سعة نظام إعادة تدوير المياه" }
+    ],
+    cap: [
+      { action: "توسعة نظام إعادة تدوير مياه الغسيل", responsible: "مدير الإنتاج", deadline: "5 أشهر", status: "قيد التخطيط" }
+    ],
+    recommendations: [
+      "توسعة نظام إعادة تدوير مياه الغسيل لرفع النسبة لأكثر من 80%",
+      "الاستمرار فى تطوير كفاءة نظام الفرز الآلي"
+    ]
+  },
+
+  "محطة تدوير الزيوت المستعملة": { 
+    icon: "🛢️", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "خزانات تخزين مزدوجة الجدران", status: "compliant", details: "مع نظام كشف تسرب فعال" },
+      { area: "إعادة التكرير بالتقطير تحت التفريغ", status: "compliant", details: "تعمل بجودة إنتاج مطابقة" },
+      { area: "بروتوكول التخلص من الحمأة الخطرة", status: "partial", details: "التوثيق غير مكتمل لكل الشحنات" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لحريق الزيوت المستعملة الملوثة (قد تحتوي مذيبات شديدة الاشتعال) أو تسرب كبير للتربة" }
+    ],
+    gaps: [
+      { requirement: "استكمال توثيق نقل الحمأة الخطرة (Manifests)", current: "غير مكتمل", gap: "تتبع غير كامل للنفايات الخطرة", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "سجلات نقل الحمأة الخطرة غير مكتملة", severity: "medium", action: "استكمال التوثيق لكل الشحنات السابقة والحالية" }
+    ],
+    cap: [
+      { action: "مراجعة واستكمال سجلات نقل النفايات الخطرة", responsible: "مدير البيئة", deadline: "شهرين", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "استكمال التوثيق الكامل لكل عمليات نقل النفايات الخطرة",
+      "الاستمرار فى برنامج الفحص الدوري لخزانات التخزين المزدوجة"
+    ]
+  },
+
+  "محرقة نفايات طبية": { 
+    icon: "🏥", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "الحرق ثنائي المرحلة بدرجة حرارة عالية", status: "compliant", details: "درجة حرارة الغرفة الثانوية تتجاوز 1100°م" },
+      { area: "نظام تنقية غازات المداخن", status: "compliant", details: "يشمل حقن كربون منشط وفلاتر أكياس" },
+      { area: "بروتوكول فصل النفايات بالترميز اللوني", status: "partial", details: "مطبق فى المصدر لكن مراقبة الالتزام ضعيفة" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لعطل مفاجئ في أنظمة فلترة الانبعاثات (خطر انبعاث ديوكسينات سامة) أو تسرب نفايات معدية قبل الحرق" }
+    ],
+    gaps: [
+      { requirement: "تعزيز مراقبة الالتزام بالفصل اللوني فى مصادر التوليد", current: "مراقبة ضعيفة", gap: "خطر اختلاط نفايات معدية بغير معدية", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "ضعف مراقبة الالتزام بفصل النفايات فى المصدر", severity: "high", action: "برنامج تدقيق ومراجعة دوري لمصادر التوليد" }
+    ],
+    cap: [
+      { action: "إطلاق برنامج تدقيق شهري لمصادر توليد النفايات", responsible: "مدير الجودة", deadline: "شهر واحد", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "تعزيز التدريب والمراقبة على الفصل الصحيح فى مصدر توليد النفايات",
+      "الحفاظ على الأداء الجيد فى نظام الحرق وتنقية الغازات"
+    ]
+  },
+
+  "مكب نفايات صحي (مدفن صحي)": { 
+    icon: "🗑️", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "جمع غاز المدفن وحرقه أو استغلاله", status: "partial", details: "شبكة جمع تغطي 70% من المساحة النشطة" },
+      { area: "نظام البطانة المركبة المزدوجة", status: "compliant", details: "مطابق للمواصفات فى الخلايا الحديثة" },
+      { area: "التغطية اليومية بالتربة", status: "non-compliant", details: "لا تتم بانتظام يومي" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتراكم/انفجار غاز الميثان أو تسرب عصارة النفايات (Leachate) للمياه الجوفية" }
+    ],
+    gaps: [
+      { requirement: "توسعة شبكة جمع الغاز لتغطية كامل المساحة", current: "70%", gap: "انبعاث ميثان غير محتوى من 30%", priority: "high" },
+      { requirement: "الالتزام بالتغطية اليومية", current: "غير منتظمة", gap: "روائح وحشرات وتسرب مياه أمطار زائد", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "تغطية جزئية لشبكة جمع غاز الميثان", severity: "high", action: "توسعة شبكة آبار الجمع لتغطية كامل الموقع" },
+      { number: "NCR-002", description: "عدم الالتزام بالتغطية اليومية للنفايات", severity: "high", action: "تخصيص معدات وطاقم مخصص للتغطية اليومية" }
+    ],
+    cap: [
+      { action: "توسعة شبكة آبار جمع الغاز", responsible: "مدير الموقع", deadline: "8 أشهر", status: "قيد التخطيط" },
+      { action: "تخصيص طاقم ومعدات للتغطية اليومية المنتظمة", responsible: "مدير العمليات", deadline: "شهر واحد", status: "عاجل" }
+    ],
+    recommendations: [
+      "الالتزام الفوري بالتغطية اليومية لمنع الروائح وتكاثر الحشرات",
+      "توسعة شبكة جمع الغاز لتغطية كامل الموقع لتقليل مخاطر الانفجار والانبعاثات"
+    ]
+  },
+
+  "مصنع أشباه موصلات": { 
+    icon: "💻", 
+    classification: { egypt: "قائمة (أ) - أثر بيئي كبير", saudi: "الفئة الثالثة - نشاط عالي الخطورة" },
+    auditAreas: [
+      { area: "غسالات عند نقطة الاستخدام (Point-of-Use Scrubbers)", status: "compliant", details: "مركبة على كل المعدات الحرجة" },
+      { area: "إعادة تدوير المياه فائقة النقاء", status: "partial", details: "معدل الاسترداد دون المستهدف" },
+      { area: "أنظمة معالجة الغازات الفلورية (PFCs)", status: "compliant", details: "تعمل بكفاءة تفكيك عالية" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب غازات خاصة شديدة السمية (Silane, Arsine) المستخدمة في عمليات الترسيب الدقيقة" }
+    ],
+    gaps: [
+      { requirement: "رفع كفاءة إعادة تدوير المياه فائقة النقاء", current: "دون المستهدف", gap: "استهلاك مياه عذبة زائد", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "كفاءة استرداد المياه فائقة النقاء دون الهدف التصميمي", severity: "medium", action: "ترقية منظومة الاسترداد بالتناضح العكسي" }
+    ],
+    cap: [
+      { action: "ترقية نظام إعادة تدوير المياه فائقة النقاء", responsible: "مدير المرافق", deadline: "6 أشهر", status: "قيد الدراسة" }
+    ],
+    recommendations: [
+      "الاستثمار فى ترقية نظام إعادة تدوير المياه فائقة النقاء",
+      "الاستمرار فى الأداء الجيد لأنظمة معالجة الغازات الفلورية"
+    ]
+  },
+
+  "مجمع دفيئات زراعية": { 
+    icon: "🌱", 
+    classification: { egypt: "قائمة (ج) - أثر بيئي محدود", saudi: "الفئة الأولى - نشاط منخفض الخطورة" },
+    auditAreas: [
+      { area: "المكافحة المتكاملة للآفات", status: "compliant", details: "مطبقة وتقلل استخدام المبيدات" },
+      { area: "التسميد بالتنقيط (Fertigation)", status: "compliant", details: "مطبق على كامل المساحة" },
+      { area: "برنامج تدوير أغطية الدفيئات", status: "non-compliant", details: "لا يوجد تعاقد لتدوير الأغطية التالفة" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد إجراءات أساسية، لكن لا توجد خطة موثقة لتسرب المبيدات أو الأسمدة الكيميائية المركزة" }
+    ],
+    gaps: [
+      { requirement: "إطلاق برنامج تدوير أغطية البولي إيثلين", current: "غير موجود", gap: "تراكم مخلفات بلاستيكية فى الموقع", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "غياب آلية للتخلص من أغطية الدفيئات التالفة", severity: "medium", action: "التعاقد مع جهة متخصصة لتدوير البلاستيك الزراعي" }
+    ],
+    cap: [
+      { action: "التعاقد مع شركة تدوير للأغطية التالفة", responsible: "مدير المزرعة", deadline: "3 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "إطلاق برنامج منتظم لتدوير أغطية الدفيئات التالفة",
+      "الاستمرار فى نظام المكافحة المتكاملة والتسميد بالتنقيط الناجحين"
+    ]
+  },
+
+  "مصنع تجميع سيارات": { 
+    icon: "🚗", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "معالجة الانبعاثات فى غرف الطلاء (RTO)", status: "compliant", details: "كفاءة تدمير VOCs مطابقة" },
+      { area: "معالجة صرف المعالجة السطحية", status: "compliant", details: "إزالة الفوسفات ضمن الحدود" },
+      { area: "برنامج صفر نفايات للمدافن", status: "partial", details: "نسبة التحويل عن الدفن 75%" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد طفايات أساسية، لكن لا توجد خطة موثقة لحريق خط الطلاء (مذيبات شديدة الاشتعال) أو تسرب زيوت التشحيم" }
+    ],
+    gaps: [
+      { requirement: "رفع نسبة تحويل النفايات عن الدفن", current: "75%", gap: "نفايات قابلة للتدوير تذهب للدفن", priority: "low" }
+    ],
+    ncrs: [],
+    cap: [
+      { action: "توسعة برنامج الفرز لرفع نسبة التحويل إلى 95%", responsible: "مدير الاستدامة", deadline: "6 أشهر", status: "قيد التخطيط" }
+    ],
+    recommendations: [
+      "توسعة برنامج فرز النفايات لرفع نسبة التحويل عن الدفن",
+      "الاستمرار فى الأداء الجيد لمعالجة انبعاثات وصرف خط الإنتاج"
+    ]
+  },
+
+  "ورشة كبرى لصيانة السيارات": { 
+    icon: "🔧", 
+    classification: { egypt: "قائمة (ج) - أثر بيئي محدود", saudi: "الفئة الأولى - نشاط منخفض الخطورة" },
+    auditAreas: [
+      { area: "تعاقد لجمع وتدوير الزيوت المستعملة", status: "compliant", details: "تعاقد موثق مع جهة مرخصة" },
+      { area: "فاصل زيت وماء لمنطقة الغسيل", status: "non-compliant", details: "غير مركب، الصرف يذهب مباشرة للشبكة" },
+      { area: "برنامج استرجاع البطاريات والإطارات", status: "compliant", details: "مطبق مع الموردين" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب زيوت مستعملة أو حريق ناتج عن أبخرة الوقود في مناطق الفحص" }
+    ],
+    gaps: [
+      { requirement: "تركيب فاصل زيت وماء لمنطقة الغسيل", current: "غير موجود", gap: "زيوت تصل لشبكة الصرف الصحي العام", priority: "high" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "عدم وجود فاصل زيت وماء على مخرج منطقة الغسيل", severity: "high", action: "تركيب فاصل زيت وماء فوراً" }
+    ],
+    cap: [
+      { action: "تركيب فاصل زيت وماء على مخرج الغسيل", responsible: "مدير الورشة", deadline: "شهرين", status: "عاجل" }
+    ],
+    recommendations: [
+      "تركيب فاصل زيت وماء بأسرع وقت لمنع تلوث شبكة الصرف الصحي",
+      "الاستمرار فى برنامج تدوير الزيوت والبطاريات الناجح"
+    ]
+  },
+
+  "منتجع سياحي ساحلي": { 
+    icon: "🏖️", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "معالجة ثلاثية للصرف الصحي وإعادة الاستخدام", status: "compliant", details: "المياه المعالجة تُستخدم بالكامل للري" },
+      { area: "الالتزام بمسافة الإنشاء الآمنة من الشعاب", status: "compliant", details: "موثقة بدراسة بيئية بحرية مسبقة" },
+      { area: "ترشيد المياه والتحلية المحلية", status: "partial", details: "التحلية الشمسية تغطي 40% فقط من الاحتياج" },
+      { area: "خطة الطوارئ", status: "partial", details: "توجد كاشفات دخان وطفايات، لكن لا توجد خطة موثقة لتسرب كيميائي من محطة معالجة المياه الخاصة بالمنتجع أو حريق في مناطق الطهي" }
+    ],
+    gaps: [
+      { requirement: "توسعة سعة التحلية بالطاقة الشمسية", current: "40% تغطية", gap: "اعتماد كبير على مصادر مياه خارجية", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "تغطية جزئية لاحتياجات المياه من التحلية المحلية", severity: "medium", action: "دراسة توسعة محطة التحلية الشمسية" }
+    ],
+    cap: [
+      { action: "دراسة توسعة محطة التحلية بالطاقة الشمسية", responsible: "مدير الاستدامة", deadline: "8 أشهر", status: "قيد الدراسة" }
+    ],
+    recommendations: [
+      "دراسة توسعة سعة التحلية الشمسية لتقليل الاعتماد على المصادر الخارجية",
+      "الاستمرار فى برنامج معالجة الصرف الثلاثية الناجح"
+    ]
+  },
+
+  "محطة إنتاج هيدروجين أخضر": { 
+    icon: "💨", 
+    classification: { egypt: "قائمة (ب) - أثر بيئي متوسط", saudi: "الفئة الثانية - نشاط متوسط الخطورة" },
+    auditAreas: [
+      { area: "شبكة كشف تسرب الهيدروجين", status: "compliant", details: "أجهزة كشف حساسة مركبة فى كل المناطق" },
+      { area: "إعادة تدوير المياه للتحليل الكهربائي", status: "partial", details: "يُعاد تدوير 60% فقط من مياه التبريد" },
+      { area: "عزل صوتي للضاغطات", status: "compliant", details: "مطابق للمعايير" },
+      { area: "خطة الطوارئ", status: "non-compliant", details: "لا توجد خطة لتسرب/انفجار غاز الهيدروجين (قابل للاشتعال بمدى واسع جداً وينتشر بسرعة)، وهو خطر جديد نسبياً يستوجب بروتوكولات متخصصة غير موجودة حالياً" }
+    ],
+    gaps: [
+      { requirement: "رفع نسبة إعادة تدوير مياه التبريد", current: "60%", gap: "استهلاك مياه إضافي غير ضروري", priority: "medium" }
+    ],
+    ncrs: [
+      { number: "NCR-001", description: "نسبة إعادة تدوير مياه التبريد دون المستهدف", severity: "medium", action: "تحسين دورة تبريد المياه المغلقة" }
+    ],
+    cap: [
+      { action: "تحسين نظام إعادة تدوير مياه التبريد", responsible: "مدير المحطة", deadline: "4 أشهر", status: "قيد التنفيذ" }
+    ],
+    recommendations: [
+      "تحسين كفاءة إعادة تدوير مياه التبريد لتقليل الاستهلاك الكلي",
+      "الحفاظ على الأداء الممتاز فى شبكة كشف تسرب الهيدروجين والعزل الصوتي"
+    ]
+  }
+};
+
+// تعبئة القائمة المنسدلة
+const select = document.getElementById('projectSelect');
+Object.keys(projects).forEach(name => {
+  const option = document.createElement('option');
+  option.value = name;
+  option.textContent = `${projects[name].icon} ${name}`;
+  select.appendChild(option);
+});
+
+function showSuggestions(filtered) {
+  const container = document.getElementById('suggestions');
+  container.innerHTML = '';
+  filtered.slice(0, 8).forEach(name => {
+    const chip = document.createElement('div');
+    chip.className = 'suggestion-chip';
+    chip.textContent = `${projects[name].icon} ${name}`;
+    chip.onclick = () => {
+      document.getElementById('searchInput').value = name;
+    };
+    container.appendChild(chip);
+  });
+}
+
+function filterSuggestions() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  if (query === '') {
+    showSuggestions(Object.keys(projects));
+    return;
+  }
+  const filtered = Object.keys(projects).filter(name => name.toLowerCase().includes(query));
+  showSuggestions(filtered);
+}
+
+function selectFromDropdown() {
+  const value = document.getElementById('projectSelect').value;
+  if (value) {
+    document.getElementById('searchInput').value = value;
+  }
+}
+
+function handleEnter(event) {
+  if (event.key === 'Enter') {
+    const query = document.getElementById('searchInput').value.trim().toLowerCase();
+    const match = Object.keys(projects).find(name => name.toLowerCase().includes(query));
+    if (match) {
+      document.getElementById('searchInput').value = match;
+    }
+  }
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'ar' ? 'en' : 'ar';
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+  
+  const t = translations[currentLang];
+  document.getElementById('mainTitle').textContent = t.mainTitle;
+  document.getElementById('mainSubtitle').textContent = t.mainSubtitle;
+  document.getElementById('selectTitle').textContent = t.selectTitle;
+  document.getElementById('searchInput').placeholder = t.searchPlaceholder;
+  document.getElementById('projectSelect').options[0].textContent = t.selectPlaceholder;
+  document.getElementById('auditTypeLabel').textContent = t.auditTypeLabel;
+  document.getElementById('generateBtn').textContent = t.generateBtn;
+  document.getElementById('printBtn').textContent = t.printBtn;
+  document.getElementById('newBtn').textContent = t.newBtn;
+  document.querySelector('.lang-toggle').textContent = t.langBtn;
+  
+  const auditTypeSelect = document.getElementById('auditType');
+  auditTypeSelect.options[0].text = t.auditTypes.compliance;
+  auditTypeSelect.options[1].text = t.auditTypes.gap;
+  auditTypeSelect.options[2].text = t.auditTypes.iso;
+  auditTypeSelect.options[3].text = t.auditTypes.prePurchase;
+  
+  if (document.getElementById('reportSection').classList.contains('active')) {
+    generateReport();
+  }
+}
+
+function getStatusClass(status) {
+  if (status === 'compliant') return 'status-compliant';
+  if (status === 'non-compliant') return 'status-non-compliant';
+  return 'status-partial';
+}
+
+function getStatusText(status, t) {
+  if (status === 'compliant') return t.compliant;
+  if (status === 'non-compliant') return t.nonCompliant;
+  return t.partialCompliance;
+}
+
+function getPriorityClass(priority, t) {
+  if (priority === 'high') return t.high;
+  if (priority === 'medium') return t.medium;
+  return t.low;
+}
+
+let reviewProjectName = null;
+let rowCounter = 0;
+
+function openReview() {
+  const name = document.getElementById('searchInput').value.trim();
+  if (!projects[name]) {
+    alert(translations[currentLang].notFound);
+    return;
+  }
+  reviewProjectName = name;
+  const project = projects[name];
+
+  document.getElementById('reviewProjectTitle').textContent = `${project.icon} ${name}`;
+
+  const statusOptions = [
+    ['compliant', currentLang === 'ar' ? 'مطابق' : 'Compliant'],
+    ['partial', currentLang === 'ar' ? 'جزئي' : 'Partial'],
+    ['non-compliant', currentLang === 'ar' ? 'غير مطابق' : 'Non-Compliant'],
+    ['na', currentLang === 'ar' ? 'غير منطبق' : 'N/A']
+  ];
+
+  const areasBox = document.getElementById('reviewAuditAreas');
+  areasBox.innerHTML = '';
+  project.auditAreas.forEach(a => areasBox.appendChild(buildAuditAreaRow(a.area, a.status, a.details, statusOptions)));
+
+  const gapsBox = document.getElementById('reviewGaps');
+  gapsBox.innerHTML = '';
+  project.gaps.forEach(g => gapsBox.appendChild(buildGapRow(g.requirement, g.current, g.gap, g.priority)));
+
+  const ncrsBox = document.getElementById('reviewNCRs');
+  ncrsBox.innerHTML = '';
+  project.ncrs.forEach(n => ncrsBox.appendChild(buildNCRRow(n.number, n.description, n.severity, n.action)));
+
+  const capBox = document.getElementById('reviewCAP');
+  capBox.innerHTML = '';
+  project.cap.forEach(c => capBox.appendChild(buildCAPRow(c.action, c.responsible, c.deadline, c.status)));
+
+  document.getElementById('reportSection').classList.remove('active');
+  document.getElementById('reviewSection').classList.add('active');
+  document.getElementById('reviewSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function cancelReview() {
+  document.getElementById('reviewSection').classList.remove('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function buildAuditAreaRow(area, status, details, statusOptions) {
+  const id = 'row' + (rowCounter++);
+  const div = document.createElement('div');
+  div.className = 'review-row';
+  div.dataset.type = 'area';
+  const radios = statusOptions.map(([val, label]) => `
+    <label><input type="radio" name="${id}_status" value="${val}" ${status === val ? 'checked' : ''}> ${label}</label>
+  `).join('');
+  div.innerHTML = `
+    <div class="review-row-head">
+      <input type="text" class="review-area-name" value="${area.replace(/"/g,'&quot;')}">
+      <button type="button" class="review-remove-btn" onclick="this.closest('.review-row').remove()">✕</button>
+    </div>
+    <div class="review-status-group">${radios}</div>
+    <textarea class="review-details" placeholder="${currentLang === 'ar' ? 'تفاصيل الملاحظة الفعلية في هذا الموقع...' : 'Actual observation details for this site...'}">${details.replace(/</g,'&lt;')}</textarea>
+  `;
+  return div;
+}
+
+function addAuditAreaRow() {
+  const statusOptions = [
+    ['compliant', currentLang === 'ar' ? 'مطابق' : 'Compliant'],
+    ['partial', currentLang === 'ar' ? 'جزئي' : 'Partial'],
+    ['non-compliant', currentLang === 'ar' ? 'غير مطابق' : 'Non-Compliant'],
+    ['na', currentLang === 'ar' ? 'غير منطبق' : 'N/A']
+  ];
+  document.getElementById('reviewAuditAreas').appendChild(buildAuditAreaRow('', 'non-compliant', '', statusOptions));
+}
+
+function buildGapRow(requirement, current, gap, priority) {
+  const div = document.createElement('div');
+  div.className = 'review-row';
+  div.dataset.type = 'gap';
+  div.innerHTML = `
+    <div class="review-row-head">
+      <label class="review-include-check"><input type="checkbox" class="review-include" checked> ${currentLang === 'ar' ? 'تضمين' : 'Include'}</label>
+      <button type="button" class="review-remove-btn" onclick="this.closest('.review-row').remove()">✕</button>
+    </div>
+    <div class="review-fields-grid">
+      <div class="review-field"><label>${currentLang === 'ar' ? 'المتطلب' : 'Requirement'}</label><input type="text" class="f-requirement" value="${requirement.replace(/"/g,'&quot;')}"></div>
+      <div class="review-field"><label>${currentLang === 'ar' ? 'الحالة الحالية' : 'Current'}</label><input type="text" class="f-current" value="${current.replace(/"/g,'&quot;')}"></div>
+      <div class="review-field"><label>${currentLang === 'ar' ? 'الفجوة' : 'Gap'}</label><input type="text" class="f-gap" value="${gap.replace(/"/g,'&quot;')}"></div>
+      <div class="review-field"><label>${currentLang === 'ar' ? 'الأولوية' : 'Priority'}</label>
+        <select class="f-priority">
+          <option value="high" ${priority==='high'?'selected':''}>${currentLang === 'ar' ? 'عالية' : 'High'}</option>
+          <option value="medium" ${priority==='medium'?'selected':''}>${currentLang === 'ar' ? 'متوسطة' : 'Medium'}</option>
+          <option value="low" ${priority==='low'?'selected':''}>${currentLang === 'ar' ? 'منخفضة' : 'Low'}</option>
+        </select>
+      </div>
+    </div>
+  `;
+  return div;
+}
+function addGapRow() { document.getElementById('reviewGaps').appendChild(buildGapRow('', '', '', 'medium')); }
+
+function buildNCRRow(number, description, severity, action) {
+  const div = document.createElement('div');
+  div.className = 'review-row';
+  div.dataset.type = 'ncr';
+  div.innerHTML = `
+    <div class="review-row-head">
+      <label class="review-include-check"><input type="checkbox" class="review-include" checked> ${currentLang === 'ar' ? 'تضمين' : 'Include'}</label>
+      <input type="text" class="f-number" value="${number.replace(/"/g,'&quot;')}" style="max-width:140px;">
+      <button type="button" class="review-remove-btn" onclick="this.closest('.review-row').remove()">✕</button>
+    </div>
+    <div class="review-fields-grid">
+      <div class="review-field"><label>${currentLang === 'ar' ? 'الوصف' : 'Description'}</label><input type="text" class="f-description" value="${description.replace(/"/g,'&quot;')}"></div>
+      <div class="review-field"><label>${currentLang === 'ar' ? 'الخطورة' : 'Severity'}</label>
+        <select class="f-severity">
+          <option value="high" ${severity==='high'?'selected':''}>${currentLang === 'ar' ? 'عالية' : 'High'}</option>
+          <option value="medium" ${severity==='medium'?'selected':''}>${currentLang === 'ar' ? 'متوسطة' : 'Medium'}</option>
+        </select>
+      </div>
+      <div class="review-field"><label>${currentLang === 'ar' ? 'الإجراء التصحيحي' : 'Corrective Action'}</label><input type="text" class="f-action" value="${action.replace(/"/g,'&quot;')}"></div>
+    </div>
+  `;
+  return div;
+}
+function addNCRRow() {
+  const num = 'NCR-' + String(document.querySelectorAll('#reviewNCRs .review-row').length + 1).padStart(3,'0');
+  document.getElementById('reviewNCRs').appendChild(buildNCRRow(num, '', 'medium', ''));
+}
+
+function buildCAPRow(action, responsible, deadline, status) {
+  const div = document.createElement('div');
+  div.className = 'review-row';
+  div.dataset.type = 'cap';
+  div.innerHTML = `
+    <div class="review-row-head">
+      <label class="review-include-check"><input type="checkbox" class="review-include" checked> ${currentLang === 'ar' ? 'تضمين' : 'Include'}</label>
+      <button type="button" class="review-remove-btn" onclick="this.closest('.review-row').remove()">✕</button>
+    </div>
+    <div class="review-fields-grid">
+      <div class="review-field"><label>${currentLang === 'ar' ? 'الإجراء' : 'Action'}</label><input type="text" class="f-action" value="${action.replace(/"/g,'&quot;')}"></div>
+      <div class="review-field"><label>${currentLang === 'ar' ? 'المسؤول' : 'Responsible'}</label><input type="text" class="f-responsible" value="${responsible.replace(/"/g,'&quot;')}"></div>
+      <div class="review-field"><label>${currentLang === 'ar' ? 'الموعد النهائي' : 'Deadline'}</label><input type="text" class="f-deadline" value="${deadline.replace(/"/g,'&quot;')}"></div>
+      <div class="review-field"><label>${currentLang === 'ar' ? 'الحالة' : 'Status'}</label><input type="text" class="f-status" value="${status.replace(/"/g,'&quot;')}"></div>
+    </div>
+  `;
+  return div;
+}
+function addCAPRow() { document.getElementById('reviewCAP').appendChild(buildCAPRow('', '', '', currentLang === 'ar' ? 'مطلوب' : 'Required')); }
+
+function generateFinalReport() {
+  const name = reviewProjectName;
+  if (!projects[name]) return;
+  const base = projects[name];
+
+  const auditAreas = [];
+  document.querySelectorAll('#reviewAuditAreas .review-row').forEach(row => {
+    const status = row.querySelector('input[type="radio"]:checked') ? row.querySelector('input[type="radio"]:checked').value : 'na';
+    if (status === 'na') return;
+    const areaName = row.querySelector('.review-area-name').value.trim();
+    const details = row.querySelector('.review-details').value.trim();
+    if (!areaName) return;
+    auditAreas.push({ area: areaName, status, details });
+  });
+
+  const gaps = [];
+  document.querySelectorAll('#reviewGaps .review-row').forEach(row => {
+    if (!row.querySelector('.review-include').checked) return;
+    const requirement = row.querySelector('.f-requirement').value.trim();
+    if (!requirement) return;
+    gaps.push({
+      requirement,
+      current: row.querySelector('.f-current').value.trim(),
+      gap: row.querySelector('.f-gap').value.trim(),
+      priority: row.querySelector('.f-priority').value
+    });
+  });
+
+  const ncrs = [];
+  document.querySelectorAll('#reviewNCRs .review-row').forEach(row => {
+    if (!row.querySelector('.review-include').checked) return;
+    const description = row.querySelector('.f-description').value.trim();
+    if (!description) return;
+    ncrs.push({
+      number: row.querySelector('.f-number').value.trim(),
+      description,
+      severity: row.querySelector('.f-severity').value,
+      action: row.querySelector('.f-action').value.trim()
+    });
+  });
+
+  const cap = [];
+  document.querySelectorAll('#reviewCAP .review-row').forEach(row => {
+    if (!row.querySelector('.review-include').checked) return;
+    const action = row.querySelector('.f-action').value.trim();
+    if (!action) return;
+    cap.push({
+      action,
+      responsible: row.querySelector('.f-responsible').value.trim(),
+      deadline: row.querySelector('.f-deadline').value.trim(),
+      status: row.querySelector('.f-status').value.trim()
+    });
+  });
+
+  if (auditAreas.length === 0) {
+    alert(currentLang === 'ar' ? 'لازم بند تدقيق واحد على الأقل غير "غير منطبق"' : 'At least one audit area must not be N/A');
+    return;
+  }
+
+  const customProject = {
+    icon: base.icon,
+    classification: base.classification,
+    auditAreas, gaps, ncrs, cap,
+    recommendations: base.recommendations
+  };
+
+  document.getElementById('reviewSection').classList.remove('active');
+  generateReport(name, customProject);
+}
+
+function generateReport(overrideName, overrideProject) {
+  const name = overrideName || document.getElementById('searchInput').value.trim();
+  if (!projects[name] && !overrideProject) {
+    alert(translations[currentLang].notFound);
+    return;
+  }
+  
+  const project = overrideProject || projects[name];
+  const reportContent = document.getElementById('reportContent');
+  const today = new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const t = translations[currentLang];
+  const auditType = document.getElementById('auditType').value;
+  
+  const totalAreas = project.auditAreas.length;
+  const compliantAreas = project.auditAreas.filter(a => a.status === 'compliant').length;
+  const partialAreas = project.auditAreas.filter(a => a.status === 'partial').length;
+  const nonCompliantAreas = project.auditAreas.filter(a => a.status === 'non-compliant').length;
+  const complianceRate = Math.round((compliantAreas / totalAreas) * 100);
+  const totalNCRs = project.ncrs.length;
+  const criticalIssues = project.ncrs.filter(n => n.severity === 'high').length;
+  
+  let html = `
+    <div class="report-cover">
+      <h1>${project.icon} ${currentLang === 'ar' ? 'تقرير التدقيق البيئي' : 'Environmental Audit Report'}</h1>
+      <h2 style="color: var(--secondary); margin-top: 15px;">${name}</h2>
+      <div class="meta">
+        <div><strong>${t.reportDate}:</strong> ${today}</div>
+        <div><strong>${t.reportType}:</strong> ${t.auditTypes[auditType]}</div>
+        <div><strong>${t.reportStatus}:</strong> ${t.reportStatusValue}</div>
+      </div>
+    </div>
+    
+    <div class="executive-summary">
+      <h3 style="color: var(--primary); margin-bottom: 15px;">${t.executiveSummary}</h3>
+      <p>${t.executiveSummaryText} <strong>${name}</strong> ${t.executiveSummaryText2}</p>
+    </div>
+    
+    <div class="score-card">
+      <div class="score-item">
+        <div class="number">${complianceRate}%</div>
+        <div class="label">${t.complianceRate}</div>
+      </div>
+      <div class="score-item">
+        <div class="number">${totalNCRs}</div>
+        <div class="label">${t.totalNCRs}</div>
+      </div>
+      <div class="score-item">
+        <div class="number">${criticalIssues}</div>
+        <div class="label">${t.criticalIssues}</div>
+      </div>
+      <div class="score-item">
+        <div class="number">${totalAreas}</div>
+        <div class="label">${currentLang === 'ar' ? 'مجالات التدقيق' : 'Audit Areas'}</div>
+      </div>
+    </div>
+    
+    <h2 class="report-section-title"><span class="num">1</span> ${t.section1}</h2>
+    <div class="report-block">
+      <strong>${t.auditScope}:</strong> ${currentLang === 'ar' ? 'تقييم شامل للامتثال البيئي للمنشأة بما في ذلك: الهواء، المياه، النفايات، الطاقة، السلامة، والتصاريح.' : 'Comprehensive assessment of environmental compliance including: air, water, waste, energy, safety, and permits.'}
+    </div>
+    <div class="report-block">
+      <strong>${t.auditMethodology}:</strong> ${currentLang === 'ar' ? 'مراجعة الوثائق، جولات ميدانية، مقابلات مع العاملين، أخذ عينات وتحليل، مقارنة مع المعايير المحلية والدولية.' : 'Document review, field inspections, staff interviews, sampling and analysis, comparison with local and international standards.'}
+    </div>
+    <div class="report-block">
+      <strong>${t.auditCriteria}:</strong> ${currentLang === 'ar' ? 'قوانين البيئة المحلية، معايير NCEC (السعودية) وجهاز شؤون البيئة (مصر)، ISO 14001، معايير IFC.' : 'Local environmental laws, NCEC standards (Saudi Arabia) and Environmental Affairs Agency (Egypt), ISO 14001, IFC standards.'}
+    </div>
+    
+    <h2 class="report-section-title"><span class="num">2</span> ${t.section2}</h2>
+    <table class="report-table">
+      <thead>
+        <tr>
+          <th style="width: 30%;">${currentLang === 'ar' ? 'مجال التدقيق' : 'Audit Area'}</th>
+          <th style="width: 25%;">${t.complianceStatus}</th>
+          <th style="width: 45%;">${currentLang === 'ar' ? 'التفاصيل' : 'Details'}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${project.auditAreas.map(area => `
+          <tr>
+            <td><strong>${area.area}</strong></td>
+            <td><span class="status-badge ${getStatusClass(area.status)}">${getStatusText(area.status, t)}</span></td>
+            <td>${area.details}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    
+    <h2 class="report-section-title"><span class="num">3</span> ${t.section3}</h2>
+    <table class="report-table">
+      <thead>
+        <tr>
+          <th style="width: 30%;">${t.requirement}</th>
+          <th style="width: 25%;">${t.currentStatus}</th>
+          <th style="width: 25%;">${t.gap}</th>
+          <th style="width: 20%;">${t.priority}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${project.gaps.map(gap => `
+          <tr>
+            <td><strong>${gap.requirement}</strong></td>
+            <td>${gap.current}</td>
+            <td>${gap.gap}</td>
+            <td><span class="status-badge ${gap.priority === 'high' ? 'status-non-compliant' : gap.priority === 'medium' ? 'status-partial' : 'status-compliant'}">${getPriorityClass(gap.priority, t)}</span></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    
+    <h2 class="report-section-title"><span class="num">4</span> ${t.section4}</h2>
+    ${project.ncrs.map(ncr => `
+      <div class="ncr-box">
+        <strong>${t.ncrNumber}:</strong> ${ncr.number} | 
+        <strong>${t.ncrSeverity}:</strong> <span class="status-badge ${ncr.severity === 'high' ? 'status-non-compliant' : 'status-partial'}">${ncr.severity === 'high' ? t.high : t.medium}</span><br>
+        <strong>${t.ncrDescription}:</strong> ${ncr.description}<br>
+        <strong>${t.ncrCorrectiveAction}:</strong> ${ncr.action}
+      </div>
+    `).join('')}
+    
+    <h2 class="report-section-title"><span class="num">5</span> ${t.section5}</h2>
+    <table class="report-table">
+      <thead>
+        <tr>
+          <th style="width: 35%;">${t.capAction}</th>
+          <th style="width: 20%;">${t.capResponsible}</th>
+          <th style="width: 20%;">${t.capDeadline}</th>
+          <th style="width: 25%;">${t.capStatus}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${project.cap.map(cap => `
+          <tr>
+            <td><strong>${cap.action}</strong></td>
+            <td>${cap.responsible}</td>
+            <td>${cap.deadline}</td>
+            <td>${cap.status}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    
+    <h2 class="report-section-title"><span class="num">6</span> ${t.section6}</h2>
+    <div class="report-block">
+      <strong>${t.recommendations}:</strong>
+      <ol style="margin-top: 10px; padding-right: 25px; line-height: 2;">
+        ${project.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+      </ol>
+    </div>
+    <div class="report-block">
+      <strong>${t.conclusion}:</strong> ${currentLang === 'ar' ? `بناءً على نتائج التدقيق، المنشأة حققت معدل امتثال ${complianceRate}% مع وجود ${totalNCRs} مخالفات (${criticalIssues} حرجة). يُوصى بتنفيذ خطة العمل التصحيحية خلال الجدول الزمني المحدد لضمان الامتثال الكامل.` : `Based on audit results, the facility achieved ${complianceRate}% compliance rate with ${totalNCRs} non-conformances (${criticalIssues} critical). It is recommended to implement the corrective action plan within the specified timeline to ensure full compliance.`}
+    </div>
+    
+    <div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid var(--primary); text-align: center; color: var(--text-light); font-size: 0.9em;">
+      <p><strong>${t.reportFooter}:</strong> Environmental Audit System</p>
+      <p><strong>${t.reportFooterNote}</strong></p>
+    </div>
+  `;
+  
+  reportContent.innerHTML = html;
+  document.getElementById('reportSection').classList.add('active');
+  document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function newReport() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('projectSelect').value = '';
+  document.getElementById('reportSection').classList.remove('active');
+  document.getElementById('reviewSection').classList.remove('active');
+  reviewProjectName = null;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+showSuggestions(Object.keys(projects));
+</script>
+</body>
+</html>

@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔧 Problem Solver Expert | محلل المشاكل البيئية الخبير</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Arial,sans-serif}
+:root{--primary:#1a365d;--secondary:#2c5282;--accent:#c53030;--success:#059669;--warning:#d97706;--info:#0284c7;--purple:#7c3aed;--bg:#f7fafc;--card:#fff;--text:#1a202c;--text-light:#4a5568;--border:#e2e8f0;--shadow:0 4px 6px rgba(0,0,0,0.07)}
+body{background:var(--bg);color:var(--text);line-height:1.7}
+.header{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:30px 20px;text-align:center;position:relative}
+.header h1{font-size:2em;margin-bottom:8px}
+.header p{opacity:0.9}
+.lang-toggle{position:absolute;top:15px;left:15px;background:rgba(255,255,255,0.2);border:2px solid #fff;color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-weight:bold}
+.container{max-width:1300px;margin:0 auto;padding:25px 20px}
+.search-box{background:var(--card);padding:20px;border-radius:10px;box-shadow:var(--shadow);margin-bottom:20px}
+.search-input{width:100%;padding:12px 18px;border:2px solid var(--border);border-radius:8px;font-size:1em}
+.search-input:focus{outline:none;border-color:var(--primary)}
+.stats-bar{background:var(--card);padding:15px;border-radius:10px;box-shadow:var(--shadow);margin-bottom:20px;display:flex;justify-content:space-around;flex-wrap:wrap;gap:15px}
+.stat-item{text-align:center}
+.stat-number{font-size:1.8em;font-weight:bold;color:var(--primary)}
+.stat-label{font-size:0.85em;color:var(--text-light)}
+.category-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;justify-content:center}
+.tab{padding:10px 20px;background:var(--card);border:2px solid var(--border);border-radius:25px;cursor:pointer;font-weight:bold;transition:all 0.3s}
+.tab:hover{border-color:var(--primary)}
+.tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.tab .count{background:var(--accent);color:#fff;padding:2px 8px;border-radius:10px;font-size:0.8em;margin-right:5px}
+.issues-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:15px;margin-bottom:25px}
+.issue-card{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:18px;cursor:pointer;transition:all 0.3s;position:relative}
+.issue-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.issue-card.selected{border-color:var(--success);background:#f0fff4}
+.issue-card .checkbox{position:absolute;top:12px;left:12px;width:24px;height:24px;border:2px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;background:#fff}
+.issue-card.selected .checkbox{background:var(--success);border-color:var(--success);color:#fff}
+.issue-card.selected .checkbox::after{content:'✓';font-weight:bold}
+.issue-card .icon{font-size:1.8em;margin-bottom:8px}
+.issue-card h3{color:var(--primary);font-size:1.1em;margin-bottom:6px;padding-left:30px}
+.issue-card .desc{color:var(--text-light);font-size:0.9em;margin-bottom:10px}
+.issue-card .meta{display:flex;gap:8px;flex-wrap:wrap}
+.badge{padding:3px 10px;border-radius:12px;font-size:0.75em;font-weight:bold}
+.badge-high{background:#fed7d7;color:#c53030}
+.badge-medium{background:#fef3c7;color:#92400e}
+.badge-low{background:#d1fae5;color:#065f46}
+.badge-sector{background:#e0e7ff;color:#3730a3}
+.selected-bar{background:var(--card);padding:18px;border-radius:10px;box-shadow:var(--shadow);margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;position:sticky;top:10px;z-index:100}
+.selected-count{font-size:1.1em;font-weight:bold;color:var(--primary)}
+.btn{padding:12px 28px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1em;transition:all 0.3s}
+.btn-generate{background:var(--success);color:#fff}
+.btn-generate:hover{background:#047857}
+.btn-clear{background:var(--accent);color:#fff}
+.btn-print{background:var(--primary);color:#fff}
+.report-section{display:none;background:var(--card);padding:30px;border-radius:10px;box-shadow:var(--shadow);margin-top:20px}
+.report-section.active{display:block}
+.report-header{text-align:center;padding-bottom:20px;border-bottom:3px solid var(--primary);margin-bottom:30px}
+.report-header h2{color:var(--primary);font-size:1.8em}
+.problem-report{margin-bottom:35px;padding-bottom:25px;border-bottom:2px dashed var(--border)}
+.problem-report:last-child{border-bottom:none}
+.problem-title{background:linear-gradient(135deg,var(--accent),#9b2c2c);color:#fff;padding:15px 20px;border-radius:8px;margin-bottom:20px;font-size:1.3em}
+.standards-box{background:#fef3c7;border-right:4px solid var(--warning);padding:12px;border-radius:6px;margin:12px 0}
+[dir="ltr"] .standards-box{border-right:none;border-left:4px solid var(--warning)}
+.standards-box strong{color:#92400e}
+.standards-box .std-badge{display:inline-block;background:#92400e;color:#fff;padding:2px 8px;border-radius:10px;font-size:0.75em;margin:2px}
+.solution-block{background:#f0fff4;border-right:4px solid var(--success);padding:15px;border-radius:6px;margin:12px 0}
+[dir="ltr"] .solution-block{border-right:none;border-left:4px solid var(--success)}
+.solution-block h4{color:var(--success);margin-bottom:10px}
+.solution-item{background:#fff;padding:12px;border-radius:6px;margin:8px 0;border:1px solid var(--border)}
+.solution-item strong{color:var(--primary)}
+.abbreviation{background:var(--primary);color:#fff;padding:3px 10px;border-radius:12px;font-size:0.85em;margin-left:8px}
+.when-to-use{background:#faf5ff;border-right:4px solid var(--purple);padding:12px;border-radius:6px;margin:10px 0}
+[dir="ltr"] .when-to-use{border-right:none;border-left:4px solid var(--purple)}
+.when-to-use strong{color:var(--purple)}
+.when-to-use .tag{display:inline-block;background:var(--purple);color:#fff;padding:2px 8px;border-radius:10px;font-size:0.75em;margin:2px}
+.emergency-block{background:#fff5f5;border-right:4px solid var(--accent);padding:15px;border-radius:6px;margin:12px 0}
+[dir="ltr"] .emergency-block{border-right:none;border-left:4px solid var(--accent)}
+.emergency-block h4{color:var(--accent);margin-bottom:10px}
+.cap-block{background:#fffbeb;border-right:4px solid var(--warning);padding:15px;border-radius:6px;margin:12px 0}
+[dir="ltr"] .cap-block{border-right:none;border-left:4px solid var(--warning)}
+.cap-block h4{color:var(--warning);margin-bottom:10px}
+.safety-block{background:#eff6ff;border-right:4px solid var(--secondary);padding:15px;border-radius:6px;margin:12px 0}
+[dir="ltr"] .safety-block{border-right:none;border-left:4px solid var(--secondary)}
+.safety-block h4{color:var(--secondary);margin-bottom:10px}
+.monitoring-box{background:#e0f2fe;border-right:4px solid var(--info);padding:15px;border-radius:6px;margin:12px 0}
+[dir="ltr"] .monitoring-box{border-right:none;border-left:4px solid var(--info)}
+.monitoring-box h4{color:var(--info);margin-bottom:10px}
+ul,ol{padding-right:25px;margin-top:8px}
+[dir="ltr"] ul,[dir="ltr"] ol{padding-right:0;padding-left:25px}
+li{margin:6px 0}
+@media print{
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
+.header,.search-box,.category-tabs,.issues-grid,.selected-bar,.lang-toggle,.stats-bar,.btn-print,.btn-clear{display:none!important}
+.report-section{display:block!important;box-shadow:none;padding:0;margin:0}
+.problem-report{page-break-inside:avoid;break-inside:avoid}
+.problem-title{page-break-after:avoid;break-after:avoid}
+.glossary-block table{page-break-inside:auto}
+.glossary-block tr{page-break-inside:avoid;break-inside:avoid}
+body{background:#fff}
+@page{margin:1.5cm}
+}
+@media(max-width:768px){.issues-grid{grid-template-columns:1fr}.header h1{font-size:1.5em}}
+</style>
+</head>
+<body>
+
+<div class="header">
+<button class="lang-toggle" onclick="toggleLanguage()">🌐 English</button>
+<h1 id="mainTitle">🔧 محلل المشاكل البيئية الخبير</h1>
+<p id="mainSubtitle">اختر المشكلة → احصل على الحل + متى نستخدمه + المعايير الدولية</p>
+</div>
+
+<div class="container">
+<div class="search-box">
+<input type="text" id="searchInput" class="search-input" placeholder="🔍 ابحث عن مشكلة..." oninput="filterIssues()">
+</div>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-number" id="totalIssues">0</div><div class="stat-label" id="totalLabel">إجمالي المشاكل</div></div>
+<div class="stat-item"><div class="stat-number" id="selectedCount">0</div><div class="stat-label" id="selectedLabel">مشكلة مختارة</div></div>
+<div class="stat-item"><div class="stat-number" id="categoryCount">0</div><div class="stat-label" id="categoryLabel">الفئات</div></div>
+</div>
+
+<div class="category-tabs" id="categoryTabs"></div>
+<div class="issues-grid" id="issuesGrid"></div>
+
+<div class="selected-bar">
+<div class="selected-count"><span id="selectedCountBar">0</span> <span id="selectedLabelBar">مشكلة مختارة</span></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button class="btn btn-clear" onclick="clearSelection()" id="clearBtn">🗑️ مسح الاختيار</button>
+<button class="btn btn-generate" onclick="generateReport()" id="generateBtn">📄 إنشاء التقرير الشامل</button>
+</div>
+</div>
+
+<div id="reportSection" class="report-section">
+<div style="display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap">
+<button class="btn btn-print" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
+<button class="btn btn-clear" onclick="closeReport()"> إغلاق التقرير</button>
+</div>
+<div id="reportContent"></div>
+</div>
+</div>
+
+<script>
+let currentLang='ar';
+let selectedIssues=new Set();
+let currentCategory='all';
+
+const translations={
+ar:{mainTitle:'🔧 محلل المشاكل البيئية الخبير',mainSubtitle:'اختر المشكلة → احصل على الحل + متى نستخدمه + المعايير الدولية',searchPlaceholder:'🔍 ابحث عن مشكلة...',selectedLabel:'مشكلة مختارة',selectedLabelBar:'مشكلة مختارة',clearBtn:'🗑️ مسح الاختيار',generateBtn:' إنشاء التقرير الشامل',printBtn:'️ طباعة / حفظ PDF',closeBtn:' إغلاق التقرير',reportTitle:'التقرير الشامل للحلول البيئية (وفق المعايير الدولية)',reportSubtitle:'خطة متكاملة للمشاكل المختارة - متوافقة مع EPA, WHO, IFC, ISO',langBtn:'🌐 English',all:'الكل',air:'تلوث الهواء',water:'تلوث المياه',soil:'تلوث التربة',waste:'إدارة النفايات',noise:'الضوضاء والاهتزازات',monitoring:'أنظمة المراقبة والكشف',other:'مخاطر أخرى',severity:'الخطورة',sectors:'القطاعات',solution:'الحل الهندسي',emergency:'خطة الطوارئ (ERP)',cap:'خطة التصحيح (CAP)',safety:'الصحة والسلامة (HSE)',mechanism:'آلية العمل',standards:'المعايير الدولية المرجعية',whenToUse:'🎯 متى نستخدم هذه التقنية؟',noSelection:'يرجى اختيار مشكلة واحدة على الأقل',high:'عالية',medium:'متوسطة',low:'منخفضة',totalIssues:'إجمالي المشاكل',totalLabel:'إجمالي المشاكل',categoryLabel:'الفئات',idealFor:'✅ الحالات المثالية',advantages:'⚖️ المميزات',limitations:'⚠️ القيود والعيوب',examples:' أمثلة على الاستخدام',epa:'EPA',who:'WHO',ifc:'IFC',iso:'ISO'},
+en:{mainTitle:'🔧 Expert Environmental Problem Solver',mainSubtitle:'Select Problem → Get Solution + When to Use + International Standards',searchPlaceholder:'🔍 Search for a problem...',selectedLabel:'problem(s) selected',selectedLabelBar:'problem(s) selected',clearBtn:'🗑️ Clear',generateBtn:' Generate Report',printBtn:'🖨️ Print/PDF',closeBtn:'✖ Close',reportTitle:'Comprehensive Solutions Report (International Standards)',reportSubtitle:'Integrated plan - Compliant with EPA, WHO, IFC, ISO',langBtn:'🌐 العربية',all:'All',air:'Air Pollution',water:'Water Pollution',soil:'Soil Contamination',waste:'Waste Management',noise:'Noise & Vibration',monitoring:'Monitoring Systems',other:'Other Risks',severity:'Severity',sectors:'Sectors',solution:'Engineering Solution',emergency:'Emergency Response (ERP)',cap:'Corrective Action (CAP)',safety:'Health & Safety (HSE)',mechanism:'Mechanism',standards:'International Reference Standards',whenToUse:'🎯 When to Use This Technology?',noSelection:'Please select at least one problem',high:'High',medium:'Medium',low:'Low',totalIssues:'Total Issues',totalLabel:'Total Issues',categoryLabel:'Categories',idealFor:'✅ Ideal For',advantages:'⚖️ Advantages',limitations:'⚠️ Limitations',examples:'🏭 Usage Examples',epa:'EPA',who:'WHO',ifc:'IFC',iso:'ISO'}
+};
+
+const categories=[
+{id:'all',icon:'📋'},
+{id:'air',icon:'💨'},
+{id:'water',icon:'💧'},
+{id:'soil',icon:'🌱'},
+{id:'waste',icon:'♻️'},
+{id:'noise',icon:'🔊'},
+{id:'monitoring',icon:'📡'},
+{id:'other',icon:'⚠️'}
+];
+
+const glossary=[
+{abbr:'EPA',full:'Environmental Protection Agency',ar:'وكالة حماية البيئة الأمريكية'},
+{abbr:'WHO',full:'World Health Organization',ar:'منظمة الصحة العالمية'},
+{abbr:'IFC',full:'International Finance Corporation',ar:'مؤسسة التمويل الدولية'},
+{abbr:'ISO',full:'International Organization for Standardization',ar:'المنظمة الدولية للمعايير'},
+{abbr:'IAEA',full:'International Atomic Energy Agency',ar:'الوكالة الدولية للطاقة الذرية'},
+{abbr:'NFPA',full:'National Fire Protection Association',ar:'الرابطة الوطنية الأمريكية للحماية من الحريق'},
+{abbr:'OSHA',full:'Occupational Safety and Health Administration',ar:'إدارة السلامة والصحة المهنية الأمريكية'},
+{abbr:'NIOSH',full:'National Institute for Occupational Safety and Health',ar:'المعهد الوطني الأمريكي للسلامة والصحة المهنية'},
+{abbr:'IARC',full:'International Agency for Research on Cancer',ar:'الوكالة الدولية لبحوث السرطان'},
+{abbr:'IMO',full:'International Maritime Organization',ar:'المنظمة البحرية الدولية'},
+{abbr:'EU',full:'European Union',ar:'الاتحاد الأوروبي'},
+{abbr:'PM',full:'Particulate Matter',ar:'الجسيمات العالقة (الغبار الدقيق)'},
+{abbr:'CO',full:'Carbon Monoxide',ar:'أول أكسيد الكربون'},
+{abbr:'CO2',full:'Carbon Dioxide',ar:'ثاني أكسيد الكربون'},
+{abbr:'NOx',full:'Nitrogen Oxides',ar:'أكاسيد النيتروجين'},
+{abbr:'SO2',full:'Sulfur Dioxide',ar:'ثاني أكسيد الكبريت'},
+{abbr:'H2S',full:'Hydrogen Sulfide',ar:'كبريتيد الهيدروجين'},
+{abbr:'NH3',full:'Ammonia',ar:'الأمونيا'},
+{abbr:'O3',full:'Ozone',ar:'الأوزون'},
+{abbr:'Pb',full:'Lead',ar:'الرصاص'},
+{abbr:'HF',full:'Hydrogen Fluoride',ar:'فلوريد الهيدروجين'},
+{abbr:'VOC',full:'Volatile Organic Compounds',ar:'المركبات العضوية المتطايرة'},
+{abbr:'VOCs',full:'Volatile Organic Compounds',ar:'المركبات العضوية المتطايرة'},
+{abbr:'PFAS',full:'Per- and Polyfluoroalkyl Substances',ar:'المواد البيرفلورية والبولي فلورية (كيماويات صناعية ثابتة)'},
+{abbr:'EDCs',full:'Endocrine Disrupting Chemicals',ar:'المواد الكيميائية المسببة لاضطراب الغدد الصماء'},
+{abbr:'BOD',full:'Biochemical Oxygen Demand',ar:'الاحتياج الأكسجيني الحيوي (مقياس لتلوث المياه)'},
+{abbr:'COD',full:'Chemical Oxygen Demand',ar:'الاحتياج الأكسجيني الكيميائي (مقياس لتلوث المياه)'},
+{abbr:'TSS',full:'Total Suspended Solids',ar:'المواد الصلبة العالقة الكلية'},
+{abbr:'CEMS',full:'Continuous Emissions Monitoring System',ar:'نظام المراقبة المستمرة للانبعاثات'},
+{abbr:'ESP',full:'Electrostatic Precipitator',ar:'المرسب الكهروستاتيكي'},
+{abbr:'FGD',full:'Flue Gas Desulfurization',ar:'إزالة الكبريت من غازات العادم'},
+{abbr:'SCR',full:'Selective Catalytic Reduction',ar:'الاختزال الحفزي الانتقائي'},
+{abbr:'SNCR',full:'Selective Non-Catalytic Reduction',ar:'الاختزال غير الحفزي الانتقائي'},
+{abbr:'RTO',full:'Regenerative Thermal Oxidizer',ar:'المؤكسد الحراري المتجدد'},
+{abbr:'VRU',full:'Vapor Recovery Unit',ar:'وحدة استرداد الأبخرة'},
+{abbr:'CCS',full:'Carbon Capture and Storage',ar:'احتجاز وتخزين الكربون'},
+{abbr:'MBR',full:'Membrane Bioreactor',ar:'المفاعل الحيوي الغشائي'},
+{abbr:'BNR',full:'Biological Nutrient Removal',ar:'إزالة المغذيات بيولوجياً (النيتروجين والفوسفور)'},
+{abbr:'DAF',full:'Dissolved Air Flotation',ar:'التعويم بالهواء المذاب'},
+{abbr:'API',full:'American Petroleum Institute (Separator)',ar:'معهد البترول الأمريكي (فاصل الزيت والماء)'},
+{abbr:'AOP',full:'Advanced Oxidation Processes',ar:'عمليات الأكسدة المتقدمة'},
+{abbr:'GAC',full:'Granular Activated Carbon',ar:'الكربون المنشط الحبيبي'},
+{abbr:'HEPA',full:'High-Efficiency Particulate Air (filter)',ar:'فلتر الهواء عالي الكفاءة للجسيمات'},
+{abbr:'XRF',full:'X-Ray Fluorescence',ar:'التألق بالأشعة السينية (تقنية تحليل)'},
+{abbr:'WWTP',full:'Wastewater Treatment Plant',ar:'محطة معالجة الصرف الصحي'},
+{abbr:'WWTPs',full:'Wastewater Treatment Plants',ar:'محطات معالجة الصرف الصحي'},
+{abbr:'PPE',full:'Personal Protective Equipment',ar:'معدات الوقاية الشخصية'},
+{abbr:'SCBA',full:'Self-Contained Breathing Apparatus',ar:'جهاز التنفس ذاتي الاحتواء'},
+{abbr:'HAZMAT',full:'Hazardous Materials',ar:'المواد الخطرة'},
+{abbr:'P100',full:'NIOSH P100 Filter Rating',ar:'تصنيف فلتر مقاوم للزيت بكفاءة 99.97% وفق NIOSH'},
+{abbr:'NAAQS',full:'National Ambient Air Quality Standards',ar:'المعايير الوطنية الأمريكية لجودة الهواء المحيط'},
+{abbr:'AQG',full:'Air Quality Guidelines',ar:'إرشادات جودة الهواء (منظمة الصحة العالمية)'},
+{abbr:'CFR',full:'Code of Federal Regulations',ar:'مدونة اللوائح الفيدرالية الأمريكية'},
+{abbr:'ERP',full:'Emergency Response Plan',ar:'خطة الاستجابة للطوارئ'},
+{abbr:'CAP',full:'Corrective Action Plan',ar:'خطة الإجراء التصحيحي'},
+{abbr:'HSE',full:'Health, Safety, and Environment',ar:'الصحة والسلامة والبيئة'},
+{abbr:'PTFE',full:'Polytetrafluoroethylene',ar:'بولي تترافلورو إيثيلين (مادة مقاومة للحرارة تستخدم في الفلاتر)'},
+{abbr:'NESHAP',full:'National Emission Standards for Hazardous Air Pollutants',ar:'المعايير الوطنية الأمريكية لانبعاثات الملوثات الهوائية الخطرة'},
+{abbr:'NCEC',full:'National Center for Environmental Compliance (Saudi Arabia)',ar:'المركز الوطني للرقابة على الالتزام البيئي (السعودية)'},
+{abbr:'BAT',full:'Best Available Technology',ar:'أفضل تكنولوجيا متاحة'},
+{abbr:'ZLD',full:'Zero Liquid Discharge',ar:'التصريف الصفري للسوائل'},
+{abbr:'POPs',full:'Persistent Organic Pollutants',ar:'الملوثات العضوية الثابتة'},
+{abbr:'CAFO',full:'Concentrated Animal Feeding Operation',ar:'عملية تربية حيوانية مكثفة'}
+];
+
+const glossarySorted=[...glossary].sort((a,b)=>b.abbr.length-a.abbr.length);
+function expandAbbr(text){
+if(!text)return text;
+let result=text;
+glossarySorted.forEach(g=>{
+const esc=g.abbr.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const re=new RegExp('(^|[^A-Za-z0-9(])('+esc+')(?![A-Za-z0-9])(?!\\s*\\()','g');
+result=result.replace(re,(m,p1,p2)=>`${p1}${p2} (${g.full} - ${g.ar})`);
+});
+return result;
+}
+
+const issues=[
+// ===== تلوث الهواء =====
+{id:'pm',category:'air',icon:'🌫️',severity:'high',sectors:['أسمنت','محاجر','بناء','حديد وصلب'],
+nameAr:'الجسيمات العالقة (PM10, PM2.5, PM1.0)',nameEn:'Particulate Matter (PM10, PM2.5, PM1.0)',
+descAr:'غبار دقيق من التكسير والطحن والحرق يؤثر على الجهاز التنفسي',descEn:'Fine dust from crushing, grinding, combustion affecting respiratory system',
+standards:['EPA NAAQS: PM2.5 ≤ 12 μg/m³ (annual)','WHO AQG 2021: PM2.5 ≤ 5 μg/m³','IFC EHS Guidelines: PM10 ≤ 50 μg/m³'],
+solutions:[
+{abbr:'Bag Filters',full:'Baghouse Filters / Fabric Filters',ar:'فلاتر الأكياس',mechAr:'أكياس قماشية (Nomex/PTFE) تحجز الجسيمات على السطح الخارجي، تنظيف بـ Pulse Jet. كفاءة 99%+ وفق EPA 40 CFR Part 60',mechEn:'Fabric bags (Nomex/PTFE) capture particles on outer surface, cleaned by Pulse Jet. Efficiency 99%+ per EPA 40 CFR Part 60',
+whenAr:{ideal:'الغبار الجاف غير اللاصق، درجات حرارة <260°C، الحاجة لكفاءة عالية جداً (>99%)',adv:'كفاءة عالية جداً، تكلفة تشغيل منخفضة، إمكانية استرداد المواد',lim:'لا تناسب الغبار اللاصق أو الرطب، تحتاج مساحة كبيرة، استبدال دوري للأكياس',ex:'مصانع الأسمنت، محطات الطاقة، مصانع الحديد والصلب'},
+whenEn:{ideal:'Dry non-sticky dust, temperatures <260°C, need for very high efficiency (>99%)',adv:'Very high efficiency, low operating cost, material recovery possible',lim:'Not suitable for sticky or wet dust, requires large space, periodic bag replacement',ex:'Cement plants, power stations, iron & steel mills'}},
+
+{abbr:'ESP',full:'Electrostatic Precipitators',ar:'المرسبات الكهروستاتيكية',mechAr:'شحن الجسيمات سالباً بجهد عالي، جذبها لألواح موجبة، طرق دوري (Rapping). كفاءة 99.5% وفق EPA AP-42',mechEn:'Charge particles negative with high voltage, attract to positive plates, periodic rapping. Efficiency 99.5% per EPA AP-42',
+whenAr:{ideal:'حجم غازات كبير، غبار ذو مقاومة كهربائية مناسبة، درجات حرارة عالية، كفاءة 99.5%',adv:'كفاءة عالية جداً، انخفاض في فقدان الضغط، عمر افتراضي طويل (20+ سنة)',lim:'تكلفة رأسمالية عالية، لا تناسب الغبار ذو المقاومة العالية جداً، حساس للتغيرات في التركيب',ex:'محطات طاقة فحم، مصانع أسمنت، مصانع ورق'},
+whenEn:{ideal:'Large gas volumes, dust with suitable electrical resistance, high temperatures, 99.5% efficiency',adv:'Very high efficiency, low pressure drop, long lifespan (20+ years)',lim:'High capital cost, not suitable for very high-resistance dust, sensitive to composition changes',ex:'Coal power plants, cement plants, paper mills'}},
+
+{abbr:'Wet Scrubber',full:'Wet Scrubber Systems',ar:'أجهزة الغسل الرطبة',mechAr:'رش ماء/محلول كيميائي في غرفة مغلقة لالتقاط الجسيمات. مناسب للغبار اللاصق',mechEn:'Spray water/chemical solution in closed chamber to capture particles. Suitable for sticky dust',
+whenAr:{ideal:'الغبار اللاصق أو الرطب، غازات تحتوي على مواد قابلة للذوبان، الحاجة لتبريد الغاز',adv:'يتعامل مع الغبار اللاصق، يزيل الغازات الذائبة أيضاً، يبرد الغازات الساخنة',lim:'يستهلك ماء كثير، ينتج مياه صرف تحتاج معالجة، تآكل في المعدات',ex:'مصانع كيماويات، مصانع أغذية، محطات معالجة'},
+whenEn:{ideal:'Sticky or wet dust, gases containing soluble materials, need for gas cooling',adv:'Handles sticky dust, also removes soluble gases, cools hot gases',lim:'High water consumption, produces wastewater needing treatment, equipment corrosion',ex:'Chemical plants, food factories, treatment plants'}}
+],
+emergency:['إيقاف المصدر فوراً','تفعيل أنظمة الرش المائي الطارئة','إخلاء المنطقة إذا تجاوز PM10 حدود 150 μg/m³ (WHO)','إبلاغ جهاز البيئة'],
+cap:['تركيب/ترقية أنظمة الفلترة وفق EPA standards','جدولة صيانة دورية كل 3 أشهر','تدريب العاملين على استخدام PPE','رصد مستمر بـ CEMS'],
+safety:['كمامات N95 أو P100 (NIOSH certified)','واقيات عين','بدلات واقية من الغبار','فحوصات دورية للرئة']},
+
+{id:'co',category:'air',icon:'☠️',severity:'high',sectors:['محطات طاقة','سيارات','أفران','تدفئة'],
+nameAr:'أول أكسيد الكربون (CO)',nameEn:'Carbon Monoxide (CO)',
+descAr:'غاز سام عديم اللون والرائحة، يرتبط بالهيموجلوبين ويمنع نقل الأكسجين',descEn:'Toxic colorless odorless gas, binds to hemoglobin preventing oxygen transport',
+standards:['EPA NAAQS: CO ≤ 9 ppm (8h), 35 ppm (1h)','WHO AQG 2021: CO ≤ 4 mg/m³ (24h)','OSHA PEL: 50 ppm (8h TWA)'],
+solutions:[
+{abbr:'Combustion Optimization',full:'Combustion Optimization',ar:'تحسين عملية الاحتراق',mechAr:'ضبط نسبة الهواء/الوقود لضمان احتراق كامل وتقليل CO. استخدام أنظمة تحكم آلية (O2 trim) وفق EPA',mechEn:'Adjust air/fuel ratio for complete combustion and CO reduction. Use automated O2 trim controls per EPA',
+whenAr:{ideal:'أفران ومراجل تعمل بالوقود، انبعاثات CO من الاحتراق غير الكامل',adv:'حل وقائي (يمنع تكوين CO)، تكلفة منخفضة، يحسن كفاءة الطاقة',lim:'يحتاج ضبط مستمر، لا يعالج CO الموجود بالفعل',ex:'محطات طاقة، أفران صناعية، أنظمة تدفئة'},
+whenEn:{ideal:'Furnaces and boilers using fuel, CO emissions from incomplete combustion',adv:'Preventive solution (prevents CO formation), low cost, improves energy efficiency',lim:'Needs continuous adjustment, does not treat existing CO',ex:'Power plants, industrial furnaces, heating systems'}},
+
+{abbr:'Catalytic Converter',full:'Catalytic Converter',ar:'المحول الحفاز',mechAr:'تحويل CO إلى CO2 عبر حفاز (Pt/Pd/Rh) عند 200-400°C. يستخدم في السيارات والمداخن الصناعية وفق EPA',mechEn:'Convert CO to CO2 via catalyst (Pt/Pd/Rh) at 200-400°C. Used in vehicles and industrial stacks per EPA',
+whenAr:{ideal:'انبعاثات CO من عوادم السيارات والمداخن الصناعية بتركيزات متوسطة',adv:'كفاءة عالية (90%+)، لا يحتاج طاقة إضافية كبيرة، عمر افتراضي طويل',lim:'الحفازات غالية (Pt/Pd/Rh)، تتسمم بـ S و Pb، تحتاج درجة حرارة تشغيل معينة',ex:'سيارات، شاحنات، مولدات ديزل'},
+whenEn:{ideal:'CO emissions from vehicle exhaust and industrial stacks at medium concentrations',adv:'High efficiency (90%+), no major extra energy needed, long lifespan',lim:'Catalysts expensive (Pt/Pd/Rh), poisoned by S and Pb, need specific operating temperature',ex:'Cars, trucks, diesel generators'}},
+
+{abbr:'CO Oxidizer',full:'Thermal/Catalytic CO Oxidizer',ar:'مؤكسد CO',mechAr:'حرق CO المتبقي في غازات العادم عند درجات عالية أو باستخدام حفازات متخصصة وفق WHO',mechEn:'Burn residual CO in exhaust at high temperatures or using specialized catalysts per WHO',
+whenAr:{ideal:'تركيزات عالية من CO في العمليات الصناعية، مصانع كيماويات',adv:'يدمر CO تماماً، مناسب للتركيزات العالية',lim:'يستهلك طاقة (حراري)، أو حفازات غالية (حفزي)',ex:'مصانع كيماويات، محطات طاقة'},
+whenEn:{ideal:'High CO concentrations in industrial processes, chemical plants',adv:'Completely destroys CO, suitable for high concentrations',lim:'Consumes energy (thermal), or expensive catalysts (catalytic)',ex:'Chemical plants, power stations'}}
+],
+emergency:['إخلاء فوري للمنطقة المغلقة','تهوية قسرية','ارتداء أجهزة تنفس SCBA','إنعاش المصابين (CO يسبب اختناق)','إبلاغ الطوارئ'],
+cap:['تركيب أنظمة كشف CO مستمرة','صيانة دورية للأفران والمداخن','تحسين كفاءة الاحتراق','تدريب العاملين على مخاطر CO'],
+safety:['أجهزة كشف CO شخصية (Portable)','SCBA للطوارئ','تهوية كافية في الأماكن المغلقة','تدريب على أعراض التسمم بـ CO']},
+
+{id:'nox',category:'air',icon:'🏭',severity:'high',sectors:['محطات طاقة','أسمنت','زجاج','طوب'],
+nameAr:'أكاسيد النيتروجين (NOx)',nameEn:'Nitrogen Oxides (NOx)',
+descAr:'غازات سامة من الاحتراق عالي الحرارة تسبب الأمطار الحمضية',descEn:'Toxic gases from high-temperature combustion causing acid rain',
+standards:['EPA NAAQS: NO2 ≤ 53 ppb (annual)','WHO AQG 2021: NO2 ≤ 10 μg/m³','EU Directive 2015/2193 (MCPD)'],
+solutions:[
+{abbr:'SCR',full:'Selective Catalytic Reduction',ar:'الاختزال الحفزي الانتقائي',mechAr:'حقن أمونيا/يوريا مع حفاز عند 300-400°C لتحويل NOx إلى N2 + H2O. كفاءة 90%+ وفق EPA 40 CFR Part 63',mechEn:'Inject ammonia/urea with catalyst at 300-400°C to convert NOx to N2 + H2O. Efficiency 90%+ per EPA 40 CFR Part 63',
+whenAr:{ideal:'محطات طاقة كبيرة، انبعاثات NOx عالية، الحاجة لكفاءة >90%',adv:'أعلى كفاءة (90-95%)، تقنية ناضجة وموثوقة',lim:'يحتاج أمونيا (خطرة)، حفاز غالي، مساحة كبيرة',ex:'محطات طاقة، مصانع أسمنت، سفن كبيرة'},
+whenEn:{ideal:'Large power plants, high NOx emissions, need for >90% efficiency',adv:'Highest efficiency (90-95%), mature and reliable technology',lim:'Needs ammonia (hazardous), expensive catalyst, large space',ex:'Power plants, cement plants, large ships'}},
+
+{abbr:'SNCR',full:'Selective Non-Catalytic Reduction',ar:'الاختزال غير الحفزي',mechAr:'حقن يوريا/أمونيا مباشرة في الفرن عند 900-1100°C بدون حفاز. كفاءة 50-70% وفق WHO guidelines',mechEn:'Inject urea/ammonia directly into furnace at 900-1100°C without catalyst. Efficiency 50-70% per WHO guidelines',
+whenAr:{ideal:'أفران بدرجات حرارة عالية جداً (900-1100°C)، ميزانية محدودة',adv:'أرخص من SCR (لا حفاز)، أبسط في التركيب',lim:'كفاءة أقل (50-70%)، يحتاج نطاق حراري ضيق جداً',ex:'محارق نفايات، أفران أسمنت'},
+whenEn:{ideal:'Furnaces at very high temperatures (900-1100°C), limited budget',adv:'Cheaper than SCR (no catalyst), simpler installation',lim:'Lower efficiency (50-70%), needs very narrow temperature range',ex:'Waste incinerators, cement kilns'}},
+
+{abbr:'Low-NOx Burner',full:'Low-NOx Burners',ar:'موقد منخفض NOx',mechAr:'تصميم خاص للموقد يقلل درجة حرارة اللهب ويحد من تكوين NOx وفق EPA standards',mechEn:'Special burner design reduces flame temperature and limits NOx formation per EPA standards',
+whenAr:{ideal:'مراجل وأفران جديدة أو عند التجديد، وقاية من المصدر',adv:'حل وقائي (يمنع تكوين NOx)، تكلفة منخفضة نسبياً',lim:'يقلل NOx 30-50% فقط، لا يكفي وحده للمعايير الصارمة',ex:'مراجل صناعية، أفران زجاج'},
+whenEn:{ideal:'New or retrofitted boilers and furnaces, source prevention',adv:'Preventive solution (prevents NOx formation), relatively low cost',lim:'Reduces NOx 30-50% only, not enough alone for strict standards',ex:'Industrial boilers, glass furnaces'}}
+],
+emergency:['إيقاف الأفران إذا تجاوز الانبعاث الحدود','تفعيل أنظمة الحقن الطارئة','إخلاء المنطقة القريبة','إبلاغ الجهات الرقابية'],
+cap:['تركيب نظام SCR/SNCR','معايرة دورية للحفاز','رصد مستمر بـ CEMS','صيانة الموقد سنوياً'],
+safety:['كمامات غاز NOx','أجهزة كشف غاز محمولة','تدريب على التعامل مع الأمونيا','PPE كيميائي كامل']},
+
+{id:'sox',category:'air',icon:'🏗️',severity:'high',sectors:['محطات طاقة','أسمنت','تكرير'],
+nameAr:'أكاسيد الكبريت (SOx)',nameEn:'Sulfur Oxides (SOx)',
+descAr:'غازات حمضية تسبب مشاكل تنفسية وأمطار حمضية',descEn:'Acidic gases causing respiratory problems and acid rain',
+standards:['EPA NAAQS: SO2 ≤ 75 ppb (1-hour)','WHO AQG 2021: SO2 ≤ 40 μg/m³ (24h)','EU Industrial Emissions Directive'],
+solutions:[
+{abbr:'FGD',full:'Flue Gas Desulfurization',ar:'إزالة الكبريت من غازات العادم',mechAr:'رش محلول جيري (Limestone Slurry) في برج امتصاص، يتفاعل SO2 منتجاً جبس (Gypsum) قابل للتسويق. كفاءة 95%+ وفق EPA',mechEn:'Spray limestone slurry in absorption tower, SO2 reacts producing marketable gypsum. Efficiency 95%+ per EPA',
+whenAr:{ideal:'محطات طاقة فحم كبيرة، انبعاثات SO2 عالية، الحاجة لكفاءة >95%',adv:'أعلى كفاءة (95-99%)، منتج ثانوي قابل للبيع (جبس)',lim:'تكلفة رأسمالية عالية، استهلاك ماء، يحتاج مساحة كبيرة',ex:'محطات طاقة فحم، مصانع تكرير'},
+whenEn:{ideal:'Large coal power plants, high SO2 emissions, need for >95% efficiency',adv:'Highest efficiency (95-99%), byproduct marketable (gypsum)',lim:'High capital cost, water consumption, needs large space',ex:'Coal power plants, refineries'}},
+
+{abbr:'Dry Scrubber',full:'Dry Scrubbing System',ar:'الغسل الجاف',mechAr:'حقن مسحوق جيري جاف في غاز العادم لامتصاص SO2. مناسب للمساحات المحدودة وفق WHO',mechEn:'Inject dry lime powder into flue gas to absorb SO2. Suitable for limited spaces per WHO',
+whenAr:{ideal:'مساحات محدودة، انبعاثات SO2 متوسطة، مياه محدودة',adv:'لا يحتاج ماء، مساحة أصغر، تكلفة أقل من FGD',lim:'كفاءة أقل (70-85%)، ينتج نفايات صلبة',ex:'محارق نفايات، مراجل صغيرة'},
+whenEn:{ideal:'Limited spaces, medium SO2 emissions, limited water',adv:'No water needed, smaller footprint, lower cost than FGD',lim:'Lower efficiency (70-85%), produces solid waste',ex:'Waste incinerators, small boilers'}},
+
+{abbr:'Low-Sulfur Fuel',full:'Low-Sulfur Fuel Switching',ar:'التحول لوقود منخفض الكبريت',mechAr:'استبدال الوقود عالي الكبريت بوقود أنظف (غاز طبيعي بدلاً من مازوت) وفق IMO 2020',mechEn:'Replace high-sulfur fuel with cleaner fuel (natural gas instead of mazut) per IMO 2020',
+whenAr:{ideal:'حل وقائي من المصدر، عندما يكون الوقود هو المصدر الرئيسي لـ SOx',adv:'يمنع المشكلة من المصدر، يحسن جودة الهواء بشكل عام',lim:'تكلفة وقود أعلى، قد لا يكون متاحاً في كل المناطق',ex:'سفن (IMO 2020)، محطات طاقة'},
+whenEn:{ideal:'Preventive source solution, when fuel is main SOx source',adv:'Prevents problem at source, improves overall air quality',lim:'Higher fuel cost, may not be available everywhere',ex:'Ships (IMO 2020), power plants'}}
+],
+emergency:['إيقاف المصدر','تفعيل FGD الطارئ','إخلاء المنطقة','إبلاغ البيئة'],
+cap:['تركيب/ترقية FGD','التحول لوقود أنظف','رصد مستمر','صيانة دورية'],
+safety:['كمامات غاز SOx','أجهزة كشف','بدلات كيميائية','فحوصات تنفسية']},
+
+{id:'vocs',category:'air',icon:'🧪',severity:'high',sectors:['دهانات','أدوية','كيماويات','طباعة','بتروكيماويات'],
+nameAr:'المركبات العضوية المتطايرة (VOCs)',nameEn:'Volatile Organic Compounds (VOCs)',
+descAr:'أبخرة مذيبات عضوية قابلة للاشتعال وسامة',descEn:'Flammable and toxic organic solvent vapors',
+standards:['EPA 40 CFR Part 60 (NSPS)','EU VOC Directive 1999/13/EC','WHO Indoor Air Quality Guidelines'],
+solutions:[
+{abbr:'RTO',full:'Regenerative Thermal Oxidizer',ar:'المؤكسد الحراري المتجدد',mechAr:'حرق VOCs عند 800-1000°C مع استرداد 95% حرارة عبر أسرّة خزفية. كفاءة تدمير 99%',mechEn:'Burn VOCs at 800-1000°C with 95% heat recovery via ceramic beds. Destruction efficiency 99%',
+whenAr:{ideal:'تركيزات VOCs متوسطة إلى عالية (>2000 ppm)، تدفق مستمر',adv:'كفاءة تدمير 99%+، استرداد حرارة 95%، اقتصادي على المدى الطويل',lim:'تكلفة رأسمالية عالية، يحتاج غاز مساعد عند تركيزات منخفضة',ex:'مصانع دهانات، مصانع أدوية، بتروكيماويات'},
+whenEn:{ideal:'Medium to high VOC concentrations (>2000 ppm), continuous flow',adv:'99%+ destruction efficiency, 95% heat recovery, economical long-term',lim:'High capital cost, needs auxiliary fuel at low concentrations',ex:'Paint factories, pharmaceutical plants, petrochemicals'}},
+
+{abbr:'Carbon Adsorption',full:'Activated Carbon Adsorption',ar:'الامتزاز بالكربون النشط',mechAr:'تمرير الهواء على أعمدة كربون نشط تمتص VOCs. إعادة توليد الكربون بالبخار',mechEn:'Pass air through activated carbon columns that adsorb VOCs. Regenerate carbon with steam',
+whenAr:{ideal:'تركيزات VOCs منخفضة إلى متوسطة، استرداد المذيبات ذو قيمة',adv:'استرداد المذيبات لإعادة الاستخدام، كفاءة عالية، بسيط التشغيل',lim:'يحتاج استبدال/تجديد الكربون، غير فعال للتركيزات العالية جداً',ex:'مصانع طباعة، معامل طلاء'},
+whenEn:{ideal:'Low to medium VOC concentrations, valuable solvent recovery',adv:'Solvent recovery for reuse, high efficiency, simple operation',lim:'Needs carbon replacement/regeneration, not effective for very high concentrations',ex:'Printing plants, coating labs'}},
+
+{abbr:'VRU',full:'Vapor Recovery Unit',ar:'وحدة استرداد الأبخرة',mechAr:'تكثيف الأبخرة وتحويلها لسائل لإعادة الاستخدام. توفير اقتصادي + بيئي',mechEn:'Condense vapors and convert to liquid for reuse. Economic + environmental savings',
+whenAr:{ideal:'محطات وقود، تخزين مذيبات متطايرة، الحاجة لاسترداد المنتج',adv:'استرداد منتج ذو قيمة، تقليل انبعاثات 95%+',lim:'تكلفة تركيب، صيانة دورية',ex:'محطات وقود، مستودعات بترول'},
+whenEn:{ideal:'Fuel stations, volatile solvent storage, need for product recovery',adv:'Recover valuable product, 95%+ emission reduction',lim:'Installation cost, periodic maintenance',ex:'Fuel stations, oil depots'}}
+],
+emergency:['إخلاء فوري','إيقاف المصدر','تفعيل أنظمة الإطفاء (رغوة)','منع مصادر الاشتعال','إبلاغ الدفاع المدني'],
+cap:['تركيب RTO/Carbon','نظام VRU للتخزين','كشف تسرب مستمر','تدريب HAZMAT'],
+safety:['كمامات كربون عضوي','بدلات كيميائية','أجهزة كشف VOCs','معدات مضادة للانفجار']},
+
+{id:'co2',category:'air',icon:'🌍',severity:'medium',sectors:['محطات طاقة','أسمنت','نقل'],
+nameAr:'انبعاثات ثاني أكسيد الكربون (CO2)',nameEn:'Carbon Dioxide Emissions (CO2)',
+descAr:'غاز دفيئة رئيسي يسبب التغير المناخي',descEn:'Major greenhouse gas causing climate change',
+standards:['Paris Agreement 2015','EPA GHG Reporting Rule (40 CFR Part 98)','ISO 14064 (GHG Accounting)'],
+solutions:[
+{abbr:'CCS',full:'Carbon Capture and Storage',ar:'احتجاز وتخزين الكربون',mechAr:'احتجاز CO2 من المدخنة، ضغطه، وحقنه في تكوينات جيولوجية عميقة',mechEn:'Capture CO2 from stack, compress it, inject into deep geological formations',
+whenAr:{ideal:'منشآت كبيرة (>100,000 ton/year CO2)، مواقع جيولوجية مناسبة للحقن',adv:'يقلل الانبعاثات 90%+، تقنية مثبتة',lim:'تكلفة عالية جداً (60-100$/ton CO2)، يحتاج مواقع حقن مناسبة',ex:'محطات طاقة فحم، مصانع أسمنت كبيرة'},
+whenEn:{ideal:'Large facilities (>100,000 ton/year CO2), suitable geological sites for injection',adv:'Reduces emissions 90%+, proven technology',lim:'Very high cost ($60-100/ton CO2), needs suitable injection sites',ex:'Coal power plants, large cement plants'}},
+
+{abbr:'Energy Efficiency',full:'Energy Efficiency Improvements',ar:'تحسين كفاءة الطاقة',mechAr:'استخدام معدات موفرة، استرداد حرارة، تحسين عمليات لتقليل الاستهلاك',mechEn:'Use efficient equipment, heat recovery, process optimization to reduce consumption',
+whenAr:{ideal:'جميع المنشآت، أول خطوة دائماً قبل CCS',adv:'يقلل الانبعاثات والتكلفة معاً، ROI سريع',lim:'لا يلغي الانبعاثات تماماً',ex:'جميع القطاعات'},
+whenEn:{ideal:'All facilities, always first step before CCS',adv:'Reduces emissions and cost together, fast ROI',lim:'Does not eliminate emissions completely',ex:'All sectors'}},
+
+{abbr:'Renewable Energy',full:'Renewable Energy Transition',ar:'التحول للطاقة المتجددة',mechAr:'استبدال الوقود الأحفوري بالطاقة الشمسية/الرياح/الهيدروجين الأخضر',mechEn:'Replace fossil fuels with solar/wind/green hydrogen energy',
+whenAr:{ideal:'استراتيجية طويلة المدى، انبعاثات Scope 2',adv:'انبعاثات صفرية، تكلفة تشغيل منخفضة',lim:'تكلفة رأسمالية، اعتماد على الطقس (شمس/رياح)',ex:'جميع القطاعات'},
+whenEn:{ideal:'Long-term strategy, Scope 2 emissions',adv:'Zero emissions, low operating cost',lim:'Capital cost, weather dependency (sun/wind)',ex:'All sectors'}}
+],
+emergency:['لا تعتبر حالة طوارئ مباشرة','رصد مستويات CO2 في الأماكن المغلقة'],
+cap:['تطبيق CCS','تحسين الكفاءة','التحول للطاقة النظيفة','شراء شهادات كربون'],
+safety:['أجهزة كشف CO2 للأماكن المغلقة','تهوية كافية','تدريب على الاختناق']},
+
+{id:'h2s',category:'air',icon:'☠️',severity:'high',sectors:['صرف صحي','مدابغ','نفط','غاز','مزارع'],
+nameAr:'كبريتيد الهيدروجين (H2S)',nameEn:'Hydrogen Sulfide (H2S)',
+descAr:'غاز سام قاتل برائحة البيض الفاسد، قاتل عند 100 ppm',descEn:'Toxic deadly gas with rotten egg smell, lethal at 100 ppm',
+standards:['OSHA PEL: 20 ppm (ceiling)','WHO AQG: H2S ≤ 150 μg/m³ (24h)','NIOSH IDLH: 100 ppm'],
+solutions:[
+{abbr:'Biofilter',full:'Biological Biofilter',ar:'المرشح الحيوي',mechAr:'تمرير الهواء على طبقة عضوية رطبة حيث بكتيريا Thiobacillus تحول H2S إلى كبريتات',mechEn:'Pass air through moist organic layer where Thiobacillus bacteria convert H2S to sulfates',
+whenAr:{ideal:'تركيزات H2S منخفضة إلى متوسطة (<500 ppm)، روائح من محطات صرف أو مزارع',adv:'تكلفة تشغيل منخفضة، صديق للبيئة، لا مواد كيميائية',lim:'يحتاج مساحة كبيرة، حساس لـ pH ودرجة الحرارة، بطيء البدء',ex:'محطات صرف صحي، مزارع، مصانع أغذية'},
+whenEn:{ideal:'Low to medium H2S concentrations (<500 ppm), odors from WWTP or farms',adv:'Low operating cost, eco-friendly, no chemicals',lim:'Needs large space, sensitive to pH and temperature, slow startup',ex:'WWTPs, farms, food factories'}},
+
+{abbr:'Chemical Scrubber',full:'Chemical Scrubber (NaOH/NaOCl)',ar:'الغسل الكيميائي',mechAr:'رش محلول هيدروكسيد الصوديوم أو هيبوكلوريت لامتصاص H2S كيميائياً',mechEn:'Spray NaOH or NaOCl solution to chemically absorb H2S',
+whenAr:{ideal:'تركيزات H2S عالية، حاجة لاستجابة سريعة، مساحات محدودة',adv:'كفاءة عالية (>95%)، استجابة سريعة، مساحة أصغر من Biofilter',lim:'يستهلك مواد كيميائية، ينتج نفايات سائلة، تكلفة تشغيل أعلى',ex:'منصات نفط، مصانع غاز، مدابغ'},
+whenEn:{ideal:'High H2S concentrations, need for quick response, limited spaces',adv:'High efficiency (>95%), quick response, smaller footprint than biofilter',lim:'Consumes chemicals, produces liquid waste, higher operating cost',ex:'Oil platforms, gas plants, tanneries'}},
+
+{abbr:'Activated Carbon',full:'Impregnated Activated Carbon',ar:'الكربون المنشط المعالج',mechAr:'كربون مشبع بـ KI أو NaOH لامتصاص H2S. مناسب للتركيزات المنخفضة',mechEn:'Carbon impregnated with KI or NaOH to adsorb H2S. Suitable for low concentrations',
+whenAr:{ideal:'تركيزات H2S منخفضة جداً، polishing نهائي، رائحة متبقية',adv:'بسيط، فعال للتركيزات المنخفضة، لا يحتاج طاقة',lim:'يحتاج استبدال دوري، غير فعال للتركيزات العالية',ex:'محطات صرف، معالجة نهائية للروائح'},
+whenEn:{ideal:'Very low H2S concentrations, final polishing, residual odor',adv:'Simple, effective for low concentrations, no energy needed',lim:'Needs periodic replacement, not effective for high concentrations',ex:'WWTPs, final odor treatment'}}
+],
+emergency:['إخلاء فوري (H2S قاتل!)','ارتداء SCBA (جهاز تنفس ذاتي)','إيقاف المصدر','إنعاش المصابين','إبلاغ الطوارئ'],
+cap:['تركيب Biofilter/Scrubber','تغطية الأحواض المفتوحة','نظام كشف H2S متصل بالإنذار','تدريب على الإنقاذ'],
+safety:['أجهزة كشف H2S شخصية','SCBA للطوارئ','بدلات كيميائية','تدريب على الإنعاش القلبي']},
+
+{id:'nh3',category:'air',icon:'',severity:'medium',sectors:['أسمدة','مزارع','ثلاجات','كيماويات'],
+nameAr:'الأمونيا (NH3)',nameEn:'Ammonia (NH3)',
+descAr:'غاز مهيج برائحة نفاذة، سام بتركيزات عالية',descEn:'Irritating gas with pungent odor, toxic at high concentrations',
+standards:['OSHA PEL: 50 ppm (8h TWA)','WHO AQG: NH3 ≤ 200 μg/m³','EPA RMP (Risk Management Program)'],
+solutions:[
+{abbr:'Wet Scrubber',full:'Acid Wet Scrubber (H2SO4)',ar:'الغسل الرطب الحمضي',mechAr:'رش حمض الكبريتيك لامتصاص NH3 وتحويله لكبريتات أمونيوم (سماد)',mechEn:'Spray sulfuric acid to absorb NH3 and convert to ammonium sulfate (fertilizer)',
+whenAr:{ideal:'مصانع أسمدة، تركيزات NH3 عالية، إمكانية بيع المنتج الثانوي',adv:'ينتج سماد قابل للبيع (كبريتات أمونيوم)، كفاءة عالية',lim:'يتعامل مع حمض خطير (H2SO4)، تآكل في المعدات',ex:'مصانع أسمدة، مصانع كيماويات'},
+whenEn:{ideal:'Fertilizer plants, high NH3 concentrations, ability to sell byproduct',adv:'Produces marketable fertilizer (ammonium sulfate), high efficiency',lim:'Handles hazardous acid (H2SO4), equipment corrosion',ex:'Fertilizer plants, chemical plants'}},
+
+{abbr:'Biofilter',full:'Biological Biofilter',ar:'المرشح الحيوي',mechAr:'بكتيريا Nitrosomonas و Nitrobacter تحول NH3 إلى نترات',mechEn:'Nitrosomonas and Nitrobacteria convert NH3 to nitrates',
+whenAr:{ideal:'مزارع، روائح NH3 منخفضة إلى متوسطة',adv:'طبيعي، تكلفة تشغيل منخفضة',lim:'يحتاج مساحة، بطيء',ex:'مزارع دواجن، مزارع أبقار'},
+whenEn:{ideal:'Farms, low to medium NH3 odors',adv:'Natural, low operating cost',lim:'Needs space, slow',ex:'Poultry farms, cattle farms'}},
+
+{abbr:'Leak Detection',full:'Advanced Leak Detection System',ar:'نظام كشف التسرب المتقدم',mechAr:'مجسات NH3 متصلة بنظام إغلاق تلقائي للصمامات',mechEn:'NH3 sensors connected to automatic valve shutoff system',
+whenAr:{ideal:'منشآت تخزين NH3، ثلاجات صناعية',adv:'استجابة فورية، يمنع الحوادث',lim:'لا يعالج الانبعاثات الروتينية',ex:'مصانع ثلاجات، مستودعات NH3'},
+whenEn:{ideal:'NH3 storage facilities, industrial refrigeration',adv:'Immediate response, prevents accidents',lim:'Does not treat routine emissions',ex:'Refrigeration plants, NH3 warehouses'}}
+],
+emergency:['إخلاء المنطقة','رش ماء لتخفيف الأمونيا','ارتداء PPE كامل','إبلاغ الطوارئ'],
+cap:['تركيب Scrubber','نظام كشف تسرب','صيانة دورية للصمامات','تدريب العاملين'],
+safety:['كمامات غاز NH3','واقيات عين','بدلات كيميائية','دوشات طوارئ']},
+
+{id:'carbon_black',category:'air',icon:'⚫',severity:'high',sectors:['إطارات','أسود كربوني','طباعة'],
+nameAr:'الكربون الأسود (Carbon Black)',nameEn:'Carbon Black',
+descAr:'جسيمات دقيقة جداً من الاحتراق غير الكامل، مسرطنة محتملة',descEn:'Very fine particles from incomplete combustion, potential carcinogen',
+standards:['IARC Group 2B (Possible Carcinogen)','EPA 40 CFR Part 63 (NESHAP)','WHO AQG for PM2.5'],
+solutions:[
+{abbr:'Bag Filter',full:'High-Efficiency Bag Filter',ar:'فلتر أكياس عالي الكفاءة',mechAr:'أكياس PTFE coated لالتقاط جسيمات الكربون الأسود الدقيقة. كفاءة 99.9%',mechEn:'PTFE coated bags to capture fine carbon black particles. Efficiency 99.9%',
+whenAr:{ideal:'جسيمات كربون أسود جافة، كفاءة مطلوبة >99%',adv:'كفاءة عالية جداً، استرداد المنتج',lim:'حساس للرطوبة',ex:'مصانع كربون أسود'},
+whenEn:{ideal:'Dry carbon black particles, >99% efficiency required',adv:'Very high efficiency, product recovery',lim:'Sensitive to moisture',ex:'Carbon black plants'}},
+
+{abbr:'ESP',full:'Electrostatic Precipitator',ar:'المرسب الكهروستاتيكي',mechAr:'فعال جداً للكربون الأسود بسبب مقاومته الكهربائية المنخفضة',mechEn:'Very effective for carbon black due to its low electrical resistance',
+whenAr:{ideal:'كربون أسود (مقاومة كهربائية منخفضة مثالية لـ ESP)',adv:'كفاءة 99.5%+، مناسب جداً للكربون الأسود',lim:'تكلفة رأسمالية عالية',ex:'مصانع أسود كربوني، إطارات'},
+whenEn:{ideal:'Carbon black (low electrical resistance ideal for ESP)',adv:'99.5%+ efficiency, very suitable for carbon black',lim:'High capital cost',ex:'Carbon black plants, tire factories'}}
+],
+emergency:['إيقاف خط الإنتاج','إخلاء المنطقة','تفعيل الفلاتر الاحتياطية'],
+cap:['تركيب Bag Filter عالي الكفاءة','صيانة دورية','رصد جودة الهواء'],
+safety:['كمامات P100','بدلات واقية','فحوصات رئوية دورية']},
+
+{id:'fluoride',category:'air',icon:'⚗️',severity:'high',sectors:['ألومنيوم','زجاج','سيراميك','فوسفات'],
+nameAr:'مركبات الفلوريد (F)',nameEn:'Fluoride Compounds (F)',
+descAr:'غازات سامة تسبب تسمم الفلور وتلف العظام',descEn:'Toxic gases causing fluorosis and bone damage',
+standards:['WHO Guidelines for Fluoride: 1.5 mg/L (drinking water)','EPA NAAQS for Fluoride','EU Directive 2010/75/EU'],
+solutions:[
+{abbr:'Dry Scrubber',full:'Dry Scrubber (Alumina)',ar:'الغسل الجاف بالألومينا',mechAr:'حقن مسحوق ألومينا لامتصاص HF وتحويله لـ AlF3 قابل لإعادة الاستخدام',mechEn:'Inject alumina powder to absorb HF and convert to reusable AlF3',
+whenAr:{ideal:'مصانع ألومنيوم (Hall-Héroult)، انبعاثات HF',adv:'ينتج AlF3 قابل لإعادة الاستخدام في العملية',lim:'يحتاج ألومينا نقية',ex:'مصاهر ألومنيوم'},
+whenEn:{ideal:'Aluminum plants (Hall-Héroult), HF emissions',adv:'Produces reusable AlF3 for the process',lim:'Needs pure alumina',ex:'Aluminum smelters'}},
+
+{abbr:'Wet Scrubber',full:'Wet Scrubber (Ca(OH)2)',ar:'الغسل الرطب بالجير',mechAr:'رش محلول هيدروكسيد الكالسيوم لترسيب الفلوريد كـ CaF2',mechEn:'Spray calcium hydroxide solution to precipitate fluoride as CaF2',
+whenAr:{ideal:'مصانع زجاج، سيراميك، فوسفات',adv:'كفاءة عالية، منتج CaF2 مستقر',lim:'ينتج مياه صرف',ex:'مصانع زجاج، فوسفات'},
+whenEn:{ideal:'Glass, ceramic, phosphate plants',adv:'High efficiency, stable CaF2 product',lim:'Produces wastewater',ex:'Glass plants, phosphate plants'}}
+],
+emergency:['إخلاء فوري','ارتداء PPE كامل','إيقاف الأفران','إبلاغ الطوارئ'],
+cap:['تركيب Dry Scrubber','مراقبة انبعاثات مستمرة','فحوصات طبية للعاملين'],
+safety:['كمامات غاز HF','واقيات وجه','بدلات كيميائية','فحوصات بول للفلوريد']},
+
+{id:'isocyanates',category:'air',icon:'',severity:'high',sectors:['إسفنج','فوم','دهانات','لاصق'],
+nameAr:'الأيزوسيانات (Isocyanates)',nameEn:'Isocyanates',
+descAr:'مواد شديدة السمية تسبب حساسية تنفسية شديدة',descEn:'Highly toxic substances causing severe respiratory sensitization',
+standards:['OSHA PEL: 0.02 ppm (MDI)','NIOSH REL: 0.005 ppm','EU REACH Regulation'],
+solutions:[
+{abbr:'Thermal Oxidizer',full:'Thermal Oxidizer',ar:'المؤكسد الحراري',mechAr:'حرق الأيزوسيانات عند درجات عالية (>800°C) لتدميرها تماماً',mechEn:'Burn isocyanates at high temperatures (>800°C) for complete destruction',
+whenAr:{ideal:'تركيزات عالية من الأيزوسيانات في الهواء',adv:'تدمير كامل (>99%)',lim:'يحتاج طاقة عالية',ex:'مصانع فوم، إسفنج'},
+whenEn:{ideal:'High isocyanate concentrations in air',adv:'Complete destruction (>99%)',lim:'Needs high energy',ex:'Foam plants, sponge factories'}},
+
+{abbr:'Carbon Filter',full:'Activated Carbon Filter',ar:'فلتر الكربون المنشط',mechAr:'امتزاز الأيزوسيانات على الكربون المنشط',mechEn:'Adsorb isocyanates on activated carbon',
+whenAr:{ideal:'تركيزات منخفضة، polishing نهائي',adv:'بسيط، فعال',lim:'يحتاج استبدال دوري',ex:'معامل طلاء، ورش دهان'},
+whenEn:{ideal:'Low concentrations, final polishing',adv:'Simple, effective',lim:'Needs periodic replacement',ex:'Coating labs, paint booths'}}
+],
+emergency:['إخلاء فوري','PPE مستوى A','إيقاف التفاعل','إبلاغ HAZMAT'],
+cap:['نظام تهوية موضعية','تركيب Oxidizer','مراقبة هواء مستمرة'],
+safety:['بدلات كيميائية كاملة','جهاز تنفس SCBA','واقيات عين','تدريب HAZMAT']},
+
+{id:'glycol',category:'air',icon:'✈️',severity:'medium',sectors:['مطارات'],
+nameAr:'الغليكول (Glycol) - مزيل الجليد',nameEn:'Glycol - De-icing Fluid',
+descAr:'سائل يرفع BOD في الصرف بشكل كبير ويؤثر على الحياة المائية',descEn:'Fluid that significantly raises BOD in wastewater and affects aquatic life',
+standards:['EPA Airport Deicing Regulations','ICAO Environmental Standards','EU Directive 2000/60/EC (Water Framework)'],
+solutions:[
+{abbr:'Glycol Recovery',full:'Glycol Recovery System',ar:'نظام استرداد الغليكول',mechAr:'جمع مياه الجليد ومعالجتها بالتقطير أو RO لاسترداد الغليكول لإعادة الاستخدام',mechEn:'Collect de-icing water and treat by distillation or RO to recover glycol for reuse',
+whenAr:{ideal:'مطارات كبيرة، كميات كبيرة من الغليكول المستخدم',adv:'استرداد منتج ذو قيمة، تقليل تكاليف الشراء',lim:'تكلفة نظام استرداد',ex:'مطارات دولية'},
+whenEn:{ideal:'Large airports, large amounts of used glycol',adv:'Recover valuable product, reduce purchase costs',lim:'Recovery system cost',ex:'International airports'}},
+
+{abbr:'Biological Treatment',full:'Biological Treatment (MBR)',ar:'المعالجة البيولوجية (MBR)',mechAr:'معالجة مياه الغليكول في MBR لتحليله بيولوجياً قبل الصرف',mechEn:'Treat glycol water in MBR for biological degradation before discharge',
+whenAr:{ideal:'مطارات صغيرة، كميات محدودة من الغليكول',adv:'تكلفة أقل من الاسترداد',lim:'لا يسترد الغليكول',ex:'مطارات إقليمية'},
+whenEn:{ideal:'Small airports, limited glycol amounts',adv:'Lower cost than recovery',lim:'Does not recover glycol',ex:'Regional airports'}}
+],
+emergency:['احتواء الانسكاب','منع وصول الصرف للشبكة','إبلاغ البيئة'],
+cap:['نظام جمع مركزي','تركيب MBR','إعادة تدوير الغليكول'],
+safety:['قفازات نيتريل','واقيات عين','تدريب على التعامل الكيميائي']},
+
+{id:'fly_ash',category:'air',icon:'🏭',severity:'medium',sectors:['محطات طاقة فحم','محارق'],
+nameAr:'الرماد المتطاير (Fly Ash)',nameEn:'Fly Ash',
+descAr:'جسيمات دقيقة من احتراق الفحم تحتوي على معادن ثقيلة',descEn:'Fine particles from coal combustion containing heavy metals',
+standards:['EPA Coal Combustion Residuals Rule','EU Directive 2010/75/EU (IED)','WHO Air Quality Guidelines'],
+solutions:[
+{abbr:'ESP',full:'Electrostatic Precipitator',ar:'المرسب الكهروستاتيكي',mechAr:'كفاءة 99.5% في جمع الرماد المتطاير',mechEn:'99.5% efficiency in collecting fly ash',
+whenAr:{ideal:'محطات طاقة فحم كبيرة، حجم غازات عالي',adv:'كفاءة عالية، عمر طويل',lim:'تكلفة رأسمالية',ex:'محطات طاقة'},
+whenEn:{ideal:'Large coal power plants, high gas volumes',adv:'High efficiency, long life',lim:'Capital cost',ex:'Power plants'}},
+
+{abbr:'Bag Filter',full:'Bag Filter',ar:'فلتر الأكياس',mechAr:'بديل فعال خاصة للرماد ذو المقاومة العالية',mechEn:'Effective alternative especially for high-resistance ash',
+whenAr:{ideal:'رماد ذو مقاومة كهربائية عالية (يصعب على ESP)',adv:'فعال للرماد الصعب',lim:'استبدال أكياس دوري',ex:'محطات طاقة بفحم معين'},
+whenEn:{ideal:'High electrical resistance ash (difficult for ESP)',adv:'Effective for difficult ash',lim:'Periodic bag replacement',ex:'Power plants with specific coal'}},
+
+{abbr:'Ash Recycling',full:'Fly Ash Recycling',ar:'إعادة تدوير الرماد',mechAr:'استخدام الرماد في صناعة الأسمنت والطوب والخرسانة',mechEn:'Use ash in cement, brick, and concrete manufacturing',
+whenAr:{ideal:'رماد نظيف (low carbon)، صناعة بناء قريبة',adv:'تحويل نفاية لمورد، تقليل طمر',lim:'يحتاج رماد بمواصفات معينة',ex:'صناعة أسمنت، خرسانة'},
+whenEn:{ideal:'Clean ash (low carbon), nearby construction industry',adv:'Turns waste into resource, reduces landfill',lim:'Needs ash with specific specs',ex:'Cement industry, concrete'}}
+],
+emergency:['إيقاف المحطة','تفعيل الفلاتر الاحتياطية','احتواء الرماد المتسرب'],
+cap:['صيانة ESP دورية','تطوير برنامج إعادة التدوير','مراقبة الانبعاثات'],
+safety:['كمامات P100','بدلات واقية','فحوصات رئوية','تدريب على التعامل مع الرماد']},
+
+{id:'ozone',category:'air',icon:'🌤️',severity:'medium',sectors:['مدن','صناعة','نقل'],
+nameAr:'الأوزون الأرضي (O3)',nameEn:'Ground-level Ozone (O3)',
+descAr:'ملوث ثانوي يتكون من تفاعل NOx + VOCs تحت أشعة الشمس',descEn:'Secondary pollutant formed from NOx + VOCs reaction under sunlight',
+standards:['EPA NAAQS: O3 ≤ 70 ppb (8h)','WHO AQG 2021: O3 ≤ 100 μg/m³ (8h)','EU Air Quality Directive 2008/50/EC'],
+solutions:[
+{abbr:'NOx Reduction',full:'NOx Emission Reduction',ar:'تقليل انبعاثات NOx',mechAr:'تطبيق SCR/SNCR لتقليل NOx (مكون أساسي لتكوين O3)',mechEn:'Apply SCR/SNCR to reduce NOx (key O3 precursor)',
+whenAr:{ideal:'مدن كبيرة، مشكلة O3 صيفية',adv:'يعالج السبب الجذري',lim:'يحتاج وقت لظهور النتائج',ex:'مدن كبرى'},
+whenEn:{ideal:'Large cities, summer O3 problem',adv:'Addresses root cause',lim:'Takes time to show results',ex:'Major cities'}},
+
+{abbr:'VOC Control',full:'VOC Emission Control',ar:'التحكم في انبعاثات VOCs',mechAr:'تقليل VOCs عبر RTO/Carbon Adsorption',mechEn:'Reduce VOCs via RTO/Carbon Adsorption',
+whenAr:{ideal:'مناطق صناعية قريبة من سكن',adv:'مكمل لتقليل NOx',lim:'يحتاج مراقبة مستمرة',ex:'مناطق صناعية'},
+whenEn:{ideal:'Industrial areas near residential',adv:'Complements NOx reduction',lim:'Needs continuous monitoring',ex:'Industrial zones'}}
+],
+emergency:['تحذير جودة الهواء','تقليل الأنشطة الخارجية','إبلاغ الصحة العامة'],
+cap:['مراقبة جودة الهواء','تقليل الانبعاثات','توعية المجتمع'],
+safety:['كمامات','تقليل التعرض','مراقبة مؤشر جودة الهواء']},
+
+{id:'dioxins',category:'air',icon:'☠️',severity:'high',sectors:['محارق','كيماويات','حديد'],
+nameAr:'الديوكسينات والفuranات',nameEn:'Dioxins and Furans',
+descAr:'ملوثات عضوية ثابتة (POPs) شديدة السمية ومسرطنة',descEn:'Persistent Organic Pollutants (POPs) highly toxic and carcinogenic',
+standards:['WHO TEQ Guidelines','Stockholm Convention on POPs','EU Directive 2010/75/EU'],
+solutions:[
+{abbr:'High-Temp Incineration',full:'High-Temperature Incineration (>1100°C)',ar:'الحرق بدرجات عالية',mechAr:'حرق عند >1100°C مع residence time >2 ثانية لتدمير الديوكسينات',mechEn:'Burn at >1100°C with residence time >2 seconds to destroy dioxins',
+whenAr:{ideal:'نفايات خطرة تحتوي على كلور، محارق',adv:'تدمير كامل للديوكسينات',lim:'يحتاج طاقة عالية جداً',ex:'محارق نفايات خطرة'},
+whenEn:{ideal:'Chlorine-containing hazardous waste, incinerators',adv:'Complete dioxin destruction',lim:'Needs very high energy',ex:'Hazardous waste incinerators'}},
+
+{abbr:'Activated Carbon Injection',full:'Activated Carbon Injection',ar:'حقن الكربون المنشط',mechAr:'حقن PAC في غاز العادم لامتزاز الديوكسينات',mechEn:'Inject PAC into flue gas to adsorb dioxins',
+whenAr:{ideal:'كمكمل للحرق، لالتقاط الديوكسينات المتبقية',adv:'فعال جداً للتركيزات المنخفضة',lim:'يحتاج استبدال كربون',ex:'محارق، مصانع حديد'},
+whenEn:{ideal:'As complement to incineration, to capture residual dioxins',adv:'Very effective for low concentrations',lim:'Needs carbon replacement',ex:'Incinerators, steel plants'}}
+],
+emergency:['إيقاف المصدر','إخلاء المنطقة','إبلاغ HAZMAT'],
+cap:['ترقية المحارق','حقن الكربون المنشط','رصد مستمر'],
+safety:['PPE مستوى A','SCBA','تدريب HAZMAT متقدم']},
+
+{id:'asbestos_air',category:'air',icon:'🏗️',severity:'high',sectors:['بناء','هدم','تعدين'],
+nameAr:'ألياف الأسبستوس في الهواء',nameEn:'Asbestos Fibers in Air',
+descAr:'ألياف مسرطنة تسبب ورم الظهارة المتوسطة (Mesothelioma)',descEn:'Carcinogenic fibers causing mesothelioma',
+standards:['OSHA PEL: 0.1 f/cc (8h TWA)','EPA NESHAP for Asbestos','WHO Guidelines for Asbestos'],
+solutions:[
+{abbr:'Wet Removal',full:'Wet Asbestos Removal',ar:'الإزالة الرطبة',mechAr:'ترطيب الأسبستوس قبل الإزالة لمنع تطاير الألياف',mechEn:'Wet asbestos before removal to prevent fiber release',
+whenAr:{ideal:'مباني قديمة تحتوي أسبستوس، أعمال هدم',adv:'يمنع تطاير الألياف',lim:'يحتاج متخصصين',ex:'هدم مباني قديمة'},
+whenEn:{ideal:'Old buildings containing asbestos, demolition work',adv:'Prevents fiber release',lim:'Needs specialists',ex:'Old building demolition'}},
+
+{abbr:'HEPA Filtration',full:'HEPA Filtration Systems',ar:'أنظمة فلترة HEPA',mechAr:'فلاتر HEPA (99.97% @ 0.3 micron) لتنقية الهواء',mechEn:'HEPA filters (99.97% @ 0.3 micron) for air purification',
+whenAr:{ideal:'غرف عزل الأسبستوس، تنظيف هواء بعد إزالة',adv:'كفاءة عالية جداً',lim:'تكلفة فلاتر',ex:'غرف عزل أسبستوس'},
+whenEn:{ideal:'Asbestos isolation rooms, air cleanup after removal',adv:'Very high efficiency',lim:'Filter cost',ex:'Asbestos isolation rooms'}}
+],
+emergency:['إخلاء فوري','عزل المنطقة','إبلاغ HAZMAT المتخصص'],
+cap:['إزالة الأسبستوس بواسطة متخصصين','رصد هواء مستمر','تدريب العاملين'],
+safety:['بدلات واقية كاملة','P100 respirators','تدريب OSHA Asbestos']},
+
+{id:'lead_air',category:'air',icon:'⚙️',severity:'high',sectors:['بطاريات','صهر','طلاء'],
+nameAr:'الرصاص في الهواء',nameEn:'Lead in Air',
+descAr:'معدن ثقيل سام يؤثر على الجهاز العصبي خاصة عند الأطفال',descEn:'Toxic heavy metal affecting nervous system especially in children',
+standards:['EPA NAAQS: Pb ≤ 0.15 μg/m³ (3-month)','WHO Guidelines: No safe level','EU Directive 2008/50/EC'],
+solutions:[
+{abbr:'Bag Filter',full:'High-Efficiency Bag Filter',ar:'فلتر أكياس عالي الكفاءة',mechAr:'فلاتر HEPA لالتقاط جسيمات الرصاص الدقيقة',mechEn:'HEPA filters to capture fine lead particles',
+whenAr:{ideal:'مصانع بطاريات، صهر معادن',adv:'كفاءة عالية',lim:'استبدال دوري',ex:'مصانع بطاريات'},
+whenEn:{ideal:'Battery plants, metal smelting',adv:'High efficiency',lim:'Periodic replacement',ex:'Battery plants'}},
+
+{abbr:'Wet Scrubber',full:'Wet Scrubber System',ar:'الغسل الرطب',mechAr:'غسل غازات العادم بمحلول كيميائي لامتصاص الرصاص',mechEn:'Scrub exhaust gases with chemical solution to absorb lead',
+whenAr:{ideal:'انبعاثات رصاص مع غازات أخرى',adv:'يزيل غازات ورصاص معاً',lim:'ينتج مياه صرف',ex:'مصاهر رصاص'},
+whenEn:{ideal:'Lead emissions with other gases',adv:'Removes gases and lead together',lim:'Produces wastewater',ex:'Lead smelters'}}
+],
+emergency:['إيقاف المصدر','إخلاء المنطقة','فحوصات دم للعاملين'],
+cap:['تركيب فلاتر عالية الكفاءة','رصد مستمر','فحوصات طبية دورية'],
+safety:['كمامات P100','فحوصات دم للرصاص','PPE كامل']},
+
+{id:'methane_fugitive',category:'air',icon:'🛢️',severity:'high',sectors:['نفط وغاز','مكبات نفايات','بتروكيماويات','قطاع الماشية'],
+nameAr:'الانبعاثات المتسربة للميثان (Fugitive Methane Emissions)',nameEn:'Fugitive Methane Emissions',
+descAr:'تسرب غاز الميثان من معدات النفط والغاز والمكبات، غاز دفيئة أقوى من CO2 بنحو 80 مرة خلال 20 عاماً',descEn:'Methane leaks from oil & gas equipment and landfills, a greenhouse gas ~80x more potent than CO2 over 20 years',
+standards:['EPA Methane Rule (40 CFR Part 60 Subpart OOOOb)','IEA Global Methane Pledge: خفض 30% بحلول 2030','UNEP Global Methane Assessment'],
+solutions:[
+{abbr:'LDAR',full:'Leak Detection and Repair Program',ar:'برنامج كشف وإصلاح التسريبات',mechAr:'فحص دوري للمعدات بكاميرات الأشعة تحت الحمراء (OGI) لرصد تسريبات الميثان غير المرئية، وإصلاحها فوراً',mechEn:'Periodic equipment inspection with infrared (OGI) cameras to detect invisible methane leaks, followed by immediate repair',
+whenAr:{ideal:'منشآت نفط وغاز بها آلاف نقاط الاتصال المحتملة للتسرب',adv:'يقلل الانبعاثات بشكل كبير مع عائد اقتصادي (الغاز المسترد يباع)',lim:'يحتاج معدات كشف متخصصة وتكرار دوري',ex:'منصات استخراج، خطوط أنابيب، محطات ضخ'},
+whenEn:{ideal:'Oil & gas facilities with thousands of potential leak points',adv:'Significantly reduces emissions with economic payback (recovered gas is sold)',lim:'Requires specialized detection equipment and repeated surveys',ex:'Extraction platforms, pipelines, pumping stations'}},
+
+{abbr:'Enclosed Flaring',full:'Enclosed Combustion / Flare Optimization',ar:'تحسين الحرق بالمشاعل المغلقة',mechAr:'حرق الميثان المتسرب بمشاعل مغلقة عالية الكفاءة (>98%) بدلاً من تصريفه مباشرة للجو، يحوله لـ CO2 الأقل تأثيراً كغاز دفيئة',mechEn:'Burn fugitive methane in high-efficiency (>98%) enclosed flares instead of direct venting, converting it to less-potent CO2',
+whenAr:{ideal:'غازات لا يمكن استردادها اقتصادياً',adv:'يقلل الأثر المناخي بشكل كبير، تركيب بسيط نسبياً',lim:'لا يسترد قيمة الغاز، ينتج CO2',ex:'آبار نفط معزولة، مكبات نفايات'},
+whenEn:{ideal:'Gas that cannot be economically recovered',adv:'Significantly reduces climate impact, relatively simple installation',lim:'Does not recover gas value, produces CO2',ex:'Isolated oil wells, landfills'}}
+],
+emergency:['إيقاف التشغيل عند تسرب كبير','عزل المنطقة ومنع مصادر الاشتعال','إبلاغ جهاز البيئة فوراً'],
+cap:['تطبيق برنامج LDAR دوري','ترقية المعدات القديمة عالية التسرب','رصد مستمر بحساسات الميثان'],
+safety:['كاشفات غاز محمولة (LEL)','حظر مصادر الشرر بالمنطقة','تدريب على الاستجابة لتسرب الغاز']},
+
+{id:'ozone_depletion_stratospheric',category:'air',icon:'🛡️',severity:'high',sectors:['تبريد وتكييف','رغاوي عزل','إطفاء حريق قديم','زراعة (مبيدات قديمة)'],
+nameAr:'استنزاف طبقة الأوزون الستراتوسفيرية (CFCs/Halons)',nameEn:'Stratospheric Ozone Depletion (CFCs/Halons)',
+descAr:'غازات مثل الكلوروفلوروكربونات (CFCs) والهالونات تدمر طبقة الأوزون العليا التي تحمي الأرض من الأشعة فوق البنفسجية الضارة — مختلفة تماماً عن الأوزون الأرضي (O3) الملوث السطحي',descEn:'Gases such as Chlorofluorocarbons (CFCs) and Halons destroy the upper ozone layer that shields Earth from harmful UV radiation — entirely distinct from ground-level ozone (O3), a surface pollutant',
+standards:['Montreal Protocol on Substances that Deplete the Ozone Layer','Kigali Amendment (HFC Phase-down)','EPA Significant New Alternatives Policy (SNAP) Program'],
+solutions:[
+{abbr:'Refrigerant Recovery',full:'Refrigerant Recovery & Recycling',ar:'استرداد وإعادة تدوير غازات التبريد',mechAr:'استخدام أجهزة استرداد متخصصة لسحب غاز التبريد من الأنظمة القديمة قبل الصيانة أو التخلص، بدلاً من تصريفه للهواء مباشرة، ثم تنقيته لإعادة استخدامه أو التخلص الآمن منه',mechEn:'Use specialized recovery machines to extract refrigerant from old systems before maintenance or disposal, instead of venting it directly to air, then purify it for reuse or safe disposal',
+whenAr:{ideal:'صيانة أو إخراج أنظمة تكييف وتبريد قديمة تحتوي CFCs/HCFCs',adv:'يمنع الانبعاث المباشر للغلاف الجوي، يسمح بإعادة الاستخدام أو التدمير الآمن',lim:'يحتاج معدات استرداد متخصصة وفنيين مدربين ومرخصين',ex:'ورش تكييف، مصانع ثلاجات قديمة'},
+whenEn:{ideal:'Servicing or decommissioning old AC/refrigeration systems containing CFCs/HCFCs',adv:'Prevents direct atmospheric release, allows reuse or safe destruction',lim:'Requires specialized recovery equipment and certified trained technicians',ex:'AC repair shops, old refrigeration factories'}},
+
+{abbr:'HFC Transition',full:'Transition to Low-GWP Alternatives (HFOs/Natural Refrigerants)',ar:'التحول لبدائل منخفضة تأثير الاحتباس الحراري',mechAr:'استبدال غازات CFCs/HCFCs/HFCs عالية التأثير بمركبات هيدروفلوروأوليفينية (HFOs) أو مواد طبيعية (أمونيا، CO2، بروبان) ذات تأثير احتباسي حراري ضئيل جداً ولا تدمر الأوزون',mechEn:'Replace high-impact CFCs/HCFCs/HFCs with Hydrofluoroolefins (HFOs) or natural refrigerants (ammonia, CO2, propane) with near-zero ozone depletion and global warming potential',
+whenAr:{ideal:'أنظمة تبريد وتكييف جديدة أو عند الترقية الكاملة',adv:'حل جذري ودائم، متوافق مع بروتوكول مونتريال وتعديل كيغالي',lim:'تكلفة استثمار أولية لتغيير المعدات بالكامل',ex:'مصانع تكييف جديدة، سلاسل تبريد تجارية'},
+whenEn:{ideal:'New refrigeration/AC systems or during full upgrades',adv:'Radical, permanent solution, compliant with Montreal Protocol and Kigali Amendment',lim:'Initial investment cost to fully replace equipment',ex:'New AC factories, commercial cold chains'}}
+],
+emergency:['إيقاف أي تسرب فوري لغاز التبريد المكتشف','عزل المعدة المتسربة عن الشبكة','إبلاغ الجهة الرقابية لو الغاز من الفئة المحظورة دولياً'],
+cap:['حصر كل معدات التبريد القديمة المحتوية CFCs/HCFCs','برنامج استبدال تدريجي وفق الجدول الزمني لبروتوكول مونتريال','تدريب واعتماد فنيي الاسترداد'],
+safety:['كمامات وتهوية جيدة عند التعامل مع غازات مسربة','قفازات مقاومة للبرودة الشديدة (Frostbite)','عدم الحرق المكشوف لأي غاز تبريد قديم نهائياً']},
+
+// ===== تلوث المياه =====
+{id:'bod_cod',category:'water',icon:'🧫',severity:'high',sectors:['مسلخ','أغذية','ورق','كيماويات'],
+nameAr:'ارتفاع BOD/COD في مياه الصرف',nameEn:'High BOD/COD in Wastewater',
+descAr:'حمل عضوي عالي يستنفد الأكسجين في المياه ويقتل الحياة المائية. ملاحظة هامة: BOD يقيس المواد القابلة للتحلل الحيوي فقط، بينما COD يقيس كل المواد القابلة للأكسدة (حيوياً وكيميائياً)، لذلك غالباً COD > BOD. عندما تكون الفجوة بينهما كبيرة (نسبة BOD/COD منخفضة <0.3) فهذا يعني وجود مواد عضوية عصية على التحلل الحيوي (Non-biodegradable/Recalcitrant) لا تعالجها الطرق البيولوجية وحدها وتحتاج معالجة كيميائية/فيزيائية متقدمة',descEn:'High organic load depletes oxygen in water and kills aquatic life. Important note: BOD measures only biodegradable matter, while COD measures everything oxidizable (biological + chemical), so COD is usually > BOD. A low BOD/COD ratio (<0.3) signals non-biodegradable/recalcitrant organics that biological treatment alone cannot remove, requiring advanced chemical/physical treatment',
+standards:['WHO Wastewater Guidelines','EPA Effluent Guidelines (40 CFR Part 400)','EU Urban Wastewater Directive 91/271/EEC'],
+solutions:[
+{abbr:'Activated Sludge',full:'Activated Sludge Process',ar:'الحمأة المنشطة',mechAr:'خلط مياه الصرف مع بكتيريا هوائية في حوض مهوّى. كفاءة إزالة BOD 85-95%',mechEn:'Mix wastewater with aerobic bacteria in aerated tank. BOD removal 85-95%',
+whenAr:{ideal:'مياه صرف بلدية وصناعية بـ BOD متوسط إلى عالي',adv:'تقنية ناضجة، كفاءة عالية، تكلفة معقولة',lim:'تنتج حمأة تحتاج معالجة، حساسة للصدمات',ex:'محطات صرف صحي، مصانع أغذية'},
+whenEn:{ideal:'Municipal and industrial wastewater with medium to high BOD',adv:'Mature technology, high efficiency, reasonable cost',lim:'Produces sludge needing treatment, sensitive to shocks',ex:'WWTPs, food factories'}},
+
+{abbr:'MBR',full:'Membrane Bioreactor',ar:'المفاعل الحيوي الغشائي',mechAr:'دمج المعالجة البيولوجية مع أغشية ترشيح فائقة الدقة (0.1-0.4 micron)',mechEn:'Combine biological treatment with ultrafiltration membranes (0.1-0.4 micron)',
+whenAr:{ideal:'مساحات محدودة، حاجة لجودة مياه عالية (إعادة استخدام)',adv:'جودة مياه ممتازة، مساحة صغيرة',lim:'تكلفة أغشية، استهلاك طاقة أعلى',ex:'فنادق، مستشفيات، إعادة استخدام'},
+whenEn:{ideal:'Limited spaces, need for high water quality (reuse)',adv:'Excellent water quality, small footprint',lim:'Membrane cost, higher energy consumption',ex:'Hotels, hospitals, reuse applications'}},
+
+{abbr:'Anaerobic Digestion',full:'Anaerobic Digestion',ar:'الهضم اللاهوائي',mechAr:'بكتيريا لاهوائية تحلل المواد العضوية بدون أكسجين، تنتج Biogas (60% ميثان)',mechEn:'Anaerobic bacteria break down organics without oxygen, producing Biogas (60% methane)',
+whenAr:{ideal:'مخلفات عضوية عالية التركيز (BOD >3000 mg/L)',adv:'ينتج طاقة (Biogas)، حمأة أقل',lim:'بطيء البدء، يحتاج تحكم دقيق',ex:'مسلخ، مصانع أغذية كبيرة'},
+whenEn:{ideal:'High concentration organic waste (BOD >3000 mg/L)',adv:'Produces energy (Biogas), less sludge',lim:'Slow startup, needs precise control',ex:'Slaughterhouses, large food factories'}},
+
+{abbr:'Fenton Process',full:'Fenton Oxidation (AOP)',ar:'أكسدة فينتون',mechAr:'تفاعل بيروكسيد الهيدروجين (H2O2) مع أملاح الحديد الثنائي (Fe2+) لتوليد جذور الهيدروكسيل (•OH) شديدة التفاعل التي تفكك المركبات العضوية العصية على التحلل الحيوي، وتخفض COD غير القابل للتحلل الحيوي بنسبة تصل إلى 90%',mechEn:'Reaction of hydrogen peroxide (H2O2) with ferrous iron (Fe2+) generates highly reactive hydroxyl radicals (•OH) that break down non-biodegradable organics, reducing recalcitrant COD by up to 90%',
+whenAr:{ideal:'مياه صرف صناعية بنسبة BOD/COD منخفضة (COD غير قابل للتحلل الحيوي)، أو ملونة (أصباغ، فينولات)',adv:'فعال جداً مع الملوثات العصية والألوان، لا يحتاج بكتيريا فلا يتأثر بالمواد السامة للبكتيريا',lim:'تكلفة كيماويات H2O2 وأملاح الحديد مرتفعة، ينتج حمأة كيميائية (Fe-sludge) تحتاج تخلصاً، يتطلب ضبط دقيق لدرجة الحموضة (pH 3-4)',ex:'صناعة الأدوية، الأصباغ والنسيج، الكيماويات'},
+whenEn:{ideal:'Industrial wastewater with low BOD/COD ratio (non-biodegradable COD), or colored effluent (dyes, phenols)',adv:'Very effective on recalcitrant pollutants and color, needs no bacteria so unaffected by toxic compounds',lim:'High H2O2/iron salt cost, produces chemical Fe-sludge requiring disposal, needs precise pH control (3-4)',ex:'Pharmaceuticals, dyeing and textiles, chemical industry'}},
+
+{abbr:'Ozonation/AOP',full:'Ozonation (O3-based Advanced Oxidation)',ar:'الأكسدة بالأوزون',mechAr:'حقن غاز الأوزون (O3) في مياه الصرف لأكسدة المركبات العضوية مباشرة، أو دمجه مع UV أو H2O2 (AOP) لتوليد جذور هيدروكسيل تفكك المركبات العصية وتزيل اللون والرائحة وتعقّم المياه في نفس الوقت',mechEn:'Ozone (O3) gas is injected to directly oxidize organics, or combined with UV or H2O2 (AOP) to generate hydroxyl radicals that break down recalcitrant compounds while removing color, odor and pathogens simultaneously',
+whenAr:{ideal:'خطوة تلميع نهائية (Polishing) بعد المعالجة البيولوجية، أو مياه بها ألوان ومركبات دوائية مقاومة للتحلل',adv:'لا ينتج حمأة إضافية، يزيل اللون والرائحة ويعقم المياه معاً',lim:'تكلفة تشغيل عالية (كهرباء لتوليد الأوزون)، الأوزون غاز سام يحتاج احتياطات سلامة صارمة',ex:'محطات معالجة متقدمة، إعادة استخدام المياه، صناعة الأدوية'},
+whenEn:{ideal:'Final polishing step after biological treatment, or effluent with color and pharmaceutical residues resistant to biodegradation',adv:'No additional sludge produced, removes color and odor while disinfecting simultaneously',lim:'High operating cost (electricity for ozone generation), ozone is a toxic gas requiring strict safety precautions',ex:'Advanced WWTPs, water reuse, pharmaceutical industry'}},
+
+{abbr:'Electrocoagulation (EC)',full:'Electrocoagulation',ar:'التخثر الكهربائي',mechAr:'تمرير تيار كهربائي بين أقطاب معدنية (حديد أو ألومنيوم) مغمورة في مياه الصرف، فتتحرر أيونات معدنية تعمل كمخثرات طبيعية تجمّع المواد العضوية المسببة لـ COD والعالقة والمعادن الثقيلة معاً لتُزال بالترسيب أو التعويم',mechEn:'An electric current is passed between metal electrodes (iron or aluminum) submerged in the wastewater, releasing metal ions that act as natural coagulants, aggregating COD-causing organics, suspended solids and heavy metals for removal by settling or flotation',
+whenAr:{ideal:'مياه صرف صناعية بها COD مصحوب بمعادن ثقيلة، زيوت مستحلبة، أو ألوان (كالمدابغ والنسيج)',adv:'يزيل COD والمعادن الثقيلة والزيوت معاً في خطوة واحدة، لا يحتاج إضافة كيماويات خارجية بكثرة',lim:'استهلاك الأقطاب المعدنية يتطلب استبدالاً دورياً، استهلاك كهرباء، ينتج حمأة معدنية',ex:'المدابغ، النسيج والصباغة، الصرف الصناعي المختلط'},
+whenEn:{ideal:'Industrial wastewater with COD combined with heavy metals, emulsified oils, or color (e.g. tanneries, textiles)',adv:'Removes COD, heavy metals and oils together in one step, needs little external chemical dosing',lim:'Electrode consumption requires periodic replacement, electricity use, produces metallic sludge',ex:'Tanneries, dyeing and textiles, mixed industrial effluent'}},
+
+{abbr:'GAC/PAC Adsorption',full:'Activated Carbon Adsorption',ar:'الامتزاز بالكربون المنشط',mechAr:'امتصاص المركبات العضوية الذائبة العصية على التحلل الحيوي على سطح الكربون المنشط (GAC) ذو المساحة السطحية الكبيرة، عادة كخطوة تلميع نهائية بعد المعالجة البيولوجية لإزالة COD المتبقي',mechEn:'Dissolved non-biodegradable organics are adsorbed onto the large surface area of granular activated carbon (GAC), typically as a final polishing step after biological treatment to remove residual COD',
+whenAr:{ideal:'إزالة COD المتبقي بعد المعالجة البيولوجية، أو إزالة الألوان والمركبات العضوية الذائبة النادرة',adv:'فعال جداً في إزالة الملوثات النادرة (Trace organics)، تقنية بسيطة نسبياً وموثوقة',lim:'تكلفة الكربون وإعادة التنشيط، يحتاج استبدالاً دورياً عند التشبع، غير فعال بمفرده مع تركيزات COD عالية جداً',ex:'خطوة تلميع نهائية بعد المعالجة البيولوجية، إعادة استخدام المياه'},
+whenEn:{ideal:'Removing residual COD after biological treatment, or removing color and trace dissolved organics',adv:'Very effective against trace organics, relatively simple and reliable technology',lim:'Carbon cost and reactivation, requires periodic replacement once saturated, ineffective alone at very high COD concentrations',ex:'Final polishing step after biological treatment, water reuse'}},
+
+{abbr:'Wet Air Oxidation (WAO)',full:'Wet Air Oxidation',ar:'الأكسدة الرطبة بالهواء',mechAr:'أكسدة المواد العضوية العصية تحت ضغط وحرارة مرتفعين (200-300°C, 20-200 bar) بالهواء أو الأكسجين النقي بدون احتراق، مناسبة لمياه الصرف فائقة التركيز التي لا تصلح لها الطرق البيولوجية',mechEn:'Recalcitrant organics are oxidized under high pressure and temperature (200-300°C, 20-200 bar) with air or pure oxygen without combustion, suited to ultra-high-strength wastewater unsuitable for biological treatment',
+whenAr:{ideal:'مخلفات صناعية فائقة التركيز بـ COD > 10,000-50,000 mg/L وغير قابلة للمعالجة البيولوجية أو الحرق التقليدي',adv:'يعالج تركيزات عضوية فائقة لا تصلح لها الطرق الحيوية، يمكن استرجاع الطاقة الحرارية الناتجة',lim:'تكلفة إنشاء وتشغيل مرتفعة جداً، يحتاج معدات مقاومة للضغط والتآكل',ex:'صناعة الورق والعجينة، الكيماويات البتروكيماوية، النفايات السائلة شديدة التركيز'},
+whenEn:{ideal:'Ultra-high-strength industrial waste with COD > 10,000-50,000 mg/L unsuitable for biological treatment or conventional incineration',adv:'Handles extreme organic concentrations unsuitable for biological methods, recoverable process heat',lim:'Very high capital and operating cost, requires pressure- and corrosion-resistant equipment',ex:'Pulp and paper industry, petrochemicals, ultra-high-strength liquid waste'}}
+],
+emergency:['إيقاف الصرف للبيئة فوراً','توجيه المياه لخزان طوارئ','تشغيل المضخات الاحتياطية','إبلاغ جهاز البيئة'],
+cap:['ترقية محطة المعالجة','زيادة سعة الأحواض','تركيب أجهزة رصد DO و BOD و COD مستمرة (لمتابعة نسبة BOD/COD)','دراسة إضافة معالجة كيميائية/متقدمة (AOP) عند انخفاض نسبة BOD/COD عن 0.3','تدريب مشغلي المحطة'],
+safety:['بدلات واقية من المياه','قفازات مطاطية طويلة','تطعيمات (تيتانوس، Hepatitis)','أجهزة كشف H2S','نظارات وقفازات مقاومة للكيماويات عند التعامل مع H2O2 والأحماض (لأنظمة الأكسدة الكيميائية)','أجهزة كشف تسرب الأوزون عند استخدام أنظمة Ozonation']},
+
+{id:'heavy_metals_water',category:'water',icon:'⚗️',severity:'high',sectors:['بطاريات','طلاء','دباغة','تعدين','نسيج وصباغة'],
+nameAr:'المعادن الثقيلة في المياه (Pb, Cd, Cr, Hg)',nameEn:'Heavy Metals in Water (Pb, Cd, Cr, Hg)',
+descAr:'معادن سامة غير قابلة للتحلل تتراكم في السلسلة الغذائية',descEn:'Toxic non-degradable metals that bioaccumulate in food chain',
+standards:['WHO Drinking Water Guidelines (Pb ≤ 0.01 mg/L)','EPA Maximum Contaminant Levels','EU Water Framework Directive 2000/60/EC'],
+solutions:[
+{abbr:'Chemical Precipitation',full:'Chemical Precipitation (Hydroxide/Sulfide)',ar:'الترسيب الكيميائي',mechAr:'رفع pH إلى 8-10 بإضافة NaOH أو Ca(OH)2، تتحول المعادن الذائبة إلى هيدروكسيدات غير ذائبة تترسب',mechEn:'Raise pH to 8-10 with NaOH or Ca(OH)2, dissolved metals convert to insoluble hydroxides that precipitate',
+whenAr:{ideal:'تركيزات معادن عالية، مياه صرف صناعية',adv:'رخيص، فعال، تقنية ناضجة',lim:'ينتج حمأة معدنية خطرة',ex:'دباغة، طلاء، تعدين'},
+whenEn:{ideal:'High metal concentrations, industrial wastewater',adv:'Cheap, effective, mature technology',lim:'Produces hazardous metal sludge',ex:'Tanneries, plating, mining'}},
+
+{abbr:'Ion Exchange',full:'Ion Exchange Resins',ar:'التبادل الأيوني',mechAr:'راتنجات خاصة تستبدل أيونات المعادن الثقيلة بأيونات غير ضارة (Na+/H+)',mechEn:'Special resins replace heavy metal ions with harmless ions (Na+/H+)',
+whenAr:{ideal:'تركيزات منخفضة إلى متوسطة، حاجة لاسترداد المعادن الثمينة',adv:'يسترد المعادن، كفاءة عالية للتركيزات المنخفضة',lim:'راتنجات غالية، تحتاج تجديد',ex:'استرداد ذهب، فضة، نحاس'},
+whenEn:{ideal:'Low to medium concentrations, need to recover precious metals',adv:'Recovers metals, high efficiency for low concentrations',lim:'Expensive resins, need regeneration',ex:'Gold, silver, copper recovery'}},
+
+{abbr:'Electrocoagulation',full:'Electrocoagulation',ar:'التخثر الكهربائي',mechAr:'أقطاب حديد/ألومنيوم تذوب كهربائياً وتكوّن هيدروكسيدات تمتص المعادن الثقيلة',mechEn:'Iron/aluminum electrodes dissolve electrically forming hydroxides that adsorb heavy metals',
+whenAr:{ideal:'مياه صرف متنوعة المعادن، لا حاجة لإضافة كيماويات',adv:'لا كيماويات مضافة، متعدد المعادن',lim:'يستهلك كهرباء، أقطاب تتآكل',ex:'مصانع متنوعة'},
+whenEn:{ideal:'Mixed metal wastewater, no chemical addition needed',adv:'No chemicals added, multi-metal',lim:'Consumes electricity, electrodes corrode',ex:'Diverse factories'}},
+
+{abbr:'Chromium Recovery',full:'Chromium Recovery & Recycling',ar:'استرداد الكروم وإعادة تدويره',mechAr:'فصل صرف الدباغة بالكروم من المصدر عن باقي الصرف، رفع الـ pH لترسيب الكروم كهيدروكسيد، ثم إذابة الراسب مرة أخرى في حمض للحصول على محلول كروم سائل جاهز لإعادة استخدامه في عملية الدباغة نفسها',mechEn:'Separate chrome-tanning effluent from the rest of the discharge at the source, raise pH to precipitate chromium as hydroxide, then redissolve the precipitate in acid to obtain a liquid chromium solution ready for reuse in the tanning process itself',
+whenAr:{ideal:'مدابغ تستخدم الدباغة بالكروم كعملية أساسية ومستمرة',adv:'يوفر 60-70% من تكلفة شراء الكروم الجديد، يقلل حجم النفايات الخطرة بنسبة تصل لـ 90%، يحول المشكلة لاقتصاد دائري',lim:'يحتاج فصل الصرف من المصدر بدقة، استثمار أولي في وحدة الاسترداد',ex:'مدابغ الجلود الكبرى والمتوسطة'},
+whenEn:{ideal:'Tanneries using chrome tanning as a core, continuous process',adv:'Saves 60-70% of new chromium purchase cost, reduces hazardous waste volume by up to 90%, turns the problem into a circular economy',lim:'Requires precise source separation of the effluent, initial investment in the recovery unit',ex:'Large and medium leather tanneries'}}
+],
+emergency:['إيقاف الصرف فوراً','عزل مصدر التلوث','تفعيل أنظمة المعالجة الطارئة','إبلاغ البيئة والصحة'],
+cap:['تركيب نظام معالجة متقدم','رصد مستمر للمعادن','صيانة دورية','تحليل دوري للرواسب'],
+safety:['بدلات كيميائية كاملة','قفازات نيتريل','أجهزة كشف المعادن','فحوصات دم دورية للعاملين']},
+
+{id:'oil_water',category:'water',icon:'🛢️',severity:'high',sectors:['نفط','محطات وقود','مطابخ','ورش'],
+nameAr:'الزيوت والشحوم في المياه (FOG)',nameEn:'Oil and Grease in Water (FOG)',
+descAr:'طبقة زيتية تمنع الأكسجة وتخنق الحياة المائية',descEn:'Oil layer prevents oxygenation and suffocates aquatic life',
+standards:['EPA Oil Pollution Act','MARPOL Annex I (Ships)','WHO Guidelines for Oil in Water'],
+solutions:[
+{abbr:'API Separator',full:'API Oil-Water Separator',ar:'فاصل الزيت والماء (API)',mechAr:'حوض ترسيب طويل يستغل فرق الكثافة بين الزيت والماء. الزيت يطفو ويُكشط',mechEn:'Long settling tank uses density difference. Oil floats and is skimmed',
+whenAr:{ideal:'قطرات زيت كبيرة (>150 micron)، تدفق مستمر',adv:'بسيط، رخيص، لا طاقة',lim:'لا يزيل الزيت المستحلب',ex:'مصافي نفط، ورش'},
+whenEn:{ideal:'Large oil droplets (>150 micron), continuous flow',adv:'Simple, cheap, no energy',lim:'Does not remove emulsified oil',ex:'Refineries, workshops'}},
+
+{abbr:'DAF',full:'Dissolved Air Flotation',ar:'التعويم بالهواء المذاب',mechAr:'حقن هواء مضغوط يذوب في الماء، عند تحرره يشكل فقاعات دقيقة تلتصق بالزيت وترفعه للسطح',mechEn:'Inject pressurized air that dissolves in water, upon release forms micro-bubbles that attach to oil and lift it',
+whenAr:{ideal:'زيت مستحلب، جسيمات خفيفة، كفاءة 90%+ مطلوبة',adv:'كفاءة عالية، سريع',lim:'يحتاج طاقة للضغط',ex:'مصافي، مصانع أغذية'},
+whenEn:{ideal:'Emulsified oil, light particles, 90%+ efficiency needed',adv:'High efficiency, fast',lim:'Needs energy for compression',ex:'Refineries, food factories'}},
+
+{abbr:'Grease Trap',full:'Grease Trap / Interceptor',ar:'مصيدة الشحوم',mechAr:'حوض بسيط يستقبل مياه المطابخ، الشحوم تطفو وتُجمع دورياً',mechEn:'Simple tank receives kitchen water, grease floats and is collected periodically',
+whenAr:{ideal:'مطابخ، مطاعم، شحوم حيوانية/نباتية',adv:'رخيص، بسيط',lim:'يحتاج تنظيف دوري',ex:'مطاعم، فنادق'},
+whenEn:{ideal:'Kitchens, restaurants, animal/vegetable fats',adv:'Cheap, simple',lim:'Needs periodic cleaning',ex:'Restaurants, hotels'}}
+],
+emergency:['نشر حواجز ماصة (Booms)','إيقاف مصدر التسرب','تفعيل مضخات الشفط','إبلاغ البيئة'],
+cap:['تركيب فاصل API أو DAF','صيانة مصائد الشحوم أسبوعياً','تدريب العاملين','رصد دوري'],
+safety:['قفازات مقاومة للزيوت','أحذية مقاومة للانزلاق','بدلات واقية','مواد ماصة (Spill Kits)']},
+
+{id:'eutrophication',category:'water',icon:'🌿',severity:'medium',sectors:['أسمدة','زراعة','صرف صحي'],
+nameAr:'الإثراء الغذائي (Eutrophication) - N و P',nameEn:'Eutrophication - Nitrogen & Phosphorus',
+descAr:'زيادة النيتروجين والفوسفور تسبب ازدهار الطحالب واستنفاد الأكسجين',descEn:'Excess N and P cause algal blooms and oxygen depletion',
+standards:['EU Nitrates Directive 91/676/EEC','EPA Nutrient Criteria','WHO Guidelines for Nutrients in Water'],
+solutions:[
+{abbr:'BNR',full:'Biological Nutrient Removal',ar:'إزالة المغذيات بيولوجياً',mechAr:'مراحل لاهوائية/هوائية متعاقبة: البكتيريا PAO تمتص الفوسفور، وبكتيريا Nitrification/Denitrification تحول النيتروجين لـ N2',mechEn:'Sequential anaerobic/aerobic stages: PAO bacteria absorb phosphorus, Nitrification/Denitrification bacteria convert nitrogen to N2',
+whenAr:{ideal:'محطات صرف كبيرة، معايير صارمة لـ N و P',adv:'كفاءة 80-90%، لا كيماويات',lim:'معقد التشغيل، يحتاج تحكم دقيق',ex:'محطات صرف صحي كبيرة'},
+whenEn:{ideal:'Large WWTPs, strict N and P standards',adv:'80-90% efficiency, no chemicals',lim:'Complex operation, needs precise control',ex:'Large WWTPs'}},
+
+{abbr:'Constructed Wetlands',full:'Constructed Wetlands',ar:'الأراضي الرطبة المُنشأة',mechAr:'نباتات مائية (قصب، بردى) تمتص N و P عبر جذورها',mechEn:'Aquatic plants (reeds, cattails) absorb N and P through roots',
+whenAr:{ideal:'مجتمعات صغيرة، مساحات متاحة، حل طبيعي',adv:'رخيص، طبيعي، جمالي',lim:'يحتاج مساحة كبيرة، بطيء',ex:'مجمعات سكنية صغيرة'},
+whenEn:{ideal:'Small communities, available space, natural solution',adv:'Cheap, natural, aesthetic',lim:'Needs large space, slow',ex:'Small residential complexes'}},
+
+{abbr:'Chemical Precipitation (P)',full:'Chemical Phosphorus Removal',ar:'الترسيب الكيميائي للفوسفور',mechAr:'إضافة أملاح الحديد (FeCl3) أو الألومنيوم (Alum) لترسيب الفوسفور',mechEn:'Add iron (FeCl3) or aluminum (Alum) salts to precipitate phosphorus',
+whenAr:{ideal:'إزالة فوسفور سريعة، دعم لـ BNR',adv:'سريع، فعال',lim:'يستهلك كيماويات، ينتج حمأة',ex:'محطات صرف'},
+whenEn:{ideal:'Quick phosphorus removal, BNR support',adv:'Fast, effective',lim:'Consumes chemicals, produces sludge',ex:'WWTPs'}}
+],
+emergency:['إيقاف صرف المياه الغنية بالمغذيات','معالجة الطحالب بـ Algaecide آمن','تهوية المياه بالأكسجين الطارئ'],
+cap:['ترقية المحطة بـ BNR','تقليل استخدام الأسمدة','رصد مستويات N و P','إنشاء مناطق عازلة'],
+safety:['قفازات كيميائية','نظارات واقية','تدريب على التعامل مع الطحالب السامة']},
+
+{id:'apis_water',category:'water',icon:'💊',severity:'high',sectors:['أدوية','مستشفيات','كيماويات'],
+nameAr:'المخلفات الصيدلانية (APIs) في المياه',nameEn:'Pharmaceutical Residues (APIs) in Water',
+descAr:'مركبات دوائية مقاومة للتحلل البيولوجي التقليدي',descEn:'Pharmaceutical compounds resistant to conventional biological treatment',
+standards:['WHO Guidelines on Pharmaceutical Pollutants','EMA Environmental Risk Assessment','EU Watch List Directive 2013/39/EU'],
+solutions:[
+{abbr:'AOP',full:'Advanced Oxidation Processes',ar:'عمليات الأكسدة المتقدمة',mechAr:'توليد جذور الهيدروكسيل (•OH) القوية عبر O3/H2O2 أو UV/H2O2 لتكسير الروابط الكيميائية المعقدة',mechEn:'Generate powerful hydroxyl radicals (•OH) via O3/H2O2 or UV/H2O2 to break complex chemical bonds',
+whenAr:{ideal:'مركبات دوائية معقدة، مقاومة للتحلل البيولوجي',adv:'يكسر مركبات معقدة جداً، كفاءة 90-99%',lim:'يستهلك طاقة ومواد كيميائية',ex:'مصانع أدوية، مستشفيات'},
+whenEn:{ideal:'Complex pharmaceutical compounds, biologically resistant',adv:'Breaks very complex compounds, 90-99% efficiency',lim:'Consumes energy and chemicals',ex:'Pharmaceutical plants, hospitals'}},
+
+{abbr:'Activated Carbon',full:'Granular Activated Carbon (GAC)',ar:'الكربون المنشط الحبيبي',mechAr:'امتزاز APIs على مساحة سطحية هائلة للكربون (1000 m²/g)',mechEn:'Adsorb APIs on huge carbon surface area (1000 m²/g)',
+whenAr:{ideal:'تركيزات منخفضة من APIs، polishing نهائي',adv:'فعال، بسيط',lim:'يحتاج استبدال دوري',ex:'محطات صرف متقدمة'},
+whenEn:{ideal:'Low API concentrations, final polishing',adv:'Effective, simple',lim:'Needs periodic replacement',ex:'Advanced WWTPs'}},
+
+{abbr:'Membrane Filtration',full:'Nanofiltration/Reverse Osmosis',ar:'الترشيح النانوي/التناضح العكسي',mechAr:'أغشية بمسام 0.001 ميكرون تحجز الجزيئات الدوائية',mechEn:'Membranes with 0.001 micron pores retain drug molecules',
+whenAr:{ideal:'حاجة لجودة مياه عالية جداً، إعادة استخدام',adv:'كفاءة 95-99%',lim:'طاقة عالية، ينتج Brine',ex:'إعادة استخدام مياه'},
+whenEn:{ideal:'Need for very high water quality, reuse',adv:'95-99% efficiency',lim:'High energy, produces Brine',ex:'Water reuse applications'}}
+],
+emergency:['إيقاف الصرف','توجيه المياه لخزان عزل','تفعيل AOP الطارئ','إبلاغ الصحة والبيئة'],
+cap:['تركيب وحدة AOP','ترشيح نانوي كمرحلة نهائية','رصد APIs دورياً','تقليل الاستخدام عند المصدر'],
+safety:['بدلات كيميائية','كمامات كربون','قفازات نيتريل مزدوجة','تدريب HAZMAT']},
+
+{id:'brine',category:'water',icon:'🧂',severity:'high',sectors:['تحلية','كيماويات','نسيج'],
+nameAr:'المحلول الملحي المركز (Brine)',nameEn:'Concentrated Brine',
+descAr:'مياه عالية الملوحة (TDS > 35,000 mg/L) تقتل الكائنات البحرية',descEn:'High salinity water (TDS > 35,000 mg/L) kills marine organisms',
+standards:['WHO Guidelines for Desalination','EPA Ocean Discharge Criteria','UNEP Regional Seas Programme'],
+solutions:[
+{abbr:'Marine Diffuser',full:'Marine Diffuser System',ar:'المشتتات البحرية',mechAr:'أنبوب طويل في قاع البحر بفتحات متعددة يضمن الخلط السريع (Rapid Dilution) قبل الوصول للسطح',mechEn:'Long pipe at sea bottom with multiple ports ensures Rapid Dilution before reaching surface',
+whenAr:{ideal:'محطات تحلية ساحلية، صرف للبحر',adv:'يخفف الملوح قبل الوصول للسطح',lim:'يحتاج قاع بحر مناسب',ex:'محطات تحلية كبيرة'},
+whenEn:{ideal:'Coastal desalination plants, sea discharge',adv:'Dilutes salinity before reaching surface',lim:'Needs suitable sea bottom',ex:'Large desalination plants'}},
+
+{abbr:'ZLD',full:'Zero Liquid Discharge',ar:'التصريف الصفري للسوائل',mechAr:'تبخير كامل للمياه واسترداد الأملاح. لا صرف نهائي للبيئة',mechEn:'Complete water evaporation and salt recovery. No final discharge to environment',
+whenAr:{ideal:'مناطق حساسة بيئياً، لوائح صارمة',adv:'لا صرف للبيئة، استرداد أملاح',lim:'طاقة عالية جداً، تكلفة عالية',ex:'مناطق محمية'},
+whenEn:{ideal:'Environmentally sensitive areas, strict regulations',adv:'No discharge to environment, salt recovery',lim:'Very high energy, high cost',ex:'Protected areas'}},
+
+{abbr:'Co-Discharge',full:'Co-Discharge with Cooling Water',ar:'الصرف المشترك مع مياه التبريد',mechAr:'خلط Brine مع مياه تبريد أقل ملوحة لتخفيف التركيز قبل الصرف',mechEn:'Mix Brine with less saline cooling water to dilute concentration before discharge',
+whenAr:{ideal:'محطات طاقة + تحلية مجاورة',adv:'يقلل ملوحة',lim:'يحتاج مصدر مياه تبريد',ex:'محطات طاقة وتحلية'},
+whenEn:{ideal:'Adjacent power + desalination plants',adv:'Reduces salinity',lim:'Needs cooling water source',ex:'Power and desalination plants'}}
+],
+emergency:['إيقاف الصرف','تفعيل نظام التخفيف الطارئ','رصد الملوحة حول نقطة الصرف'],
+cap:['تحسين تصميم المشتتات','تطبيق ZLD تدريجياً','استرداد الأملاح كمنتج','رصد مستمر'],
+safety:['بدلات مقاومة للملوحة','نظارات واقية','تدريب على التعامل مع الأملاح']},
+
+{id:'radioactive_water',category:'water',icon:'☢️',severity:'high',sectors:['طاقة نووية','مستشفيات','معامل'],
+nameAr:'المياه الملوثة إشعاعياً',nameEn:'Radioactively Contaminated Water',
+descAr:'نظائر مشعة (Cs-137, Sr-90, Tritium) تشكل خطراً إشعاعياً طويل الأمد',descEn:'Radioactive isotopes (Cs-137, Sr-90, Tritium) pose long-term radiation risk',
+standards:['IAEA Safety Standards','WHO Guidelines for Drinking-water Quality (Radionuclides)','EPA Radionuclides Rule'],
+solutions:[
+{abbr:'Ion Exchange (Radioactive)',full:'Specialized Ion Exchange for Radionuclides',ar:'التبادل الأيوني للنظائر المشعة',mechAr:'راتنجات متخصصة (مثل Zeolite) تمتص النظائر المشعة انتقائياً',mechEn:'Specialized resins (like Zeolite) selectively absorb radionuclides',
+whenAr:{ideal:'نظائر مشعة ذائبة بتركيزات منخفضة إلى متوسطة',adv:'انتقائي، فعال',lim:'راتنجات تصبح نفاية مشعة',ex:'مستشفيات، معامل'},
+whenEn:{ideal:'Dissolved radionuclides at low to medium concentrations',adv:'Selective, effective',lim:'Resins become radioactive waste',ex:'Hospitals, labs'}},
+
+{abbr:'Evaporation',full:'Radioactive Waste Evaporation',ar:'التبخير للنفايات المشعة',mechAr:'تبخير الماء وتكثيفه، النظائر تبقى في المخلفات المركزة',mechEn:'Evaporate and condense water, isotopes remain in concentrated waste',
+whenAr:{ideal:'حجم مياه كبير، نظائر غير متطايرة',adv:'يقلل الحجم كثيراً',lim:'طاقة عالية، لا يزيل Tritium',ex:'محطات طاقة نووية'},
+whenEn:{ideal:'Large water volumes, non-volatile isotopes',adv:'Greatly reduces volume',lim:'High energy, does not remove Tritium',ex:'Nuclear power plants'}},
+
+{abbr:'Cementation',full:'Cementation of Radioactive Waste',ar:'تثبيت النفايات المشعة بالإسمنت',mechAr:'خلط المخلفات المركزة مع الإسمنت لتكوين كتلة صلبة آمنة',mechEn:'Mix concentrated waste with cement to form solid block safe for long-term storage',
+whenAr:{ideal:'تخزين طويل الأمد للنفايات المركزة',adv:'مستقر، آمن',lim:'يزيد الحجم',ex:'تخزين نهائي'},
+whenEn:{ideal:'Long-term storage of concentrated waste',adv:'Stable, safe',lim:'Increases volume',ex:'Final storage'}}
+],
+emergency:['إيقاف المصدر فوراً','عزل المنطقة بحدود إشعاعية','ارتداء بدلات إشعاعية','إبلاغ هيئة الرقابة النووية'],
+cap:['نظام معالجة متخصص','تخزين آمن طويل الأمد','رصد إشعاعي مستمر','تدريب متخصص'],
+safety:['بدلات إشعاعية (Lead-lined)','Dosimeters شخصية','تدريب إشعاعي متقدم','مراقبة صحية صارمة']},
+
+{id:'pesticides_water',category:'water',icon:'🌾',severity:'high',sectors:['زراعة','مبيدات'],
+nameAr:'المبيدات في المياه',nameEn:'Pesticides in Water',
+descAr:'مركبات كيميائية سامة (Organophosphates, Carbamates) تؤثر على الكائنات المائية',descEn:'Toxic chemicals (Organophosphates, Carbamates) affect aquatic organisms',
+standards:['WHO Guidelines for Pesticides in Drinking Water','EPA Maximum Contaminant Levels','EU Drinking Water Directive 98/83/EC'],
+solutions:[
+{abbr:'Activated Carbon',full:'Powdered Activated Carbon (PAC)',ar:'الكربون المنشط المسحوق',mechAr:'إضافة PAC مباشرة للمياه لامتزاز المبيدات',mechEn:'Add PAC directly to water for pesticide adsorption',
+whenAr:{ideal:'طوارئ تلوث، مبيدات متنوعة',adv:'سريع، فعال',lim:'يحتاج إزالة لاحقة',ex:'طوارئ تلوث'},
+whenEn:{ideal:'Contamination emergencies, diverse pesticides',adv:'Fast, effective',lim:'Needs subsequent removal',ex:'Contamination emergencies'}},
+
+{abbr:'Ozonation',full:'Ozonation Treatment',ar:'المعالجة بالأوزون',mechAr:'الأوزون (O3) مؤكسد قوي يكسر روابط المبيدات',mechEn:'Ozone (O3) is strong oxidant that breaks pesticide bonds',
+whenAr:{ideal:'مبيدات عضوية، محطات معالجة متقدمة',adv:'يكسر مبيدات معقدة',lim:'يحتاج توليد O3 في الموقع',ex:'محطات مياه متقدمة'},
+whenEn:{ideal:'Organic pesticides, advanced treatment plants',adv:'Breaks complex pesticides',lim:'Needs on-site O3 generation',ex:'Advanced water plants'}},
+
+{abbr:'Bioremediation',full:'Bioremediation with Specialized Bacteria',ar:'المعالجة الحيوية ببكتيريا متخصصة',mechAr:'بكتيريا Pseudomonas و Bacillus تحلل المبيدات',mechEn:'Pseudomonas and Bacillus bacteria degrade pesticides',
+whenAr:{ideal:'مبيدات قابلة للتحلل الحيوي، وقت كافٍ',adv:'طبيعي، رخيص',lim:'بطيء، لا لكل المبيدات',ex:'أراضٍ زراعية'},
+whenEn:{ideal:'Biodegradable pesticides, sufficient time',adv:'Natural, cheap',lim:'Slow, not for all pesticides',ex:'Agricultural lands'}}
+],
+emergency:['إيقاف مصدر التلوث','تفعيل الكربون المنشط','عزل المنطقة الملوثة','إبلاغ الزراعة والبيئة'],
+cap:['منطقة عازلة حول المسطحات المائية','تقليل استخدام المبيدات','مكافحة متكاملة IPM','رصد دوري'],
+safety:['بدلات كيميائية','كمامات كربون','قفازات نيتريل','تدريب على التعامل مع المبيدات']},
+
+{id:'thermal_pollution',category:'water',icon:'🌡️',severity:'medium',sectors:['محطات طاقة','تحلية','صناعة'],
+nameAr:'التلوث الحراري للمياه',nameEn:'Thermal Water Pollution',
+descAr:'مياه تبريد ساخنة ترفع درجة حرارة المسطح المائي وتقلل DO',descEn:'Hot cooling water raises water body temperature and reduces DO',
+standards:['EPA Thermal Discharge Regulations (40 CFR Part 125)','EU Water Framework Directive','WHO Guidelines for Thermal Pollution'],
+solutions:[
+{abbr:'Cooling Tower',full:'Cooling Tower System',ar:'برج التبريد',mechAr:'تبريد المياه بالتبخير قبل صرفها. يقلل الحرارة 10-15°C',mechEn:'Cool water by evaporation before discharge. Reduces temperature 10-15°C',
+whenAr:{ideal:'محطات طاقة، مصانع، الحاجة لتبريد قبل الصرف',adv:'فعال، يعيد استخدام المياه',lim:'يستهلك ماء بالتبخر',ex:'محطات طاقة'},
+whenEn:{ideal:'Power plants, factories, need for cooling before discharge',adv:'Effective, reuses water',lim:'Consumes water by evaporation',ex:'Power plants'}},
+
+{abbr:'Cooling Pond',full:'Cooling Pond / Reservoir',ar:'بركة التبريد',mechAr:'تخزين المياه الساخنة في بركة كبيرة لتفقد الحرارة طبيعياً',mechEn:'Store hot water in large pond to lose heat naturally',
+whenAr:{ideal:'مساحات متاحة، تدفق متغير',adv:'طبيعي، رخيص',lim:'يحتاج مساحة كبيرة',ex:'مناطق ريفية'},
+whenEn:{ideal:'Available space, variable flow',adv:'Natural, cheap',lim:'Needs large space',ex:'Rural areas'}},
+
+{abbr:'Heat Exchanger',full:'Heat Exchanger for Recovery',ar:'مبادل حراري للاسترداد',mechAr:'استخدام الحرارة المهدرة في أغراض أخرى',mechEn:'Use waste heat for other purposes',
+whenAr:{ideal:'حاجة لتدفئة أو تجفيف قريب',adv:'يحول مشكلة لمورد',lim:'يحتاج مستفيد قريب',ex:'تدفئة مناطق'},
+whenEn:{ideal:'Need for nearby heating or drying',adv:'Turns problem into resource',lim:'Needs nearby beneficiary',ex:'District heating'}}
+],
+emergency:['إيقاف الصرف الساخن','تفعيل أبراج التبريد الاحتياطية','رصد درجة الحرارة'],
+cap:['تركيب Cooling Towers','استرداد الحرارة','رصد مستمر لحرارة المياه'],
+safety:['قفازات مقاومة للحرارة','واقيات وجه','تدريب على التعامل مع المياه الساخنة']},
+
+{id:'pathogens_water',category:'water',icon:'🦠',severity:'high',sectors:['صرف صحي','مستشفيات','مجازر'],
+nameAr:'المسببات المرضية في المياه (Pathogens)',nameEn:'Waterborne Pathogens',
+descAr:'بكتيريا (E.coli)، فيروسات، طفيليات تسبب أمراضاً خطيرة',descEn:'Bacteria (E.coli), viruses, parasites causing serious diseases',
+standards:['WHO Guidelines for Drinking-water Quality','EPA Total Coliform Rule','EU Bathing Water Directive 2006/7/EC'],
+solutions:[
+{abbr:'Chlorination',full:'Chlorination Disinfection',ar:'التعقيم بالكلور',mechAr:'إضافة Cl2 أو NaOCl بجرعة 1-3 mg/L لقتل الميكروبات',mechEn:'Add Cl2 or NaOCl at 1-3 mg/L dose to kill microbes',
+whenAr:{ideal:'تعقيم مياه شرب وصرف، تكلفة منخفضة مطلوبة',adv:'رخيص، فعال، متبقي حماية',lim:'نواتج ثانوية (THMs)، طعم',ex:'محطات مياه شرب'},
+whenEn:{ideal:'Drinking water and wastewater disinfection, low cost needed',adv:'Cheap, effective, residual protection',lim:'Byproducts (THMs), taste',ex:'Drinking water plants'}},
+
+{abbr:'UV Disinfection',full:'UV Disinfection System',ar:'التعقيم بالأشعة فوق البنفسجية',mechAr:'أشعة UV-C (254 nm) تدمر DNA الميكروبات',mechEn:'UV-C rays (254 nm) destroy microbial DNA',
+whenAr:{ideal:'مياه صافية (low turbidity)، لا نواتج كيميائية',adv:'لا كيماويات، فعال ضد Cryptosporidium',lim:'لا متبقي حماية، يحتاج مياه صافية',ex:'مياه معبأة، حمامات سباحة'},
+whenEn:{ideal:'Clear water (low turbidity), no chemical byproducts',adv:'No chemicals, effective against Cryptosporidium',lim:'No residual protection, needs clear water',ex:'Bottled water, swimming pools'}},
+
+{abbr:'Ozonation',full:'Ozone Disinfection',ar:'التعقيم بالأوزون',mechAr:'O3 مؤكسد أقوى من الكلور 3000 مرة',mechEn:'O3 is 3000x stronger oxidant than chlorine',
+whenAr:{ideal:'فيروسات وأكياس أميبية، مياه معبأة',adv:'أقوى من الكلور، لا طعم',lim:'لا متبقي، تكلفة أعلى',ex:'مياه معبأة فاخرة'},
+whenEn:{ideal:'Viruses and amoebic cysts, bottled water',adv:'Stronger than chlorine, no taste',lim:'No residual, higher cost',ex:'Premium bottled water'}}
+],
+emergency:['إيقاف الصرف','تعقيم طارئ بجرعات عالية','إبلاغ الصحة','تحذير المستخدمين'],
+cap:['نظام تعقيم متعدد المراحل','رصد Coliform دورياً','صيانة أنظمة التعقيم'],
+safety:['قفازات مطاطية','بدلات واقية','تطعيمات (Hepatitis, Tetanus)','تدريب على التعامل مع مياه الصرف']},
+
+{id:'microplastics',category:'water',icon:'',severity:'medium',sectors:['بلاستيك','نسيج','مستحضرات تجميل'],
+nameAr:'الميكروبلاستيك في المياه',nameEn:'Microplastics in Water',
+descAr:'جسيمات بلاستيكية <5mm تتراكم في الكائنات المائية',descEn:'Plastic particles <5mm accumulate in aquatic organisms',
+standards:['WHO Microplastics in Drinking Water 2019','EU Microplastics Restriction','UNEP Marine Litter Strategy'],
+solutions:[
+{abbr:'Membrane Filtration',full:'Membrane Bioreactor (MBR)',ar:'الترشيح الغشائي',mechAr:'أغشية MBR تحجز الجسيمات >0.1 micron',mechEn:'MBR membranes retain particles >0.1 micron',
+whenAr:{ideal:'محطات معالجة متقدمة',adv:'فعال للجسيمات الصغيرة',lim:'تكلفة أغشية',ex:'محطات حديثة'},
+whenEn:{ideal:'Advanced treatment plants',adv:'Effective for small particles',lim:'Membrane cost',ex:'Modern plants'}},
+
+{abbr:'Advanced Filtration',full:'Sand/Carbon Filtration',ar:'الترشيح المتقدم',mechAr:'ترشيح رملي + كربون نشط',mechEn:'Sand + activated carbon filtration',
+whenAr:{ideal:'جسيمات أكبر (>20 micron)',adv:'رخيص',lim:'لا يحجز جسيمات صغيرة جداً',ex:'محطات تقليدية'},
+whenEn:{ideal:'Larger particles (>20 micron)',adv:'Cheap',lim:'Does not retain very small particles',ex:'Conventional plants'}}
+],
+emergency:['رصد مستويات الميكروبلاستيك','إبلاغ البيئة'],
+cap:['تقليل استخدام البلاستيك','ترقية محطات المعالجة','رصد مستمر'],
+safety:['PPE أساسي','تدريب على التعامل مع البلاستيك']},
+
+{id:'endocrine_disruptors',category:'water',icon:'',severity:'high',sectors:['كيماويات','زراعة','صناعة'],
+nameAr:'معطلات الغدد الصماء (EDCs)',nameEn:'Endocrine Disrupting Chemicals (EDCs)',
+descAr:'مواد كيميائية تعطل النظام الهرموني (BPA, Phthalates)',descEn:'Chemicals that disrupt endocrine system (BPA, Phthalates)',
+standards:['WHO EDC Guidelines','EU REACH Regulation','EPA Endocrine Disruptor Screening Program'],
+solutions:[
+{abbr:'AOP',full:'Advanced Oxidation Processes',ar:'عمليات الأكسدة المتقدمة',mechAr:'تكسير EDCs بجذور الهيدروكسيل',mechEn:'Break down EDCs with hydroxyl radicals',
+whenAr:{ideal:'EDCs معقدة، مياه شرب',adv:'يكسر مركبات معقدة',lim:'طاقة ومواد كيميائية',ex:'محطات مياه متقدمة'},
+whenEn:{ideal:'Complex EDCs, drinking water',adv:'Breaks complex compounds',lim:'Energy and chemicals',ex:'Advanced water plants'}},
+
+{abbr:'Activated Carbon',full:'Granular Activated Carbon',ar:'الكربون المنشط',mechAr:'امتزاز EDCs على الكربون المنشط',mechEn:'Adsorb EDCs on activated carbon',
+whenAr:{ideal:'تركيزات منخفضة، polishing',adv:'فعال',lim:'استبدال دوري',ex:'محطات مياه'},
+whenEn:{ideal:'Low concentrations, polishing',adv:'Effective',lim:'Periodic replacement',ex:'Water plants'}}
+],
+emergency:['إيقاف المصدر','تفعيل AOP','إبلاغ الصحة'],
+cap:['استبدال المواد المعطلة','AOP + Carbon','رصد مستمر'],
+safety:['PPE كيميائي','تدريب HAZMAT']},
+
+{id:'disinfection_byproducts',category:'water',icon:'🧪',severity:'medium',sectors:['محطات تنقية مياه الشرب','مسابح عامة','صناعات غذائية'],
+nameAr:'نواتج التطهير الكلورية (THMs/HAAs)',nameEn:'Disinfection By-Products (THMs/HAAs)',
+descAr:'مركبات مسرطنة محتملة تتكون من تفاعل الكلور مع المواد العضوية في الماء أثناء التطهير',descEn:'Potentially carcinogenic compounds formed when chlorine reacts with organic matter during water disinfection',
+standards:['EPA Stage 2 DBP Rule: TTHMs ≤ 80 μg/L, HAA5 ≤ 60 μg/L','WHO Guidelines for Drinking-water Quality','EU Drinking Water Directive'],
+solutions:[
+{abbr:'GAC Filtration',full:'Granular Activated Carbon Filtration',ar:'الترشيح بالكربون المنشط الحبيبي',mechAr:'ترشيح المياه عبر كربون منشط حبيبي يمتز المواد العضوية السابقة للتطهير قبل إضافة الكلور، فيقلل تكون النواتج الجانبية',mechEn:'Filter water through granular activated carbon that adsorbs disinfection precursor organics before chlorination, reducing byproduct formation',
+whenAr:{ideal:'مصادر مياه سطحية غنية بالمواد العضوية',adv:'يعالج المشكلة من الأساس، فوائد إضافية (طعم وريحة)',lim:'يحتاج استبدال دوري للكربون',ex:'محطات تنقية مياه الشرب الكبرى'},
+whenEn:{ideal:'Surface water sources rich in organic matter',adv:'Addresses the root cause, additional benefits (taste and odor)',lim:'Requires periodic carbon replacement',ex:'Major drinking water treatment plants'}},
+
+{abbr:'UV Disinfection',full:'Ultraviolet Disinfection',ar:'التطهير بالأشعة فوق البنفسجية',mechAr:'استخدام أشعة UV لتعطيل الميكروبات بدلاً من الاعتماد الكامل على الكلور، يقلل من تكون النواتج الجانبية الكلورية',mechEn:'Use UV light to inactivate microbes instead of relying fully on chlorine, reducing chlorinated byproduct formation',
+whenAr:{ideal:'محطات مياه حديثة، مياه منخفضة العكارة',adv:'لا نواتج جانبية كيميائية، فعال ضد الطفيليات المقاومة للكلور',lim:'لا يوفر حماية متبقية في شبكة التوزيع، يحتاج كلور تكميلي منخفض',ex:'محطات مياه شرب حديثة'},
+whenEn:{ideal:'Modern water plants, low-turbidity water',adv:'No chemical byproducts, effective against chlorine-resistant parasites',lim:'No residual protection in distribution network, needs supplemental low-dose chlorine',ex:'Modern drinking water plants'}}
+],
+emergency:['تقليل جرعة الكلور مؤقتاً مع ضمان التطهير الكافي','اختبار فوري لمستويات THMs/HAAs'],
+cap:['ترقية نظام المعالجة بمرحلة GAC أو UV','تحسين إزالة المواد العضوية قبل التطهير','رصد دوري لنواتج التطهير في الشبكة'],
+safety:['فحوصات دورية لجودة مياه الشرب','تدريب العاملين على التعامل الآمن مع الكلور']},
+
+{id:'ballast_bilge_water',category:'water',icon:'🚢',severity:'high',sectors:['موانئ','سفن','شحن بحري'],
+nameAr:'مياه التوازن وماء الآسن من السفن (Ballast & Bilge Water)',nameEn:'Ballast & Bilge Water from Ships',
+descAr:'مياه التوازن تنقل كائنات بحرية غازية دخيلة بين المحيطات، وماء الآسن من قاع السفن ملوث بالزيوت والوقود',descEn:'Ballast water transports invasive marine organisms between oceans, while bilge water from ship bottoms is contaminated with oil and fuel',
+standards:['IMO Ballast Water Management Convention (BWM)','IMO MARPOL Annex I (Oil Pollution)','IFC EHS Guidelines for Ports'],
+solutions:[
+{abbr:'BWMS',full:'Ballast Water Treatment System (UV/Chlorination)',ar:'أنظمة معالجة مياه التوازن',mechAr:'معالجة مياه التوازن بالأشعة فوق البنفسجية أو الكلورة أو الترشيح الدقيق قبل تفريغها في ميناء جديد، لقتل الكائنات الدخيلة ومنع غزوها البيئي',mechEn:'Treat ballast water with UV, chlorination or fine filtration before discharge at a new port, killing invasive organisms and preventing ecological invasion',
+whenAr:{ideal:'سفن الشحن والناقالت العابرة بين مناطق بحرية مختلفة',adv:'يمنع غزو الكائنات الدخيلة، مطلوب دولياً وفق اتفاقية IMO BWM',lim:'تكلفة تركيب وتشغيل على السفينة، يحتاج فحص دوري لالمتثال',ex:'ناقلات نفط، سفن حاويات كبرى'},
+whenEn:{ideal:'Cargo ships and tankers transiting between different marine regions',adv:'Prevents invasive species invasion, internationally required per IMO BWM Convention',lim:'Installation and operating cost on the vessel, needs periodic compliance inspection',ex:'Oil tankers, major container ships'}},
+
+{abbr:'OWS',full:'Oily Water Separator',ar:'فاصل المياه الزيتية',mechAr:'فصل الزيت عن ماء الآسن المتجمع في قاع السفينة بالطرد المركزي أو الترشيح الائتلافي قبل تصريف المياه للبحر، بما يضمن عدم تجاوز 15 جزء بالمليون زيت',mechEn:'Separate oil from bilge water collected in the ship bottom via centrifugation or coalescing filtration before discharge to sea, ensuring oil content stays below 15 ppm',
+whenAr:{ideal:'أي سفينة بها غرفة محركات تتجمع فيها مياه ملوثة بالزيت',adv:'إلزامي دولياً وفق MARPOL، يمنع تلوث المياه الساحلية بالزيت',lim:'يحتاج صيانة دورية ومراقبة سجل الزيت (Oil Record Book)',ex:'كل السفن التجارية والناقالت'},
+whenEn:{ideal:'Any ship with an engine room where oil-contaminated water accumulates',adv:'Internationally mandatory per MARPOL, prevents coastal water oil pollution',lim:'Needs periodic maintenance and Oil Record Book monitoring',ex:'All merchant ships and tankers'}}
+],
+emergency:['إيقاف أي تصريف مباشر فوراً لو تجاوز الحد المسموح','استخدام حواجز ماصة (Booms) لأي تسرب زيت سطحي','إبلاغ سلطة الميناء والجهات البحرية'],
+cap:['تركيب/صيانة نظام معالجة مياه التوازن ونظام فصل المياه الزيتية','تدقيق سجل الزيت وسجل مياه التوازن دورياً','تدريب طاقم السفينة على بروتوكولات MARPOL/IMO'],
+safety:['قفازات مقاومة للزيوت','معدات إخماد حريق قرب مناطق التخزين','تهوية جيدة في غرف المعدات المغلقة']},
+
+{id:'manure_leachate_water',category:'water',icon:'🐄',severity:'medium',sectors:['مزارع الماشية والأغنام','مزارع الدواجن','ثروة حيوانية'],
+nameAr:'عصارة الروث ومخلفات الأدوية البيطرية في مياه غسيل الحظائر',nameEn:'Manure Leachate & Veterinary Drug Residues in Livestock Wash Water',
+descAr:'تسرب عصارة الروث الغنية بالنيتروجين والفوسفور للمياه الجوفية، ومياه غسيل الحظائر المحملة ببقايا أدوية بيطرية ومضادات حيوية',descEn:'Nutrient-rich manure leachate (nitrogen, phosphorus) infiltrating groundwater, and livestock housing wash water carrying veterinary drug and antibiotic residues',
+standards:['EPA CAFO Regulations (Concentrated Animal Feeding Operations)','FAO Guidelines for Livestock Waste Management','WHO Guidelines for Antibiotic Residues in Water'],
+solutions:[
+{abbr:'Covered Lagoons',full:'Covered Anaerobic Lagoons + Biogas',ar:'بحيرات مغطاة للهضم اللاهوائي',mechAr:'تجميع الروث في بحيرات مغطاة بغشاء عازل يمنع تسرب العصارة للتربة، مع هضم لاهوائي يولد غاز الميثان كطاقة ويثبت المخلفات',mechEn:'Collect manure in lagoons covered with an impermeable membrane that prevents leachate infiltration into soil, with anaerobic digestion generating methane for energy and stabilizing the waste',
+whenAr:{ideal:'مزارع ماشية وأغنام كبيرة بكميات روث ضخمة',adv:'يمنع تسرب العصارة للمياه الجوفية، ينتج طاقة (Biogas)، يقلل الروائح',lim:'تكلفة إنشاء الغشاء العازل والخزانات',ex:'مزارع ماشية ومجمعات تربية كبرى'},
+whenEn:{ideal:'Large cattle and sheep farms with massive manure quantities',adv:'Prevents leachate infiltration into groundwater, produces biogas energy, reduces odors',lim:'Cost of installing the impermeable liner and tanks',ex:'Cattle farms and large breeding complexes'}},
+
+{abbr:'Constructed Wetlands',full:'Constructed Wetlands',ar:'الأراضي الرطبة المُنشأة',mechAr:'تمرير مياه غسيل الحظائر عبر أحواض ضحلة مزروعة بنباتات مائية (قصب/بوص) لامتصاص النيتروجين والفوسفور المتبقي وترشيح بقايا الأدوية جزئياً',mechEn:'Pass livestock wash water through shallow ponds planted with aquatic vegetation (reed/cattail) to absorb residual nitrogen and phosphorus and partially filter drug residues',
+whenAr:{ideal:'مزارع متوسطة، حاجة لحل منخفض التكلفة',adv:'رخيص، صديق للبيئة، يحسن المظهر الجمالي',lim:'يحتاج مساحة، لا يزيل المضادات الحيوية بالكامل',ex:'مزارع دواجن وماشية متوسطة'},
+whenEn:{ideal:'Medium-sized farms, need for a low-cost solution',adv:'Cheap, eco-friendly, improves aesthetic appearance',lim:'Requires space, does not fully remove antibiotics',ex:'Medium poultry and cattle farms'}}
+],
+emergency:['إيقاف صرف مياه الغسيل المباشر على الأرض فوراً','عزل بِرك الروث المتسربة','فحص فوري لآبار المياه المجاورة'],
+cap:['بناء بحيرات مغطاة أو أحواض ترسيب قبل أي تصريف','التخلص السليم من الأدوية البيطرية منتهية الصلاحية','رصد دوري لمخلفات المضادات الحيوية في المياه المجاورة'],
+safety:['قفازات وأحذية مخصصة لتفادي الأمراض المشتركة (Zoonotic)','تخزين الأدوية البيطرية في مكان مغلق بعيد عن العمال غير المصرح لهم']},
+
+// ===== تلوث التربة =====
+{id:'heavy_metals_soil',category:'soil',icon:'🌱',severity:'high',sectors:['بطاريات','تعدين','دباغة','طلاء'],
+nameAr:'تلوث التربة بالمعادن الثقيلة',nameEn:'Soil Contamination with Heavy Metals',
+descAr:'معادن (Pb, Cd, As, Hg) تتراكم في التربة وتنتقل للمحاصيل',descEn:'Metals (Pb, Cd, As, Hg) accumulate in soil and transfer to crops',
+standards:['EPA Soil Screening Levels','WHO Guidelines for Soil Quality','EU Soil Framework Directive'],
+solutions:[
+{abbr:'S/S',full:'Solidification/Stabilization',ar:'التصلب والتثبيت',mechAr:'خلط التربة الملوثة بالإسمنت أو الجير لتحويلها لكتلة صلبة تمنع Leaching',mechEn:'Mix contaminated soil with cement or lime to form solid mass preventing Leaching',
+whenAr:{ideal:'معادن ثقيلة، حاجة لمنع الانتشار السريع',adv:'سريع، يمنع Leaching',lim:'لا يزيل المعادن',ex:'مواقع ملوثة'},
+whenEn:{ideal:'Heavy metals, need to prevent rapid spread',adv:'Fast, prevents Leaching',lim:'Does not remove metals',ex:'Contaminated sites'}},
+
+{abbr:'Soil Washing',full:'Soil Washing',ar:'غسل التربة',mechAr:'فصل الحبيبات الدقيقة الملوثة عن الرمل النظيف',mechEn:'Separate contaminated fine particles from clean sand',
+whenAr:{ideal:'تربة رملية، معادن على حبيبات دقيقة',adv:'يقلل حجم النفايات 90%',lim:'لا يناسب طين',ex:'مواقع رملية'},
+whenEn:{ideal:'Sandy soil, metals on fine particles',adv:'Reduces waste volume 90%',lim:'Not suitable for clay',ex:'Sandy sites'}},
+
+{abbr:'Phytoremediation',full:'Phytoremediation',ar:'المعالجة النباتية',mechAr:'نباتات متخصصة تمتص المعادن عبر جذورها',mechEn:'Specialized plants absorb metals through roots',
+whenAr:{ideal:'تلوث سطحي غير عميق، وقت كافٍ',adv:'رخيص، طبيعي، جمالي',lim:'بطيء (سنوات)',ex:'أراضٍ واسعة ملوثةlightly'},
+whenEn:{ideal:'Shallow surface contamination, sufficient time',adv:'Cheap, natural, aesthetic',lim:'Slow (years)',ex:'Lightly contaminated large areas'}}
+],
+emergency:['عزل المنطقة الملوثة','منع الوصول','تغطية التربة','أخذ عينات للتحليل'],
+cap:['إزالة التربة الملوثة','معالجة فيزيائية/كيميائية','رصد دوري','إعادة تأهيل الموقع'],
+safety:['بدلات واقية','كمامات P100','قفازات كيميائية','فحوصات دم دورية']},
+
+{id:'hydrocarbons_soil',category:'soil',icon:'🛢️',severity:'high',sectors:['نفط','محطات وقود','ورش'],
+nameAr:'تلوث التربة بالهيدروكربونات (نفط)',nameEn:'Soil Contamination with Hydrocarbons (Oil)',
+descAr:'تسرب نفطي يلوث التربة ويمنع نمو النباتات',descEn:'Oil spill contaminates soil and prevents plant growth',
+standards:['EPA Petroleum Brownfields Program','WHO Guidelines for Petroleum in Soil','EU Soil Protection Strategy','NCEC Requirements for Secondary Containment (Saudi Arabia)'],
+solutions:[
+{abbr:'Bioremediation',full:'Bioremediation (In-Situ/Ex-Situ)',ar:'المعالجة الحيوية',mechAr:'بكتيريا Pseudomonas و Bacillus تحلل الهيدروكربونات',mechEn:'Pseudomonas and Bacillus bacteria degrade hydrocarbons',
+whenAr:{ideal:'هيدروكربونات قابلة للتحلل، وقت كافٍ',adv:'طبيعي، رخيص',lim:'بطيء',ex:'تسربات نفطية'},
+whenEn:{ideal:'Biodegradable hydrocarbons, sufficient time',adv:'Natural, cheap',lim:'Slow',ex:'Oil spills'}},
+
+{abbr:'Soil Vapor Extraction',full:'Soil Vapor Extraction (SVE)',ar:'استخراج أبخرة التربة',mechAr:'سحب أبخرة النفط من التربة بفراغ هوائي',mechEn:'Extract oil vapors from soil by air vacuum',
+whenAr:{ideal:'مركبات متطايرة (BTEX)، تربة مسامية',adv:'سريع للمركبات المتطايرة',lim:'لا يناسب مركبات ثقيلة',ex:'محطات وقود'},
+whenEn:{ideal:'Volatile compounds (BTEX), porous soil',adv:'Fast for volatiles',lim:'Not suitable for heavy compounds',ex:'Fuel stations'}},
+
+{abbr:'Thermal Desorption',full:'Thermal Desorption',ar:'الامتزاز الحراري',mechAr:'تسخين التربة لـ 300-600°C لتبخير الهيدروكربونات',mechEn:'Heat soil to 300-600°C to vaporize hydrocarbons',
+whenAr:{ideal:'تلوث شديد، حاجة لسرعة',adv:'سريع وفعال',lim:'طاقة عالية',ex:'مواقع ملوثة بشدة'},
+whenEn:{ideal:'Severe contamination, need for speed',adv:'Fast and effective',lim:'High energy',ex:'Heavily contaminated sites'}}
+],
+emergency:['احتواء التسرب فوراً','إزالة التربة الملوثة','منع وصول المياه الجوفية','إبلاغ البيئة'],
+cap:['Bioremediation في الموقع','مراقبة مستمرة','استرداد التربة','إعادة التشجير'],
+safety:['بدلات كيميائية','كمامات كربون','قفازات نيتريل','أجهزة كشف VOCs']},
+
+{id:'pesticides_soil',category:'soil',icon:'🌾',severity:'medium',sectors:['زراعة','مبيدات'],
+nameAr:'تلوث التربة بالمبيدات',nameEn:'Soil Contamination with Pesticides',
+descAr:'مبيدات متراكمة تقتل الكائنات النافعة وتلوث المحاصيل',descEn:'Accumulated pesticides kill beneficial organisms and contaminate crops',
+standards:['WHO Guidelines for Pesticide Residues','FAO International Code of Conduct','EU Sustainable Use Directive 2009/128/EC'],
+solutions:[
+{abbr:'Bioremediation',full:'Pesticide-Degrading Bioremediation',ar:'المعالجة الحيوية للمبيدات',mechAr:'بكتيريا وفطريات متخصصة تحلل المبيدات',mechEn:'Specialized bacteria and fungi degrade pesticides',
+whenAr:{ideal:'مبيدات عضوية قابلة للتحلل',adv:'طبيعي',lim:'بطيء',ex:'أراضٍ زراعية'},
+whenEn:{ideal:'Biodegradable organic pesticides',adv:'Natural',lim:'Slow',ex:'Agricultural lands'}},
+
+{abbr:'Phytoremediation',full:'Phytoremediation',ar:'المعالجة النباتية',mechAr:'نباتات تمتص المبيدات أو تحللها',mechEn:'Plants absorb or degrade pesticides',
+whenAr:{ideal:'تلوث سطحي، وقت طويل',adv:'رخيص، جمالي',lim:'بطيء جداً',ex:'أراضٍ واسعة'},
+whenEn:{ideal:'Surface contamination, long time',adv:'Cheap, aesthetic',lim:'Very slow',ex:'Large areas'}},
+
+{abbr:'Soil Replacement',full:'Contaminated Soil Replacement',ar:'استبدال التربة الملوثة',mechAr:'إزالة التربة الملوثة واستبدالها بتربة نظيفة',mechEn:'Remove contaminated soil and replace with clean soil',
+whenAr:{ideal:'تلوث شديد، حاجة لزراعة فورية',adv:'سريع',lim:'مكلف',ex:'أراضٍ زراعية ملوثة بشدة'},
+whenEn:{ideal:'Severe contamination, need for immediate farming',adv:'Fast',lim:'Expensive',ex:'Heavily contaminated farmland'}}
+],
+emergency:['إيقاف استخدام المبيد','عزل المنطقة','أخذ عينات','إبلاغ الزراعة'],
+cap:['المكافحة المتكاملة IPM','تقليل المبيدات','زراعة عضوية','رصد التربة'],
+safety:['بدلات كيميائية','كمامات','قفازات','تدريب على التعامل مع المبيدات']},
+
+{id:'saline_soil',category:'soil',icon:'🧂',severity:'medium',sectors:['زراعة','تحلية'],
+nameAr:'تملح التربة',nameEn:'Soil Salinization',
+descAr:'تراكم الأملاح يقلل إنتاجية التربة ويمنع نمو النباتات',descEn:'Salt accumulation reduces soil productivity and prevents plant growth',
+standards:['FAO Guidelines for Saline Soils','WHO Guidelines for Irrigation Water','EU Soil Salinization Strategy'],
+solutions:[
+{abbr:'Leaching',full:'Soil Leaching with Good Drainage',ar:'الغسيل مع صرف جيد',mechAr:'ري غزير لغسل الأملاح مع نظام صرف فعال',mechEn:'Heavy irrigation to wash salts with effective drainage',
+whenAr:{ideal:'تملح خفيف إلى متوسط، مياه جيدة متاحة',adv:'فعال',lim:'يستهلك ماء',ex:'أراضٍ زراعية'},
+whenEn:{ideal:'Light to medium salinity, good water available',adv:'Effective',lim:'Consumes water',ex:'Agricultural lands'}},
+
+{abbr:'Gypsum Application',full:'Gypsum (CaSO4) Application',ar:'إضافة الجبس',mechAr:'الجبس يحل محل الصوديوم في التربة',mechEn:'Gypsum replaces sodium in soil',
+whenAr:{ideal:'تربة صودية (Sodic)',adv:'رخيص، فعال للصوديوم',lim:'لا يزيل أملاح أخرى',ex:'تربة صودية'},
+whenEn:{ideal:'Sodic soils',adv:'Cheap, effective for sodium',lim:'Does not remove other salts',ex:'Sodic soils'}},
+
+{abbr:'Salt-Tolerant Crops',full:'Salt-Tolerant Crop Varieties',ar:'محاصيل متحملة للملوحة',mechAr:'زراعة أصناف تتحمل الملوحة (شعير، قطن)',mechEn:'Grow salt-tolerant varieties (barley, cotton)',
+whenAr:{ideal:'تملح لا يمكن علاجه',adv:'استمرار الإنتاج',lim:'محاصيل محدودة',ex:'مناطق ملحية'},
+whenEn:{ideal:'Unrecoverable salinity',adv:'Continue production',lim:'Limited crops',ex:'Saline areas'}}
+],
+emergency:['إيقاف الري بالمياه المالحة','تصريف المياه الراكدة'],
+cap:['نظام صرف فعال','ري بالتنقيط','إضافة مواد عضوية','مراقبة الملوحة'],
+safety:['نظارات واقية','قفازات','تدريب على إدارة التربة']},
+
+{id:'pfas_soil',category:'soil',icon:'⚗️',severity:'high',sectors:['كيماويات','إطفاء','صناعة'],
+nameAr:'مركبات PFAS (المواد الكيميائية الأبدية)',nameEn:'PFAS (Forever Chemicals)',
+descAr:'مركبات لا تتحلل طبيعياً تتراكم في التربة والمياه',descEn:'Non-degradable compounds accumulating in soil and water',
+standards:['EPA PFAS Action Plan','EU PFAS Restriction Proposal','WHO PFAS Guidelines'],
+solutions:[
+{abbr:'Soil Excavation',full:'Soil Excavation and Disposal',ar:'حفر التربة والتخلص',mechAr:'إزالة التربة الملوثة ونقلها لمطمر آمن',mechEn:'Remove contaminated soil and transport to secure landfill',
+whenAr:{ideal:'تلوث مركز في منطقة صغيرة',adv:'إزالة سريعة',lim:'مكلف، ينقل المشكلة',ex:'مواقع محددة'},
+whenEn:{ideal:'Concentrated contamination in small area',adv:'Quick removal',lim:'Expensive, transfers problem',ex:'Specific sites'}},
+
+{abbr:'Thermal Treatment',full:'High-Temperature Thermal Treatment',ar:'المعالجة الحرارية العالية',mechAr:'حرق التربة عند >1000°C لتدمير PFAS',mechEn:'Burn soil at >1000°C to destroy PFAS',
+whenAr:{ideal:'تلوث شديد، PFAS فقط يحرق بدرجات عالية جداً',adv:'يدمر PFAS فعلياً',lim:'طاقة عالية جداً',ex:'مواقع شديدة التلوث'},
+whenEn:{ideal:'Severe contamination, only PFAS burns at very high temps',adv:'Actually destroys PFAS',lim:'Very high energy',ex:'Heavily contaminated sites'}}
+],
+emergency:['عزل المنطقة','منع الوصول','إبلاغ EPA/البيئة'],
+cap:['حفر التربة','معالجة حرارية','رصد مستمر'],
+safety:['PPE مستوى A','SCBA','تدريب HAZMAT PFAS']},
+
+{id:'mining_contamination',category:'soil',icon:'⛏️',severity:'high',sectors:['التعدين','استخراج المعادن','محاجر'],
+nameAr:'تلوث التربة من مخلفات التعدين (Acid Mine Drainage)',nameEn:'Mining-related Soil Contamination (Acid Mine Drainage)',
+descAr:'تسرب أحماض ومعادن ثقيلة من مخلفات المناجم (Tailings) للتربة المحيطة، يحمض التربة ويسمم النبات والمياه الجوفية',descEn:'Leaching of acids and heavy metals from mine tailings into surrounding soil, acidifying soil and poisoning vegetation and groundwater',
+standards:['EPA Mine Waste Regulations (40 CFR Part 440)','ICMM Guidelines (International Council on Mining and Metals)','IFC EHS Guidelines for Mining'],
+solutions:[
+{abbr:'Tailings Encapsulation',full:'Engineered Tailings Encapsulation',ar:'تغليف مخلفات التعدين هندسياً',mechAr:'تغطية مخلفات التعدين بطبقات عازلة (طينية/جيوممبرين) لمنع تلامسها بالهواء والمطر، يوقف تكون الحمض',mechEn:'Cover tailings with sealing layers (clay/geomembrane) to prevent air and rain contact, stopping acid formation',
+whenAr:{ideal:'مخلفات تعدين نشطة أو مهجورة بها معادن كبريتيدية',adv:'يوقف التفاعل من المصدر، حل طويل الأمد',lim:'تكلفة إنشاء عالية، يحتاج صيانة الغطاء دورياً',ex:'مناجم فحم، مناجم نحاس وذهب'},
+whenEn:{ideal:'Active or abandoned tailings with sulfide minerals',adv:'Stops reaction at source, long-term solution',lim:'High construction cost, requires periodic cover maintenance',ex:'Coal mines, copper and gold mines'}},
+
+{abbr:'Phytoremediation',full:'Phytoremediation with Hyperaccumulator Plants',ar:'المعالجة النباتية بنباتات ماصة للمعادن',mechAr:'زراعة نباتات قادرة على امتصاص المعادن الثقيلة من التربة وتخزينها في أنسجتها، ثم حصادها والتخلص منها بأمان',mechEn:'Plant metal-hyperaccumulating species that absorb heavy metals from soil into their tissue, then harvest and dispose safely',
+whenAr:{ideal:'تلوث متوسط منتشر على مساحة واسعة، وقت متاح طويل',adv:'منخفض التكلفة، صديق للبيئة',lim:'بطيء جداً (سنوات)، غير فعال للتلوث الشديد جداً',ex:'مواقع تعدين مغلقة، مناطق ريفية واسعة'},
+whenEn:{ideal:'Moderate contamination spread over large area, ample time available',adv:'Low cost, environmentally friendly',lim:'Very slow (years), ineffective for severe contamination',ex:'Closed mining sites, large rural areas'}}
+],
+emergency:['عزل منطقة التسرب فوراً','منع وصول التسرب الحمضي لمصادر المياه','إبلاغ جهاز البيئة'],
+cap:['بناء نظام تغليف/عزل للمخلفات','برنامج رصد جودة المياه الجوفية المجاورة','خطة إعادة تأهيل تدريجية للموقع'],
+safety:['PPE مقاومة للأحماض','فحص دوري لمياه الشرب المجاورة','تدريب على HAZMAT']},
+
+{id:'soil_erosion',category:'soil',icon:'🏞️',severity:'medium',sectors:['الزراعة','إزالة الغابات','مشاريع البناء والطرق'],
+nameAr:'تآكل التربة وفقدان الغطاء النباتي',nameEn:'Soil Erosion & Land Degradation',
+descAr:'فقدان الطبقة السطحية الخصبة من التربة بفعل المياه والرياح نتيجة إزالة الغطاء النباتي أو سوء الممارسات الزراعية',descEn:'Loss of fertile topsoil due to water and wind action, caused by vegetation removal or poor agricultural practices',
+standards:['FAO Guidelines for Sustainable Soil Management','UNCCD (UN Convention to Combat Desertification)','USDA-NRCS Soil Conservation Standards'],
+solutions:[
+{abbr:'Contour Terracing',full:'Contour Terracing / Contour Farming',ar:'الزراعة الكنتورية المدرجة',mechAr:'إنشاء مدرجات وحرث بمحاذاة خطوط الكنتور بدلاً من اتجاه الانحدار، يبطئ جريان المياه ويقلل التآكل',mechEn:'Build terraces and plow along contour lines instead of slope direction, slows water runoff and reduces erosion',
+whenAr:{ideal:'أراضي زراعية منحدرة',adv:'يقلل التآكل بشكل كبير، يحافظ على رطوبة التربة',lim:'تكلفة إنشاء أولية، يحتاج صيانة',ex:'مزارع جبلية وتلال'},
+whenEn:{ideal:'Sloped agricultural land',adv:'Significantly reduces erosion, retains soil moisture',lim:'Initial construction cost, needs maintenance',ex:'Hillside and mountain farms'}},
+
+{abbr:'Reforestation',full:'Reforestation / Vegetative Cover Restoration',ar:'إعادة التشجير واستعادة الغطاء النباتي',mechAr:'زراعة أشجار ونباتات غطاء تثبت التربة بجذورها وتقلل تأثير المطر والرياح المباشر عليها',mechEn:'Plant trees and cover crops that stabilize soil with roots and reduce direct rain/wind impact',
+whenAr:{ideal:'مناطق أزيل غطاؤها النباتي حديثاً، أحواض أنهار',adv:'حل طويل الأمد، فوائد بيئية إضافية (تنوع حيوي، كربون)',lim:'يحتاج سنوات لتحقيق تأثير كامل',ex:'أحواض تصريف الأنهار، مناطق التعدين المغلقة'},
+whenEn:{ideal:'Recently deforested areas, river basins',adv:'Long-term solution, additional environmental benefits (biodiversity, carbon)',lim:'Takes years for full effect',ex:'River drainage basins, closed mining areas'}}
+],
+emergency:['إيقاف أي نشاط حفر أو إزالة غطاء إضافي فوراً','تركيب حواجز طينية مؤقتة لمنع انجراف فوري بعد أمطار غزيرة'],
+cap:['خطة تدريجية لاستعادة الغطاء النباتي','تطبيق ممارسات حرث محافظة','رصد دوري بالأقمار الصناعية لتتبع التغير'],
+safety:['لا مخاطر مباشرة على العاملين، لكن يُنصح بتقييم استقرار المنحدرات قبل العمل']},
+
+{id:'organic_fats_soil',category:'soil',icon:'🥩',severity:'high',sectors:['مذابح','مصانع أغذية','مصانع دهون وزيوت','تصنيع لحوم'],
+nameAr:'تلوث التربة بالمخلفات العضوية والدهون والزيوت الحيوانية (المذابح والصناعات الغذائية)',nameEn:'Soil Contamination with Organic Waste, Animal Fats & Oils (Slaughterhouses & Food Industry)',
+descAr:'تصريف دماء ومخلفات ذبح ودهون حيوانية على التربة يسبب تعفناً عضوياً واستهلاك أكسجين التربة وتكاثر الحشرات والقوارض والروائح',descEn:'Discharge of blood, slaughter offal and animal fats onto soil causes organic putrefaction, soil oxygen depletion, insect/rodent proliferation and odors',
+standards:['EPA 40 CFR Part 432 (Meat & Poultry Products Effluent Guidelines)','FAO Code of Practice for Meat Processing Waste','WHO Guidelines for Safe Disposal of Animal By-products'],
+solutions:[
+{abbr:'DAF',full:'Dissolved Air Flotation',ar:'التعويم بالهواء المذاب',mechAr:'فصل الدهون والزيوت من مياه الغسيل من المصدر عبر حقن هواء مضغوط يذوب في الماء، وعند تحرره يشكل فقاعات دقيقة تلتصق بالدهون وترفعها للسطح لتُكشط، فيمنع تشرب الدهون في التربة من الأساس بدلاً من معالجتها بعد التلوث',mechEn:'Separates fats and oils from wash water at the source by injecting pressurized air that dissolves in water; upon release it forms micro-bubbles that attach to fats and lift them to the surface for skimming, preventing fat infiltration into soil rather than treating it after contamination',
+whenAr:{ideal:'مياه غسيل المذابح المحملة بالدهون قبل أي تصريف على الأرض أو الشبكة',adv:'يمنع المشكلة من المصدر، كفاءة فصل تتجاوز 98%، يحمي أي محطة معالجة بيولوجية لاحقة من "الصدمة الدهنية"',lim:'لا يعالج التربة الملوثة بالفعل، يحتاج صيانة دورية لكاشطات السطح',ex:'مسالخ، مصانع أغذية، مطابخ مركزية'},
+whenEn:{ideal:'Fat-laden slaughterhouse wash water before any discharge to ground or sewer network',adv:'Prevents the problem at the source, separation efficiency exceeds 98%, protects any downstream biological treatment from "fat shock"',lim:'Does not treat already-contaminated soil, needs periodic maintenance of surface skimmers',ex:'Slaughterhouses, food factories, central kitchens'}},
+
+{abbr:'Rendering',full:'Rendering Process',ar:'التحويل الصناعي (Rendering)',mechAr:'تسخين المخلفات الحيوانية والدهون لدرجات عالية لفصل الدهن (Tallow) والبروتين، يحولها لمواد صناعية آمنة بدلاً من التخلص العشوائي',mechEn:'Heat animal by-products and fats to high temperatures to separate tallow and protein meal, converting waste into safe industrial materials instead of random disposal',
+whenAr:{ideal:'كميات كبيرة ومنتظمة من مخلفات المذابح والدهون',adv:'يحول النفايات لمنتج اقتصادي (علف/صابون/وقود)، يقضي على مصدر التلوث من جذوره',lim:'تكلفة رأسمالية للمعدات، يحتاج نقل ومعالجة منتظمة للمخلفات',ex:'مجازر كبيرة، مصانع تصنيع لحوم'},
+whenEn:{ideal:'Large regular quantities of slaughterhouse waste and fats',adv:'Converts waste into economic product (feed/soap/fuel), eliminates pollution at the source',lim:'Capital cost for equipment, needs regular waste transport and processing',ex:'Large slaughterhouses, meat processing plants'}},
+
+{abbr:'AD',full:'Anaerobic Digestion (Biogas)',ar:'الهضم اللاهوائي (توليد الغاز الحيوي)',mechAr:'بكتيريا لاهوائية تحلل الدهون والمخلفات العضوية في خزانات مغلقة لإنتاج غاز الميثان (طاقة) وسماد عضوي (Digestate)',mechEn:'Anaerobic bacteria decompose fats and organic waste in sealed tanks producing methane biogas (energy) and organic fertilizer (digestate)',
+whenAr:{ideal:'مخلفات عضوية عالية الدهون، حاجة لمصدر طاقة بديل',adv:'ينتج طاقة نظيفة وسماد عضوي، يقلل الروائح والحشرات بشكل كبير',lim:'يحتاج تحكم دقيق في الحرارة والحموضة، استثمار أولي في الخزانات',ex:'مذابح، مصانع ألبان وأغذية'},
+whenEn:{ideal:'High-fat organic waste, need for alternative energy source',adv:'Produces clean energy and organic fertilizer, significantly reduces odors and insects',lim:'Requires precise temperature/pH control, initial tank investment',ex:'Slaughterhouses, dairy and food factories'}},
+
+{abbr:'Composting',full:'Controlled Aerobic Composting',ar:'التسميد الهوائي المتحكم فيه',mechAr:'خلط المخلفات العضوية بمواد كربونية (نشارة خشب/قش) بنسب محددة، مع تهوية دورية لتحفيز التحلل الهوائي وقتل الممرضات بالحرارة (55-65°C)',mechEn:'Mix organic waste with carbon materials (wood chips/straw) in set ratios, with periodic aeration to promote aerobic decomposition and kill pathogens via heat (55-65°C)',
+whenAr:{ideal:'مخلفات عضوية غير مركزة، مساحة كافية متاحة',adv:'ينتج سماد آمن قابل للبيع، تكلفة تشغيل منخفضة نسبياً',lim:'يحتاج مساحة كبيرة ووقت (أسابيع-شهور)، رقابة صارمة على الروائح',ex:'مزارع، مصانع أغذية متوسطة الحجم'},
+whenEn:{ideal:'Non-concentrated organic waste, sufficient space available',adv:'Produces sellable safe fertilizer, relatively low operating cost',lim:'Needs large space and time (weeks-months), strict odor control needed',ex:'Farms, medium-sized food factories'}}
+],
+emergency:['إيقاف التصريف العشوائي للمخلفات فوراً','عزل منطقة التسرب أو التكدس','تغطية المخلفات لمنع الحشرات والقوارض والروائح','إبلاغ جهاز البيئة والصحة'],
+cap:['إنشاء وحدة Rendering أو نظام تسميد نظامي معتمد','بناء فواصل دهون (Grease Traps) وخط صرف مخصص قبل أي تصريف للتربة','برنامج جمع ونقل دوري للمخلفات لجهة مرخصة','رصد دوري لجودة التربة المحيطة (BOD/COD في المياه المرتبطة)'],
+safety:['قفازات مقاومة للمواد البيولوجية','كمامات ضد الروائح والغازات (H2S/NH3)','بدلات مقاومة للماء والدهون','تطعيمات ضد الأمراض الحيوانية المشتركة (Zoonotic)']},
+
+{id:'desertification_overgrazing',category:'soil',icon:'🏜️',severity:'medium',sectors:['الرعي الجائر','تربية الماشية الرحّالة','المناطق شبه الجافة'],
+nameAr:'التصحر الناتج عن الرعي الجائر',nameEn:'Desertification from Overgrazing',
+descAr:'رعي قطعان كبيرة بشكل مكثف يتجاوز قدرة الأرض على التجدد، يدمر الغطاء النباتي ويحول الأراضي شبه الجافة تدريجياً لصحراء',descEn:'Intensive grazing by large herds beyond land regeneration capacity destroys vegetation cover and gradually converts semi-arid land into desert',
+standards:['UNCCD (UN Convention to Combat Desertification)','FAO Guidelines for Sustainable Rangeland Management','IUCN Global Drylands Initiative'],
+solutions:[
+{abbr:'Rotational Grazing',full:'Rotational/Managed Grazing',ar:'الرعي الدوّار المُدار',mechAr:'تقسيم أرض الرعي لقطع، ونقل القطيع بينها بجدول زمني محدد يعطي كل قطعة وقتاً كافياً للتجدد الطبيعي قبل الرعي التالي',mechEn:'Divide grazing land into paddocks and rotate the herd between them on a fixed schedule, giving each section enough time for natural regeneration before the next grazing cycle',
+whenAr:{ideal:'مناطق رعي شبه جافة بها قطعان متوسطة إلى كبيرة',adv:'يحافظ على الغطاء النباتي، يزيد إنتاجية الأرض على المدى الطويل',lim:'يحتاج تخطيطاً وإدارة دقيقة وأسيجة مؤقتة',ex:'مزارع الرعي الرحالة، محميات طبيعية'},
+whenEn:{ideal:'Semi-arid grazing areas with medium to large herds',adv:'Preserves vegetation cover, increases land productivity long-term',lim:'Requires careful planning, management and temporary fencing',ex:'Nomadic grazing farms, nature reserves'}},
+
+{abbr:'Reseeding',full:'Native Vegetation Reseeding & Restoration',ar:'إعادة زراعة الغطاء النباتي الأصلي',mechAr:'زراعة بذور نباتات محلية متحملة للجفاف في المناطق المتدهورة لتثبيت التربة واستعادة الغطاء النباتي تدريجياً',mechEn:'Plant seeds of drought-tolerant native species in degraded areas to stabilize soil and gradually restore vegetation cover',
+whenAr:{ideal:'مناطق تصحر مبكر لسه ممكن استعادتها',adv:'يعيد التوازن البيئي، يدعم التنوع الحيوي المحلي',lim:'بطيء (سنوات)، يحتاج حماية من الرعي لحين نمو النباتات',ex:'مناطق رعي متدهورة، حدود الصحراء'},
+whenEn:{ideal:'Early-stage desertified areas still recoverable',adv:'Restores ecological balance, supports local biodiversity',lim:'Slow (years), needs protection from grazing until plants establish',ex:'Degraded rangelands, desert fringes'}}
+],
+emergency:['إخلاء المنطقة المتضررة من الرعي فوراً لإعطائها فرصة للتجدد','توفير مصادر علف بديلة للقطيع مؤقتاً'],
+cap:['وضع خطة رعي دوّار طويلة المدى','برنامج إعادة تشجير وزراعة تدريجي','رصد دوري بالأقمار الصناعية لتتبع تمدد التصحر'],
+safety:['لا مخاطر مباشرة على العاملين، لكن يُنصح بتقييم قدرة الأرض الاستيعابية قبل أي زيادة في القطيع']},
+
+{id:'land_subsidence_groundwater',category:'soil',icon:'🕳️',severity:'high',sectors:['الزراعة المكثفة','المدن الساحلية','الصناعة (سحب مياه جوفية)'],
+nameAr:'انخفاض مستوى الأرض (Land Subsidence) من الاستنزاف الجائر للمياه الجوفية',nameEn:'Land Subsidence from Groundwater Over-Extraction',
+descAr:'السحب المفرط للمياه الجوفية يفرغ طبقات الخزان الجوفي فتنضغط الطبقات الطينية وينخفض مستوى سطح الأرض تدريجياً وبشكل غير قابل للعكس أحياناً، مما يهدد المباني والبنية التحتية',descEn:'Excessive groundwater withdrawal empties aquifer layers, causing clay layers to compact and the ground surface to gradually — and sometimes irreversibly — sink, threatening buildings and infrastructure',
+standards:['USGS Land Subsidence Guidelines','FAO Groundwater Governance Framework','World Bank Groundwater Management Good Practice'],
+solutions:[
+{abbr:'MAR',full:'Managed Aquifer Recharge',ar:'التغذية المُدارة للخزان الجوفي',mechAr:'حقن أو تسريب مياه سطحية فائضة (أمطار أو مياه معالجة) عائداً للخزان الجوفي عبر آبار حقن أو أحواض تسريب، لتعويض المياه المسحوبة والحفاظ على ضغط الطبقة',mechEn:'Inject or infiltrate surplus surface water (rainwater or treated water) back into the aquifer via injection wells or infiltration basins, offsetting withdrawn water and maintaining layer pressure',
+whenAr:{ideal:'مناطق بها خزان جوفي مستنزف لكن لا يزال قابلاً للتغذية',adv:'يوقف أو يبطئ الانخفاض، يزيد المخزون المائي المتاح',lim:'يحتاج مصدر مياه فائضة للحقن، تكلفة إنشاء آبار الحقن',ex:'مدن ساحلية، مناطق زراعية مكثفة'},
+whenEn:{ideal:'Areas with a depleted but still rechargeable aquifer',adv:'Halts or slows subsidence, increases available water reserves',lim:'Requires a surplus water source for injection, cost of injection well construction',ex:'Coastal cities, intensive agricultural areas'}},
+
+{abbr:'Extraction Quotas',full:'Groundwater Extraction Quotas & Metering',ar:'تحديد حصص السحب والعدادات',mechAr:'تركيب عدادات على كل بئر وفرض حصص سحب سنوية قصوى بناءً على معدل التغذية الطبيعي للخزان، مع رصد مستوى المياه بشكل دوري',mechEn:'Install meters on every well and impose maximum annual extraction quotas based on the aquifer natural recharge rate, with periodic water-level monitoring',
+whenAr:{ideal:'مناطق سحب غير منظم من آبار متعددة',adv:'حل إداري منخفض التكلفة، يعالج المشكلة من جذورها (السحب الجائر)',lim:'يحتاج إطاراً تنظيمياً وقانونياً قوياً وإرادة تنفيذية',ex:'مناطق زراعية بها آبار خاصة كثيرة'},
+whenEn:{ideal:'Areas with unregulated extraction from multiple wells',adv:'Low-cost administrative solution, addresses the root cause (over-extraction)',lim:'Requires a strong regulatory/legal framework and enforcement will',ex:'Agricultural areas with many private wells'}}
+],
+emergency:['إيقاف السحب فوراً من الآبار القريبة من مناطق انخفاض حاد أو ظهور شقوق','تقييم فوري لسلامة المباني والبنية التحتية القريبة'],
+cap:['برنامج تغذية مُدارة للخزان الجوفي','فرض حصص سحب ومراقبة بعدادات','رصد دوري بالاستشعار عن بعد (InSAR) لتتبع معدل الانخفاض'],
+safety:['تقييم هندسي دوري لاستقرار المباني القريبة','وضع علامات تحذيرية حول مناطق الانخفاض الحاد أو الشقوق الأرضية']},
+
+// ===== إدارة النفايات =====
+{id:'medical_waste',category:'waste',icon:'🏥',severity:'high',sectors:['مستشفيات','معامل','عيادات'],
+nameAr:'النفايات الطبية المعدية',nameEn:'Infectious Medical Waste',
+descAr:'نفايات تحتوي على ممرضات (إبر، أنسجة، أدوية) تنقل أمراضاً',descEn:'Waste containing pathogens (needles, tissues, drugs) that transmit diseases',
+standards:['WHO Safe Management of Healthcare Waste','Basel Convention','EU Medical Waste Directive'],
+solutions:[
+{abbr:'Incineration',full:'Medical Waste Incineration (850-1200°C)',ar:'الحرق الطبي',mechAr:'حرق بدرجات عالية مع فلاتر متقدمة. يقلل الحجم 90%',mechEn:'High-temperature burning with advanced filters. Reduces volume 90%',
+whenAr:{ideal:'نفايات معدية وصيدلانية، كميات كبيرة',adv:'يدمر ممرضات، يقلل حجم',lim:'انبعاثات تحتاج فلترة',ex:'مستشفيات كبيرة'},
+whenEn:{ideal:'Infectious and pharmaceutical waste, large quantities',adv:'Destroys pathogens, reduces volume',lim:'Emissions need filtration',ex:'Large hospitals'}},
+
+{abbr:'Autoclave',full:'Autoclave Sterilization',ar:'التعقيم بالبخار المضغوط',mechAr:'بخار عند 121°C وضغط 15 psi لمدة 30-60 دقيقة',mechEn:'Steam at 121°C and 15 psi for 30-60 minutes',
+whenAr:{ideal:'نفايات معدية غير صيدلانية، بديل صديق للبيئة',adv:'لا انبعاثات حرق',lim:'لا يعالج كيماويات',ex:'مستشفيات متوسطة'},
+whenEn:{ideal:'Non-pharmaceutical infectious waste, eco-friendly alternative',adv:'No combustion emissions',lim:'Does not treat chemicals',ex:'Medium hospitals'}},
+
+{abbr:'Microwave Treatment',full:'Microwave Waste Treatment',ar:'المعالجة بالميكروويف',mechAr:'موجات ميكروويف تسخن النفايات الرطبة',mechEn:'Microwave waves heat moist waste',
+whenAr:{ideal:'نفايات رطبة معدية',adv:'سريع',lim:'لا يناسب جاف',ex:'مختبرات'},
+whenEn:{ideal:'Moist infectious waste',adv:'Fast',lim:'Not suitable for dry',ex:'Laboratories'}}
+],
+emergency:['عزل النفايات فوراً','تعقيم المنطقة','إبلاغ الصحة','التتبع الوبائي'],
+cap:['فصل صارم من المصدر','تعاقد مع معالج معتمد','تدريب العاملين','Manifest System'],
+safety:['قفازات مزدوجة','كمامات N95','بدلات واقية','تطعيمات (Hepatitis B)']},
+
+{id:'e_waste',category:'waste',icon:'',severity:'medium',sectors:['إلكترونيات','مكاتب','اتصالات'],
+nameAr:'النفايات الإلكترونية (E-Waste)',nameEn:'Electronic Waste (E-Waste)',
+descAr:'أجهزة تحتوي على معادن ثقيلة (Pb, Hg, Cd) ومواد خطرة',descEn:'Devices containing heavy metals (Pb, Hg, Cd) and hazardous materials',
+standards:['Basel Convention on E-Waste','WEEE Directive (EU)','EPA E-Waste Management Guidelines'],
+solutions:[
+{abbr:'Dismantling',full:'Manual Dismantling & Sorting',ar:'التفكيك والفرز اليدوي',mechAr:'فصل المكونات (بلاستيك، معادن، لوحات) لإعادة التدوير',mechEn:'Separate components (plastics, metals, boards) for recycling',
+whenAr:{ideal:'أجهزة كبيرة (كمبيوتر، طابعات)',adv:'استرداد مواد',lim:'يحتاج عمالة',ex:'مكاتب'},
+whenEn:{ideal:'Large devices (computers, printers)',adv:'Material recovery',lim:'Needs labor',ex:'Offices'}},
+
+{abbr:'Precious Metal Recovery',full:'Precious Metal Recovery',ar:'استرداد المعادن الثمينة',mechAr:'استخراج الذهب، الفضة، النحاس من اللوحات',mechEn:'Extract gold, silver, copper from boards',
+whenAr:{ideal:'لوحات إلكترونية بكميات كبيرة',adv:'قيمة اقتصادية',lim:'عملية معقدة',ex:'مصانع إعادة تدوير'},
+whenEn:{ideal:'Large quantities of electronic boards',adv:'Economic value',lim:'Complex process',ex:'Recycling plants'}},
+
+{abbr:'Safe Disposal',full:'Hazardous Component Safe Disposal',ar:'التخلص الآمن من المكونات الخطرة',mechAr:'معالجة خاصة للبطاريات والشاشات',mechEn:'Special treatment for batteries and screens',
+whenAr:{ideal:'بطاريات، شاشات CRT',adv:'يمنع تلوث',lim:'تكلفة',ex:'جميع E-Waste'},
+whenEn:{ideal:'Batteries, CRT screens',adv:'Prevents pollution',lim:'Cost',ex:'All E-Waste'}}
+],
+emergency:['عزل النفايات','منع الحرق العشوائي','إبلاغ البيئة'],
+cap:['برنامج إعادة تدوير','تعاقد مع معالج معتمد','تقليل الاستهلاك','شراء أجهزة موفرة'],
+safety:['قفازات','كمامات','نظارات','تدريب على التعامل مع E-Waste']},
+
+{id:'hazardous_chemical_waste',category:'waste',icon:'☣️',severity:'high',sectors:['كيماويات','مصانع','معامل'],
+nameAr:'النفايات الكيميائية الخطرة',nameEn:'Hazardous Chemical Waste',
+descAr:'مواد سامة، قابلة للاشتعال، أكالة، أو متفاعلة',descEn:'Toxic, flammable, corrosive, or reactive materials',
+standards:['Basel Convention','EPA RCRA (40 CFR Parts 260-272)','EU Hazardous Waste Directive'],
+solutions:[
+{abbr:'Neutralization',full:'Chemical Neutralization',ar:'المعايدة الكيميائية',mechAr:'تحويل الأحماض والقلويات إلى أملاح آمنة',mechEn:'Convert acids and bases to safe salts',
+whenAr:{ideal:'أحماض وقلويات فقط',adv:'بسيط',lim:'لا يناسب عضويات',ex:'معامل'},
+whenEn:{ideal:'Acids and bases only',adv:'Simple',lim:'Not for organics',ex:'Laboratories'}},
+
+{abbr:'Incineration',full:'High-Temperature Incineration (>1100°C)',ar:'الحرق بدرجات عالية',mechAr:'تدمير كامل للمواد العضوية الخطرة',mechEn:'Complete destruction of hazardous organic materials',
+whenAr:{ideal:'مركبات عضوية خطرة، مبيدات',adv:'تدمير كامل',lim:'انبعاثات',ex:'مصانع كيماويات'},
+whenEn:{ideal:'Hazardous organic compounds, pesticides',adv:'Complete destruction',lim:'Emissions',ex:'Chemical plants'}},
+
+{abbr:'Secure Landfill',full:'Hazardous Waste Secure Landfill',ar:'الطمر الآمن للنفايات الخطرة',mechAr:'طمر في خلايا مبطنة بـ HDPE مزدوج',mechEn:'Landfill in cells lined with double HDPE',
+whenAr:{ideal:'نفايات غير قابلة للمعالجة',adv:'آمن',lim:'حل أخير',ex:'جميع النفايات الخطرة'},
+whenEn:{ideal:'Non-treatable waste',adv:'Safe',lim:'Last resort',ex:'All hazardous waste'}}
+],
+emergency:['عزل المنطقة','ارتداء PPE مستوى A','إبلاغ HAZMAT','منع الوصول للمياه'],
+cap:['تقليل النفايات عند المصدر','إعادة التدوير','Manifest System','تدريب العاملين'],
+safety:['بدلات كيميائية كاملة','SCBA','قفازات نيتريل مزدوجة','تدريب HAZMAT متقدم']},
+
+{id:'plastic_waste',category:'waste',icon:'🥤',severity:'medium',sectors:['بلاستيك','تعبئة','تجارة'],
+nameAr:'النفايات البلاستيكية',nameEn:'Plastic Waste',
+descAr:'بلاستيك غير قابل للتحلل يتراكم في البيئة',descEn:'Non-degradable plastic accumulates in environment',
+standards:['Basel Convention Plastic Waste Amendments','EU Single-Use Plastics Directive','UNEP Clean Seas Campaign'],
+solutions:[
+{abbr:'Mechanical Recycling',full:'Mechanical Plastic Recycling',ar:'إعادة التدوير الميكانيكي',mechAr:'طحن، صهر، وإعادة تشكيل البلاستيك',mechEn:'Grind, melt, and reshape plastic',
+whenAr:{ideal:'بلاستيك نظيف ومفروز (PET, HDPE)',adv:'يحفظ المادة',lim:'يحتاج فرز',ex:'عبوات'},
+whenEn:{ideal:'Clean sorted plastic (PET, HDPE)',adv:'Preserves material',lim:'Needs sorting',ex:'Bottles'}},
+
+{abbr:'Chemical Recycling',full:'Chemical Recycling (Pyrolysis)',ar:'إعادة التدوير الكيميائي',mechAr:'تسخين بدون أكسجين لتحويله لوقود',mechEn:'Heat without oxygen to convert to fuel',
+whenAr:{ideal:'بلاستيك مختلط أو ملوث',adv:'يتعامل مع مختلط',lim:'طاقة',ex:'بلاستيك مختلط'},
+whenEn:{ideal:'Mixed or contaminated plastic',adv:'Handles mixed',lim:'Energy',ex:'Mixed plastic'}},
+
+{abbr:'Biodegradable Alternatives',full:'Biodegradable Plastic Alternatives',ar:'بدائل بلاستيكية قابلة للتحلل',mechAr:'استخدام PLA أو PHA القابلة للتحلل',mechEn:'Use biodegradable PLA or PHA',
+whenAr:{ideal:'تطبيقات قصيرة الأمد (أكياس، عبوات)',adv:'يتحلل طبيعياً',lim:'تكلفة أعلى',ex:'أكياس، عبوات'},
+whenEn:{ideal:'Short-term applications (bags, packaging)',adv:'Naturally degrades',lim:'Higher cost',ex:'Bags, packaging'}}
+],
+emergency:['جمع النفايات المتناثرة','منع الحرق العشوائي','إبلاغ البيئة'],
+cap:['تقليل الاستخدام','إعادة التدوير','بدائل قابلة للتحلل','توعية المجتمع'],
+safety:['قفازات','كمامات','تدريب على الفرز']},
+
+{id:'sludge',category:'waste',icon:'',severity:'medium',sectors:['صرف صحي','صناعة','ورق'],
+nameAr:'الحمأة (Sludge)',nameEn:'Sludge',
+descAr:'مخلفات شبه صلبة من معالجة المياه',descEn:'Semi-solid waste from water treatment',
+standards:['EPA 40 CFR Part 503 (Biosolids)','EU Sewage Sludge Directive 86/278/EEC','WHO Guidelines for Sludge Use'],
+solutions:[
+{abbr:'Anaerobic Digestion',full:'Anaerobic Digestion',ar:'الهضم اللاهوائي',mechAr:'تخمير الحمأة لإنتاج Biogas وتقليل الحجم 50%',mechEn:'Ferment sludge to produce Biogas and reduce volume 50%',
+whenAr:{ideal:'حمأة عضوية عالية، محطات كبيرة',adv:'ينتج طاقة',lim:'بطيء',ex:'محطات صرف كبيرة'},
+whenEn:{ideal:'High organic sludge, large plants',adv:'Produces energy',lim:'Slow',ex:'Large WWTPs'}},
+
+{abbr:'Dewatering',full:'Sludge Dewatering (Filter Press/Centrifuge)',ar:'تجفيف الحمأة',mechAr:'Filter Press أو Centrifuge لتقليل المحتوى المائي',mechEn:'Filter Press or Centrifuge to reduce water content',
+whenAr:{ideal:'قبل النقل أو الطمر',adv:'يقلل حجم ووزن',lim:'يحتاج طاقة',ex:'جميع الحمأة'},
+whenEn:{ideal:'Before transport or landfill',adv:'Reduces volume and weight',lim:'Needs energy',ex:'All sludge'}},
+
+{abbr:'Composting',full:'Sludge Composting',ar:'تسميد الحمأة',mechAr:'خلط الحمأة مع مواد عضوية لإنتاج سماد',mechEn:'Mix sludge with organic materials to produce compost',
+whenAr:{ideal:'حمأة معالجة وخالية من معادن ثقيلة',adv:'منتج مفيد',lim:'يحتاج حمأة نظيفة',ex:'صرف صحي'},
+whenEn:{ideal:'Treated sludge free of heavy metals',adv:'Useful product',lim:'Needs clean sludge',ex:'Sewage sludge'}}
+],
+emergency:['احتواء التسرب','منع وصول المياه','إبلاغ البيئة'],
+cap:['نظام تجفيف متقدم','استخدام الحمأة كسماد','تقليل الإنتاج','رصد المعادن'],
+safety:['بدلات واقية','قفازات','كمامات','تطعيمات']},
+
+{id:'radioactive_waste',category:'waste',icon:'☢️',severity:'high',sectors:['طاقة نووية','مستشفيات','معامل'],
+nameAr:'النفايات الإشعاعية',nameEn:'Radioactive Waste',
+descAr:'مواد مشعة تحتاج تخزين آمن لآلاف السنين',descEn:'Radioactive materials need safe storage for thousands of years',
+standards:['IAEA Safety Standards Series','WHO Radiation Guidelines','EPA Radioactive Waste Regulations'],
+solutions:[
+{abbr:'Cementation',full:'Cementation',ar:'التثبيت بالإسمنت',mechAr:'خلط النفايات مع الإسمنت لتكوين كتلة صلبة',mechEn:'Mix waste with cement to form solid block',
+whenAr:{ideal:'نفايات مشعة منخفضة ومتوسطة المستوى',adv:'مستقر، رخيص',lim:'يزيد حجم',ex:'مستشفيات، معامل'},
+whenEn:{ideal:'Low and intermediate level radioactive waste',adv:'Stable, cheap',lim:'Increases volume',ex:'Hospitals, labs'}},
+
+{abbr:'Vitrification',full:'Vitrification (Glass Encapsulation)',ar:'التزجيج',mechAr:'صهر النفايات مع الزجاج',mechEn:'Melt waste with glass',
+whenAr:{ideal:'نفايات عالية المستوى (HLW)',adv:'مستقر جداً لآلاف السنين',lim:'مكلف جداً',ex:'محطات نووية'},
+whenEn:{ideal:'High-level waste (HLW)',adv:'Very stable for thousands of years',lim:'Very expensive',ex:'Nuclear plants'}},
+
+{abbr:'Deep Geological Storage',full:'Deep Geological Repository',ar:'التخزين الجيولوجي العميق',mechAr:'تخزين في تكوينات صخرية عميقة (500+ متر)',mechEn:'Store in deep rock formations (500+ meters)',
+whenAr:{ideal:'نفايات عالية المستوى طويلة الأمد',adv:'آمن لآلاف السنين',lim:'يحتاج موقع جيولوجي مناسب',ex:'نفايات نووية'},
+whenEn:{ideal:'Long-term high-level waste',adv:'Safe for thousands of years',lim:'Needs suitable geological site',ex:'Nuclear waste'}}
+],
+emergency:['عزل المنطقة','ارتداء بدلات إشعاعية','إبلاغ هيئة الرقابة النووية','إخلاء واسع'],
+cap:['تقليل النفايات','إعادة المعالجة','تخزين آمن','رصد إشعاعي'],
+safety:['بدلات رصاص','Dosimeters','تدريب إشعاعي','مراقبة صحية صارمة']},
+
+{id:'food_waste',category:'waste',icon:'🍽️',severity:'medium',sectors:['مطاعم','فنادق','سوبرماركت'],
+nameAr:'نفايات الطعام',nameEn:'Food Waste',
+descAr:'30% من الغذاء العالمي يُهدر',descEn:'30% of global food is wasted',
+standards:['UN SDG 12.3 (Food Waste Reduction)','EU Food Waste Framework','EPA Food Recovery Hierarchy'],
+solutions:[
+{abbr:'Composting',full:'Food Waste Composting',ar:'تسميد نفايات الطعام',mechAr:'تحويل نفايات الطعام لسماد عضوي',mechEn:'Convert food waste to organic compost',
+whenAr:{ideal:'نفايات طعام نباتية',adv:'سماد مفيد',lim:'لا يناسب لحم/سمك',ex:'مطاعم'},
+whenEn:{ideal:'Vegetable food waste',adv:'Useful compost',lim:'Not for meat/fish',ex:'Restaurants'}},
+
+{abbr:'Anaerobic Digestion',full:'Food Waste Anaerobic Digestion',ar:'الهضم اللاهوائي',mechAr:'إنتاج Biogas من نفايات الطعام',mechEn:'Produce Biogas from food waste',
+whenAr:{ideal:'جميع أنواع نفايات الطعام بما فيها لحم',adv:'ينتج طاقة',lim:'يحتاج منشأة',ex:'مدن كبيرة'},
+whenEn:{ideal:'All food waste including meat',adv:'Produces energy',lim:'Needs facility',ex:'Large cities'}}
+],
+emergency:['جمع النفايات','منع التراكم'],
+cap:['تقليل الهدر','تبرع بالفائض','تسميد','هضم لاهوائي'],
+safety:['قفازات','كمامات','تدريب على التعامل مع الطعام']},
+
+{id:'construction_demolition_waste',category:'waste',icon:'🏗️',severity:'medium',sectors:['البناء والتشييد','الهدم','المقاولات'],
+nameAr:'مخلفات البناء والهدم (C&D Waste)',nameEn:'Construction & Demolition (C&D) Waste',
+descAr:'كميات ضخمة من الخرسانة والحديد والخشب الناتجة عن أعمال البناء والهدم، تشغل مساحات كبيرة في المطامر',descEn:'Massive quantities of concrete, steel, and wood from construction and demolition, occupying large landfill space',
+standards:['EPA C&D Debris Guidance','ISO 20887 (Design for Disassembly and Adaptability)','LEED Materials & Resources Credits'],
+solutions:[
+{abbr:'Concrete Recycling',full:'Concrete Crushing & Recycling',ar:'تكسير وإعادة تدوير الخرسانة',mechAr:'تكسير مخلفات الخرسانة لركام يُعاد استخدامه في الطرق والأساسات بدلاً من التخلص منه',mechEn:'Crush concrete debris into aggregate reused in roads and foundations instead of disposal',
+whenAr:{ideal:'مواقع هدم كبيرة، مشاريع طرق قريبة',adv:'يقلل الحاجة لركام جديد، يوفر تكلفة نقل ودفن',lim:'يحتاج معدات تكسير في الموقع أو قريبة',ex:'هدم مبانٍ، مشاريع طرق'},
+whenEn:{ideal:'Large demolition sites, nearby road projects',adv:'Reduces need for virgin aggregate, saves haulage/disposal cost',lim:'Requires on-site or nearby crushing equipment',ex:'Building demolition, road projects'}},
+
+{abbr:'Material Sorting',full:'On-Site Material Recovery & Sorting',ar:'الفرز واسترداد المواد بالموقع',mechAr:'فصل مخلفات البناء لفئات (خرسانة، حديد، خشب، بلاستيك) بالموقع لتسهيل إعادة التدوير وبيع الخردة',mechEn:'Separate C&D waste into categories (concrete, steel, wood, plastic) on-site to facilitate recycling and scrap sale',
+whenAr:{ideal:'مشاريع بناء وهدم متوسطة وكبيرة',adv:'يزيد نسبة إعادة التدوير، عائد اقتصادي من بيع الخردة',lim:'يحتاج مساحة ووقت وعمالة للفرز',ex:'مواقع بناء منظمة، شركات مقاولات كبرى'},
+whenEn:{ideal:'Medium to large construction/demolition projects',adv:'Increases recycling rate, economic return from scrap sale',lim:'Needs space, time, and labor for sorting',ex:'Organized construction sites, major contractors'}}
+],
+emergency:['تأمين مواد الهدم الخطرة (أسبستوس، دهانات رصاصية) فوراً','منع تطاير الغبار بالرش المائي'],
+cap:['خطة فرز وإعادة تدوير من بداية المشروع','التعاقد مع منشآت إعادة تدوير معتمدة','تتبع كميات النفايات المحولة عن المطمر'],
+safety:['خوذات وأحذية سلامة','كمامات ضد الغبار','فحص المواد الخطرة قبل الهدم (أسبستوس)']},
+
+{id:'pcb_transformer_oil',category:'waste',icon:'⚡',severity:'high',sectors:['محطات كهرباء','محولات جهد عالي','صناعة'],
+nameAr:'زيوت المحولات القديمة الملوثة بـ PCBs',nameEn:'Old Transformer Oils Contaminated with PCBs',
+descAr:'زيوت تزييت ومحولات جهد عالي قديمة قد تحتوي على ثنائي الفينيل متعدد الكلور (PCBs)، مادة سامة وثابتة بيئياً ومسرطنة محتملة',descEn:'Old high-voltage transformer and lubricating oils that may contain Polychlorinated Biphenyls (PCBs), a toxic, environmentally persistent, potentially carcinogenic substance',
+standards:['Stockholm Convention on Persistent Organic Pollutants (POPs)','EPA TSCA PCB Regulations (40 CFR Part 761)','Basel Convention on Hazardous Waste'],
+solutions:[
+{abbr:'PCB Testing',full:'PCB Screening & Inventory',ar:'الفحص المخبري وحصر المحولات',mechAr:'أخذ عينات دورية من زيت كل محول وفحصها معملياً لتحديد وجود وتركيز PCBs، وعمل سجل حصري بالمحولات المشتبه بها',mechEn:'Periodic sampling of transformer oil tested in a lab to determine PCB presence and concentration, maintaining an inventory of suspect transformers',
+whenAr:{ideal:'محولات قديمة (قبل التسعينات عادة) غير موثقة المصدر',adv:'يحدد حجم المشكلة الفعلي قبل اتخاذ أي إجراء مكلف',lim:'يحتاج معامل معتمدة ووقت للنتائج',ex:'محطات كهرباء قديمة، مصانع كبرى'},
+whenEn:{ideal:'Old transformers (typically pre-1990s) of undocumented origin',adv:'Determines the actual scale of the problem before costly action',lim:'Requires certified labs and time for results',ex:'Old power stations, major factories'}},
+
+{abbr:'Retrofilling',full:'PCB Retrofilling / Decontamination',ar:'استبدال الزيت الملوث (Retrofilling)',mechAr:'تصريف الزيت الملوث بـ PCBs من المحول واستبداله بزيت نظيف غير مكلور، مع تنظيف المحول داخلياً لتقليل تركيز PCBs المتبقي لأقل من الحد الآمن',mechEn:'Drain PCB-contaminated oil from the transformer and replace with clean non-chlorinated oil, internally flushing the unit to reduce residual PCB concentration below the safe limit',
+whenAr:{ideal:'محولات لا تزال بحالة تشغيلية جيدة لكن الزيت ملوث',adv:'أرخص من استبدال المحول بالكامل، يمدد عمره التشغيلي بأمان',lim:'قد يحتاج تكرار الدورة للوصول لتركيز آمن تماماً',ex:'محولات محطات توليد قابلة للتشغيل المستمر'},
+whenEn:{ideal:'Transformers still in good operating condition but with contaminated oil',adv:'Cheaper than full transformer replacement, safely extends its service life',lim:'May need repeated cycles to reach a fully safe concentration',ex:'Power generation transformers requiring continuous operation'}}
+],
+emergency:['عزل المحول المتسرب فوراً ومنع أي تلامس مباشر','احتواء أي تسرب زيت بمواد ماصة متخصصة','إبلاغ جهاز البيئة عند تأكيد وجود PCBs'],
+cap:['استبدال الزيت الملوث بطريقة آمنة (Retrofilling) أو استبدال المحول كلياً','التخلص من الزيت والمعدات الملوثة كنفاية خطرة معتمدة وفق اتفاقية استكهولم','تحديث سجل حصري دوري لكل المحولات ذات الخطورة المحتملة'],
+safety:['قفازات كيميائية وبدلات واقية عند التعامل مع الزيت المشتبه به','عدم الحرق المكشوف لأي زيت محولات قديم نهائياً','تدريب HAZMAT للعاملين على التعامل مع POPs']},
+
+{id:'animal_byproducts_waste',category:'waste',icon:'🦴',severity:'medium',sectors:['مذابح','مصانع لحوم','تصنيع أعلاف'],
+nameAr:'المخلفات الحيوانية غير الصالحة (أحشاء وعظام) من المذابح',nameEn:'Non-Usable Animal By-Products (Offal & Bones) from Slaughterhouses',
+descAr:'أحشاء وعظام ومخلفات ذبح غير قابلة للاستخدام، إذا تراكمت دون تخلص سريع تسبب تعفناً وروائح وجذب حشرات وقوارض وانتقال أمراض',descEn:'Offal, bones and slaughter remnants unfit for use; if accumulated without prompt disposal cause putrefaction, odors, and attract insects/rodents while spreading disease',
+standards:['FAO Code of Practice for Meat Processing Waste','WHO Guidelines for Safe Disposal of Animal By-products','EU Animal By-Products Regulation (EC) 1069/2009'],
+solutions:[
+{abbr:'Rendering',full:'Rendering into Meat & Bone Meal',ar:'التحويل لمسحوق لحم وعظم',mechAr:'طهي المخلفات تحت ضغط وحرارة عالية لتفصل الدهن وتحويل الباقي لمسحوق (Meal) يُستخدم كعلف حيواني معتمد أو سماد',mechEn:'Cook by-products under high pressure and heat to separate fat and convert the remainder into meal used as certified animal feed or fertilizer',
+whenAr:{ideal:'كميات منتظمة كبيرة من مخلفات الذبح',adv:'يحول النفاية لمنتج اقتصادي، يقضي على مصدر الروائح والحشرات نهائياً',lim:'تكلفة رأسمالية للمعدات، يحتاج ترخيص لبيع المنتج كعلف',ex:'مذابح ومجازر كبرى'},
+whenEn:{ideal:'Large regular quantities of slaughter remnants',adv:'Converts waste into an economic product, permanently eliminates the source of odors and insects',lim:'Capital cost for equipment, needs licensing to sell the product as feed',ex:'Large slaughterhouses'}},
+
+{abbr:'Cold Storage & Licensed Transport',full:'Cold Storage & Licensed Disposal Transport',ar:'التبريد الفوري والنقل المرخص',mechAr:'تبريد المخلفات فوراً بعد الذبح وتخزينها في حاويات مغلقة معزولة حرارياً لحين نقلها بشكل دوري ومنتظم لجهة تصنيع علف أو تخلص معتمدة',mechEn:'Immediately cool by-products after slaughter and store in sealed, thermally insulated containers until regular, licensed transport to a feed-manufacturing or disposal facility',
+whenAr:{ideal:'مذابح صغيرة ومتوسطة بدون وحدة Rendering داخلية',adv:'تكلفة أولية منخفضة، حل سريع التطبيق',lim:'يعتمد كلياً على انتظام جهة النقل، لا يحل المشكلة من جذورها',ex:'مذابح بلدية ومتوسطة'},
+whenEn:{ideal:'Small to medium slaughterhouses without an in-house rendering unit',adv:'Low initial cost, quick to implement',lim:'Fully dependent on transporter regularity, does not solve the problem at the root',ex:'Municipal and medium-sized slaughterhouses'}}
+],
+emergency:['تبريد أو تجميد المخلفات المتراكمة فوراً لو حصل تأخير في النقل','عزل منطقة التخزين عن مناطق الذبح النظيفة','إبلاغ جهة النقل المعتمدة فوراً'],
+cap:['إنشاء وحدة Rendering داخلية أو التعاقد الدائم مع متعهد نقل مرخص','برنامج تعقيم دوري لمناطق ومعدات التخزين','جدولة نقل يومية أو شبه يومية لمنع أي تراكم'],
+safety:['قفازات ومعدات وقاية شخصية كاملة عند التداول','تعقيم دوري لمناطق التخزين لمنع انتقال الأمراض','تطعيمات ضد الأمراض المشتركة (Zoonotic) للعاملين']},
+
+{id:'tannery_solid_waste',category:'waste',icon:'🐄',severity:'medium',sectors:['مدابغ','صناعة جلود','صناعة أعلاف وغراء'],
+nameAr:'المخلفات الجلدية الصلبة (قصاصات وشعر ودهون) من المدابغ',nameEn:'Solid Leather Waste (Trimmings, Hair & Fat) from Tanneries',
+descAr:'قصاصات جلود وشعر ودهون ناتجة عن مراحل النقع والدباغة، قد تحمل بقايا كروم وتسبب تعفناً وروائح إذا تراكمت',descEn:'Leather trimmings, hair and fat generated during soaking and tanning stages, potentially carrying chromium residues, causing putrefaction and odors if accumulated',
+standards:['Basel Convention on Hazardous Waste','EU Waste Framework Directive','ILO Guidelines on Occupational Safety in Tanneries'],
+solutions:[
+{abbr:'Sorting & Reuse',full:'Source Sorting for Glue/Feed Byproduct Recovery',ar:'الفرز من المصدر لاسترداد منتجات ثانوية',mechAr:'فصل المخلفات الجلدية غير المحتوية على كروم من المصدر (قبل الدباغة) وتحويلها لصناعة الغراء أو الأعلاف، مع التخلص من المخلفات المحتوية على كروم كنفاية خطرة منفصلة',mechEn:'Separate chromium-free leather waste at the source (pre-tanning stage) for use in glue or feed manufacturing, while disposing chromium-containing waste separately as hazardous waste',
+whenAr:{ideal:'مدابغ بها مراحل نقع وتقليم قبل الدباغة الكروماتية',adv:'عائد اقتصادي من بيع المخلفات النظيفة، يقلل حجم النفايات الخطرة',lim:'يحتاج فرزاً دقيقاً ومنظماً لتجنب اختلاط الكروم',ex:'مدابغ متوسطة وكبيرة منظمة'},
+whenEn:{ideal:'Tanneries with soaking and trimming stages prior to chrome tanning',adv:'Economic return from selling clean waste, reduces hazardous waste volume',lim:'Requires precise, organized sorting to avoid chromium contamination',ex:'Organized medium and large tanneries'}},
+
+{abbr:'S/S',full:'Solidification/Stabilization (for chrome-bearing waste)',ar:'التصلب والتثبيت للمخلفات المحتوية على كروم',mechAr:'خلط المخلفات الجلدية المحتوية على بقايا كروم بمواد رابطة (إسمنت/جير) لتثبيت الكروم ومنع تسربه (Leaching) قبل التخلص الآمن',mechEn:'Mix chromium-bearing leather waste with binding agents (cement/lime) to stabilize chromium and prevent leaching prior to safe disposal',
+whenAr:{ideal:'مخلفات جلدية ملوثة بالكروم لا يمكن فرزها لإعادة الاستخدام',adv:'يمنع تسرب الكروم للتربة والمياه الجوفية',lim:'لا يزيل الكروم، فقط يثبته، يحتاج مطمر مخصص للنفايات الخطرة',ex:'مدابغ الكروم الكبرى'},
+whenEn:{ideal:'Chromium-contaminated leather waste that cannot be sorted for reuse',adv:'Prevents chromium leaching into soil and groundwater',lim:'Does not remove chromium, only stabilizes it; requires a dedicated hazardous waste landfill',ex:'Large chrome tanneries'}}
+],
+emergency:['تخزين المخلفات الجلدية الطرية في حاويات مغلقة فوراً لمنع التعفن','عزل المخلفات المحتوية على كروم عن باقي المخلفات فوراً'],
+cap:['نظام فرز صارم من المصدر بين مخلفات ما قبل وبعد الدباغة الكروماتية','التعاقد مع جهة معتمدة لتصنيع الغراء/الأعلاف من المخلفات النظيفة','نظافة دورية لمنع تكاثر الحشرات في مناطق التخزين'],
+safety:['قفازات مقاومة كيميائياً عند التعامل مع مخلفات النقع','كمامات ضد الروائح في مناطق التخزين','تطعيمات وفحوصات دورية للعاملين']},
+
+// ===== الضوضاء =====
+{id:'industrial_noise',category:'noise',icon:'',severity:'medium',sectors:['مصانع','بناء','مطارات'],
+nameAr:'الضوضاء الصناعية',nameEn:'Industrial Noise',
+descAr:'ضوضاء تتجاوز 85 dB تسبب فقدان السمع',descEn:'Noise exceeding 85 dB causes hearing loss',
+standards:['WHO Environmental Noise Guidelines','OSHA Noise Standards (29 CFR 1910.95)','EU Environmental Noise Directive 2002/49/EC'],
+solutions:[
+{abbr:'Acoustic Enclosure',full:'Acoustic Enclosure / Soundproofing',ar:'التغليف الصوتي',mechAr:'تغليف المعدات بمواد عازلة تقلل الضوضاء 20-30 dB',mechEn:'Enclose equipment with insulating materials reducing noise 20-30 dB',
+whenAr:{ideal:'معدات ثابتة عالية الضوضاء',adv:'فعال جداً',lim:'يحتاج صيانة للمعدة داخل',ex:'ضاغطات، مولدات'},
+whenEn:{ideal:'Fixed high-noise equipment',adv:'Very effective',lim:'Needs maintenance for internal equipment',ex:'Compressors, generators'}},
+
+{abbr:'Silencers',full:'Acoustic Silencers / Mufflers',ar:'كاتمات الصوت',mechAr:'تركيب كاتمات على مخارج الهواء والغاز',mechEn:'Install silencers on air and gas outlets',
+whenAr:{ideal:'معدات بها عادم هوائي/غازي',adv:'فعال للمخارج',lim:'يقلل أداء أحياناً',ex:'ضاغطات، توربينات'},
+whenEn:{ideal:'Equipment with air/gas exhaust',adv:'Effective for outlets',lim:'Sometimes reduces performance',ex:'Compressors, turbines'}},
+
+{abbr:'Vibration Isolation',full:'Vibration Isolation Mounts',ar:'عوازل الاهتزاز',mechAr:'مطاط أو زنبركات تحت المعدات',mechEn:'Rubber or springs under equipment',
+whenAr:{ideal:'اهتزاز ينتقل للهيكل',adv:'رخيص، فعال',lim:'لا يحل ضوضاء هوائية',ex:'معدات دوارة'},
+whenEn:{ideal:'Vibration transmitting to structure',adv:'Cheap, effective',lim:'Does not solve airborne noise',ex:'Rotating equipment'}}
+],
+emergency:['إيقاف المعدات الصاخبة','إخلاء المنطقة','تقييم الضرر'],
+cap:['تركيب عوازل','صيانة دورية','رصد الضوضاء','تدريب العاملين'],
+safety:['واقيات أذن (Earplugs/Earmuffs)','فحوصات سمع دورية','تقليل وقت التعرض']},
+
+{id:'construction_noise',category:'noise',icon:'🏗️',severity:'medium',sectors:['بناء','طرق','هدم'],
+nameAr:'ضوضاء الإنشاءات',nameEn:'Construction Noise',
+descAr:'ضوضاء مؤقتة لكن عالية من المعدات الثقيلة',descEn:'Temporary but high noise from heavy equipment',
+standards:['WHO Night Noise Guidelines','EPA Noise Control Act','EU Environmental Noise Directive'],
+solutions:[
+{abbr:'Noise Barriers',full:'Temporary Noise Barriers',ar:'حواجز ضوضاء مؤقتة',mechAr:'ألواح عازلة حول الموقع',mechEn:'Insulating panels around site',
+whenAr:{ideal:'مواقع بناء قريبة من سكن',adv:'يحمي الجيران',lim:'مؤقت',ex:'بناء حضري'},
+whenEn:{ideal:'Construction sites near residential',adv:'Protects neighbors',lim:'Temporary',ex:'Urban construction'}},
+
+{abbr:'Low-Noise Equipment',full:'Low-Noise Equipment',ar:'معدات منخفضة الضوضاء',mechAr:'استخدام معدات حديثة أقل ضوضاء',mechEn:'Use modern less noisy equipment',
+whenAr:{ideal:'مشاريع طويلة الأمد',adv:'حل جذري',lim:'تكلفة أعلى',ex:'مشاريع كبيرة'},
+whenEn:{ideal:'Long-term projects',adv:'Root solution',lim:'Higher cost',ex:'Large projects'}},
+
+{abbr:'Time Restrictions',full:'Operating Time Restrictions',ar:'تقييد أوقات العمل',mechAr:'منع العمل الليلي وفي العطلات',mechEn:'Prohibit night and holiday work',
+whenAr:{ideal:'مناطق سكنية حساسة',adv:'بسيط، فعال',lim:'يطول المشروع',ex:'مناطق سكنية'},
+whenEn:{ideal:'Sensitive residential areas',adv:'Simple, effective',lim:'Extends project',ex:'Residential areas'}}
+],
+emergency:['إيقاف العمل','التفاوض مع الجيران','إبلاغ البلدية'],
+cap:['خطة إدارة ضوضاء','تقييد الأوقات','صيانة المعدات','توعية العمال'],
+safety:['واقيات أذن','تدريب','فحوصات سمع']},
+
+{id:'traffic_noise',category:'noise',icon:'🚗',severity:'medium',sectors:['الطرق السريعة','المناطق الحضرية','النقل'],
+nameAr:'ضوضاء حركة المرور',nameEn:'Traffic Noise',
+descAr:'ضوضاء مستمرة من حركة المركبات على الطرق السريعة والشوارع الحضرية تؤثر على السكان المجاورين',descEn:'Continuous noise from vehicle traffic on highways and urban streets affecting nearby residents',
+standards:['WHO Environmental Noise Guidelines: Lden ≤ 53 dB','EPA Highway Traffic Noise Barrier Guidelines','EU Environmental Noise Directive 2002/49/EC'],
+solutions:[
+{abbr:'Noise Barriers',full:'Permanent Highway Noise Barriers',ar:'حواجز ضوضاء دائمة للطرق',mechAr:'جدران عازلة على جانبي الطريق تعكس وتمتص موجات الصوت قبل وصولها للمناطق السكنية',mechEn:'Sound-reflecting/absorbing walls along roadsides that block noise before reaching residential areas',
+whenAr:{ideal:'طرق سريعة قريبة من مناطق سكنية',adv:'يقلل الضوضاء 10-15 dB، حل دائم',lim:'تكلفة إنشاء عالية، يحتاج مساحة',ex:'الطرق الدائرية، الطرق السريعة الحضرية'},
+whenEn:{ideal:'Highways near residential zones',adv:'Reduces noise 10-15 dB, permanent solution',lim:'High construction cost, needs space',ex:'Ring roads, urban highways'}},
+
+{abbr:'Low-Noise Pavement',full:'Low-Noise Road Surfacing',ar:'أسطح طرق منخفضة الضوضاء',mechAr:'استخدام أسفلت مطاطي أو مسامي يقلل الاحتكاك بين الإطارات والطريق',mechEn:'Use rubberized or porous asphalt that reduces tire-road friction noise',
+whenAr:{ideal:'طرق حضرية عالية الكثافة المرورية',adv:'يقلل الضوضاء من المصدر مباشرة',lim:'تكلفة صيانة أعلى، عمر افتراضي أقصر',ex:'شوارع المدن الرئيسية'},
+whenEn:{ideal:'High-traffic urban roads',adv:'Reduces noise at the source directly',lim:'Higher maintenance cost, shorter lifespan',ex:'Main city streets'}}
+],
+emergency:['رصد شكاوى السكان','تقييم مستوى الضوضاء فوراً'],
+cap:['دراسة خريطة ضوضاء (Noise Mapping)','تركيب حواجز أو تحسين سطح الطريق','تعديل تنظيم المرور بالمناطق الحساسة'],
+safety:['لا مخاطر مباشرة على العاملين، توعية السكان بمخاطر التعرض طويل الأمد']},
+
+{id:'vibration_pollution',category:'noise',icon:'📳',severity:'medium',sectors:['السكك الحديدية','مواقع البناء','المصانع الثقيلة'],
+nameAr:'التلوث الاهتزازي (Ground-borne Vibration)',nameEn:'Vibration Pollution (Ground-borne Vibration)',
+descAr:'اهتزازات تنتقل عبر التربة من القطارات والمعدات الثقيلة، تؤثر على استقرار المباني وراحة السكان',descEn:'Vibrations transmitted through the ground from trains and heavy equipment, affecting building stability and resident comfort',
+standards:['ISO 2631 (Human Exposure to Whole-Body Vibration)','FTA Transit Noise and Vibration Impact Assessment Guidelines'],
+solutions:[
+{abbr:'Vibration Isolation',full:'Resilient Vibration Isolation Mounts',ar:'عوازل اهتزاز مرنة',mechAr:'تركيب حصائر مطاطية أو زنبركية تحت المعدات أو مسارات القطارات تمتص الاهتزاز قبل انتقاله للتربة',mechEn:'Install rubber or spring mats under equipment or rail tracks that absorb vibration before ground transmission',
+whenAr:{ideal:'معدات ثقيلة ثابتة، خطوط مترو تحت الأرض',adv:'فعال جداً عند المصدر',lim:'تكلفة تركيب وصيانة',ex:'محطات ضخ، خطوط مترو الأنفاق'},
+whenEn:{ideal:'Fixed heavy equipment, underground metro lines',adv:'Very effective at the source',lim:'Installation and maintenance cost',ex:'Pumping stations, metro tunnel lines'}},
+
+{abbr:'Isolation Trenches',full:'Wave Barrier / Isolation Trenches',ar:'خنادق عازلة للموجات الاهتزازية',mechAr:'حفر خنادق مملوءة بمواد ماصة بين مصدر الاهتزاز والمباني لقطع مسار انتقال الموجات عبر التربة',mechEn:'Dig trenches filled with absorbing material between vibration source and buildings to interrupt wave propagation through soil',
+whenAr:{ideal:'مواقع بناء أو سكك قريبة من مبانٍ حساسة (مستشفيات، معامل)',adv:'يحمي مبانٍ محددة بدقة',lim:'مناسب لمسافات محدودة فقط',ex:'مواقع بناء بجوار مستشفيات'},
+whenEn:{ideal:'Construction or rail sites near sensitive buildings (hospitals, labs)',adv:'Precisely protects specific buildings',lim:'Only suitable for limited distances',ex:'Construction sites next to hospitals'}}
+],
+emergency:['إيقاف المصدر عند ظهور تشققات بالمباني المجاورة','تقييم هندسي فوري للمنشآت القريبة'],
+cap:['مسح اهتزازي قبل بدء المشروع','تركيب عوازل عند الحاجة','رصد دوري للمباني الحساسة'],
+safety:['فحص دوري لسلامة المعدات', 'تدريب العاملين على حدود التعرض الآمن']},
+
+// ===== أنظمة المراقبة والكشف =====
+{id:'cems',category:'monitoring',icon:'📡',severity:'high',sectors:['محطات طاقة','أسمنت','كيماويات','تكرير'],
+nameAr:'CEMS - أنظمة الرصد المستمر للانبعاثات',nameEn:'CEMS - Continuous Emission Monitoring Systems',
+descAr:'أنظمة ثابتة تراقب الانبعاثات من المداخن 24/7 بدقة عالية (تصل إلى PM1.0)',descEn:'Fixed systems monitoring stack emissions 24/7 with high accuracy (up to PM1.0)',
+standards:['EPA 40 CFR Part 60 (Appendix B)','EU IED 2010/75/EU','ISO 14956 (CEMS Performance)'],
+solutions:[
+{abbr:'CEMS',full:'Continuous Emission Monitoring System',ar:'نظام الرصد المستمر للانبعاثات',mechAr:'أجهزة تحليلية ثابتة (NDIR للـ CO2/CO، Chemiluminescence للـ NOx، Fluorescence للـ SO2، Beta Attenuation/TEOM للـ PM). تقيس كل ثانية',mechEn:'Fixed analytical devices (NDIR for CO2/CO, Chemiluminescence for NOx, Fluorescence for SO2, Beta Attenuation/TEOM for PM). Measure every second',
+whenAr:{ideal:'محطات طاقة، مصانع أسمنت، منشآت كبيرة ملزمة برصد مستمر',adv:'الأدق، رصد 24/7، يصل لـ PM1.0، بيانات فورية للجهة الرقابية',lim:'تكلفة عالية (100-500 ألف$)، صيانة متخصصة',ex:'محطات طاقة >50MW، مصانع أسمنت'},
+whenEn:{ideal:'Power plants, cement plants, large facilities required to monitor continuously',adv:'Most accurate, 24/7 monitoring, reaches PM1.0, real-time data for regulators',lim:'High cost ($100-500K), specialized maintenance',ex:'Power plants >50MW, cement plants'}},
+
+{abbr:'DAHS',full:'Data Acquisition and Handling System',ar:'نظام جمع ومعالجة البيانات',mechAr:'نظام حاسوبي يجمع البيانات من CEMS ويولد تقارير تلقائية',mechEn:'Computer system collects data from CEMS and generates automatic reports',
+whenAr:{ideal:'مع CEMS، حاجة لتقارير آلية للجهات الرقابية',adv:'أتمتة كاملة',lim:'يحتاج CEMS',ex:'جميع المنشآت الكبيرة'},
+whenEn:{ideal:'With CEMS, need for automated reports for regulators',adv:'Full automation',lim:'Needs CEMS',ex:'All large facilities'}},
+
+{abbr:'Calibration System',full:'Automatic Calibration System',ar:'نظام المعايرة التلقائي',mechAr:'غازات معايرة قياسية تُحقن دورياً لضمان دقة القياسات',mechEn:'Standard calibration gases injected periodically to ensure measurement accuracy',
+whenAr:{ideal:'مع CEMS لضمان دقة مستمرة',adv:'يضمن دقة ±2%',lim:'يستهلك غازات معايرة',ex:'CEMS systems'},
+whenEn:{ideal:'With CEMS to ensure continuous accuracy',adv:'Ensures ±2% accuracy',lim:'Consumes calibration gases',ex:'CEMS systems'}}
+],
+emergency:['تفعيل أنظمة الإنذار عند تجاوز الحدود','إيقاف المصدر تلقائياً','إبلاغ الجهة الرقابية فوراً','توثيق الحادث'],
+cap:['صيانة دورية كل 3 أشهر','معايرة شهرية','استبدال قطع الغيار','تدريب المشغلين'],
+safety:['تدريب على التعامل مع غازات المعايرة','PPE عند الصيانة','بروتوكولات السلامة الكهربائية']},
+
+{id:'mobile_monitoring',category:'monitoring',icon:'🚐',severity:'medium',sectors:['تفتيش بيئي','طوارئ','دراسات'],
+nameAr:'أنظمة المراقبة المتنقلة (Mobile Monitoring)',nameEn:'Mobile Monitoring Systems',
+descAr:'وحدات متنقلة تأخذ عينات من مواقع مختلفة',descEn:'Mobile units taking samples from various locations',
+standards:['EPA TO-15 (VOCs Sampling)','EPA Method IO-4.2 (PM Sampling)','WHO Air Quality Monitoring Guidelines'],
+solutions:[
+{abbr:'Mobile Lab',full:'Mobile Environmental Laboratory',ar:'المختبر البيئي المتنقل',mechAr:'شاحنة مجهزة بأجهزة تحليل (GC-MS للـ VOCs، FTIR للغازات، Beta Gauge للـ PM)',mechEn:'Truck equipped with analytical devices (GC-MS for VOCs, FTIR for gases, Beta Gauge for PM)',
+whenAr:{ideal:'تفتيش مواقع متعددة، دراسات baseline، استجابة طوارئ',adv:'مرن، يغطي مناطق واسعة',lim:'تكلفة تشغيل عالية',ex:'جهاز البيئة، استشارات'},
+whenEn:{ideal:'Multi-site inspections, baseline studies, emergency response',adv:'Flexible, covers wide areas',lim:'High operating cost',ex:'Environmental agency, consultants'}},
+
+{abbr:'Portable Analyzers',full:'Portable Gas Analyzers',ar:'أجهزة التحليل المحمولة',mechAr:'أجهزة يدوية (Multi-gas detectors, PID للـ VOCs, XRF للمعادن)',mechEn:'Handheld devices (Multi-gas detectors, PID for VOCs, XRF for metals)',
+whenAr:{ideal:'قياسات سريعة في الموقع، تقييم أولي',adv:'سريع، رخيص',lim:'دقة أقل من الثابت',ex:'تفتيش ميداني'},
+whenEn:{ideal:'Quick on-site measurements, initial assessment',adv:'Fast, cheap',lim:'Less accurate than fixed',ex:'Field inspections'}},
+
+{abbr:'Drone Sampling',full:'Drone-based Air Sampling',ar:'أخذ العينات بالطائرات بدون طيار',mechAr:'درونز مزودة بمستشعرات لأخذ عينات من ارتفاعات مختلفة',mechEn:'Drones equipped with sensors to sample from different altitudes',
+whenAr:{ideal:'مناطق خطرة أو يصعب الوصول إليها',adv:'يصل لأماكن صعبة',lim:'مدة طيران محدودة',ex:'مداخن عالية، مناطق كوارث'},
+whenEn:{ideal:'Dangerous or hard-to-reach areas',adv:'Reaches difficult places',lim:'Limited flight time',ex:'Tall stacks, disaster areas'}}
+],
+emergency:['نشر الوحدة المتنقلة فوراً','أخذ عينات من موقع الحادث','تحليل سريع للنتائج','توجيه الاستجابة'],
+cap:['جدولة تفتيش دوري','معايرة الأجهزة','تدريب المشغلين','توثيق النتائج'],
+safety:['PPE حسب نوع الملوث','تدريب على القيادة في ظروف خطرة','بروتوكولات السلامة الميدانية']},
+
+{id:'satellite_monitoring',category:'monitoring',icon:'🛰️',severity:'medium',sectors:['رصد إقليمي','تغير مناخي','كوارث'],
+nameAr:'الرصد بالأقمار الصناعية (GIS & Remote Sensing)',nameEn:'Satellite Monitoring (GIS & Remote Sensing)',
+descAr:'استخدام الأقمار الصناعية لرصد التلوث على نطاق واسع',descEn:'Using satellites to monitor pollution at large scale',
+standards:['NASA Earth Observing System','ESA Copernicus Programme','UN-SPIDER (Space-based Information for Disaster Risk)'],
+solutions:[
+{abbr:'Satellite Sensors',full:'Satellite-based Sensors (MODIS, Sentinel-5P)',ar:'مستشعرات الأقمار الصناعية',mechAr:'أقمار مثل Sentinel-5P ترصد NO2, SO2, O3, CO على مستوى عالمي',mechEn:'Satellites like Sentinel-5P monitor NO2, SO2, O3, CO globally',
+whenAr:{ideal:'رصد إقليمي/عالمي، تغير مناخي، كوارث بيئية كبيرة',adv:'تغطية واسعة، بيانات مجانية (Copernicus)',lim:'دقة مكانية محدودة (7×3.5 km)',ex:'رصد تلوث إقليمي'},
+whenEn:{ideal:'Regional/global monitoring, climate change, large environmental disasters',adv:'Wide coverage, free data (Copernicus)',lim:'Limited spatial resolution (7×3.5 km)',ex:'Regional pollution monitoring'}},
+
+{abbr:'GIS Analysis',full:'Geographic Information Systems (GIS)',ar:'نظم المعلومات الجغرافية',mechAr:'برامج (ArcGIS, QGIS) لتحليل البيانات المكانية',mechEn:'Software (ArcGIS, QGIS) to analyze spatial data',
+whenAr:{ideal:'تحليل وتصور بيانات بيئية',adv:'تحليل مكاني متقدم',lim:'يحتاج تدريب',ex:'جميع التطبيقات البيئية'},
+whenEn:{ideal:'Environmental data analysis and visualization',adv:'Advanced spatial analysis',lim:'Needs training',ex:'All environmental applications'}},
+
+{abbr:'Thermal Imaging',full:'Thermal Satellite Imaging',ar:'التصوير الحراري بالأقمار',mechAr:'كشف التسربات الحرارية والحرائق',mechEn:'Detect thermal leaks and fires',
+whenAr:{ideal:'حرائق غابات، تسربات حرارية',adv:'رصد عن بعد',lim:'تأثر بالغيوم',ex:'حرائق، براكين'},
+whenEn:{ideal:'Forest fires, thermal leaks',adv:'Remote monitoring',lim:'Affected by clouds',ex:'Fires, volcanoes'}}
+],
+emergency:['رصد الكوارث البيئية عن بعد','توجيه فرق الاستجابة','تقييم الأثر الإقليمي'],
+cap:['اشتراك في خدمات الأقمار','تدريب على GIS','تكامل مع البيانات الأرضية'],
+safety:['تدريب على تحليل البيانات','بروتوكولات مشاركة البيانات']},
+
+{id:'filter_sampling',category:'monitoring',icon:'🔬',severity:'medium',sectors:['معامل','أبحاث','رصد'],
+nameAr:'أخذ العينات على فلاتر وتحليلها',nameEn:'Filter-based Sampling and Analysis',
+descAr:'طريقة مرجعية (Reference Method) لأخذ عينات الهواء على فلاتر',descEn:'Reference method for air sampling on filters',
+standards:['EPA Method IO-2.1 (PM10 Sampling)','EPA Method IO-3.3 (Metals by XRF)','EN 12341 (PM10/PM2.5 Reference Method)'],
+solutions:[
+{abbr:'High-Volume Sampler',full:'High-Volume Air Sampler',ar:'جهاز أخذ العينات عالي الحجم',mechAr:'يسحب 1000-2000 لتر/دقيقة عبر فلتر لمدة 24 ساعة',mechEn:'Draws 1000-2000 L/min through filter for 24 hours',
+whenAr:{ideal:'رصد PM10/PM2.5 مرجعي، دراسات علمية',adv:'الأدق (Reference Method)، معتمد قانونياً',lim:'بطيء (24 ساعة للعينة)',ex:'محطات رصد رسمية'},
+whenEn:{ideal:'Reference PM10/PM2.5 monitoring, scientific studies',adv:'Most accurate (Reference Method), legally accepted',lim:'Slow (24 hours per sample)',ex:'Official monitoring stations'}},
+
+{abbr:'Low-Volume Sampler',full:'Low-Volume Personal Sampler',ar:'جهاز أخذ العينات الشخصي',mechAr:'جهاز محمول يسحب 2-5 لتر/دقيقة لقياس تعرض العاملين',mechEn:'Portable device drawing 2-5 L/min to measure personal worker exposure',
+whenAr:{ideal:'تقييم تعرض شخصي للعاملين',adv:'يقيس التعرض الفعلي للشخص',lim:'عينة واحدة لكل شخص',ex:'تقييم مهني'},
+whenEn:{ideal:'Personal worker exposure assessment',adv:'Measures actual personal exposure',lim:'One sample per person',ex:'Occupational assessment'}},
+
+{abbr:'Lab Analysis',full:'Laboratory Analysis (XRF, IC, GC-MS)',ar:'التحليل المعملي',mechAr:'تحليل الفلاتر بـ: XRF (للمعادن)، IC (للأيونات)، GC-MS (للمركبات العضوية)',mechEn:'Analyze filters by: XRF (metals), IC (ions), GC-MS (organics)',
+whenAr:{ideal:'تحديد التركيب الكيميائي الدقيق',adv:'الأدق كيميائياً',lim:'يحتاج معمل معتمد ISO 17025',ex:'تحاليل رسمية'},
+whenEn:{ideal:'Precise chemical composition determination',adv:'Most accurate chemically',lim:'Needs ISO 17025 accredited lab',ex:'Official analyses'}}
+],
+emergency:['أخذ عينات طارئة من موقع الحادث','تحليل سريع','مقارنة بالمعايير'],
+cap:['جدولة أخذ عينات دوري','معايرة الأجهزة','اعتماد المعمل ISO 17025'],
+safety:['تدريب على أخذ العينات','PPE حسب الموقع','بروتوكولات نقل العينات']},
+
+{id:'portable_detectors',category:'monitoring',icon:'📱',severity:'medium',sectors:['سلامة مهنية','طوارئ','تفتيش'],
+nameAr:'أجهزة الكشف المحمولة (Portable Detectors)',nameEn:'Portable Detection Devices',
+descAr:'أجهزة يدوية للكشف السريع عن الغازات والملوثات',descEn:'Handheld devices for quick on-site detection of gases and pollutants',
+standards:['OSHA 29 CFR 1910.146 (Confined Spaces)','NIOSH Pocket Guide','EN 45544 (Workplace Atmospheres)'],
+solutions:[
+{abbr:'Multi-Gas Detector',full:'Multi-Gas Detector (4-6 gases)',ar:'جهاز كشف الغازات المتعدد',mechAr:'يقيس O2, LEL, CO, H2S, VOCs, CO2 في نفس الوقت',mechEn:'Measures O2, LEL, CO, H2S, VOCs, CO2 simultaneously',
+whenAr:{ideal:'أماكن مغلقة، دخول خزانات، سلامة مهنية',adv:'يقيس عدة غازات معاً',lim:'يحتاج معايرة يومية',ex:'أماكن مغلقة، تفتيش'},
+whenEn:{ideal:'Confined spaces, tank entry, occupational safety',adv:'Measures multiple gases together',lim:'Needs daily calibration',ex:'Confined spaces, inspections'}},
+
+{abbr:'PID Detector',full:'Photoionization Detector (PID)',ar:'جهاز الكشف بالتأين الضوئي',mechAr:'يكشف VOCs بتركيزات ppb باستخدام مصباح UV',mechEn:'Detects VOCs at ppb levels using UV lamp',
+whenAr:{ideal:'تسربات مذيبات، تقييم مواقع ملوثة',adv:'حساس جداً (ppb)',lim:'لا يحدد نوع VOC',ex:'تفتيش مواقع'},
+whenEn:{ideal:'Solvent leaks, contaminated site assessment',adv:'Very sensitive (ppb)',lim:'Does not identify VOC type',ex:'Site inspections'}},
+
+{abbr:'XRF Analyzer',full:'Portable XRF Analyzer',ar:'محلل XRF المحمول',mechAr:'يحلل المعادن الثقيلة في التربة خلال ثوانٍ',mechEn:'Analyzes heavy metals in soil within seconds',
+whenAr:{ideal:'تقييم سريع لتربة ملوثة',adv:'فوري، لا تحضير عينة',lim:'دقة أقل من المعمل',ex:'تقييم مواقع'},
+whenEn:{ideal:'Quick soil contamination assessment',adv:'Instant, no sample prep',lim:'Less accurate than lab',ex:'Site assessment'}}
+],
+emergency:['استخدام فوري في حالات الطوارئ','تحديد نوع الملوث','توجيه إجراءات الاستجابة'],
+cap:['معايرة يومية','صيانة دورية','تدريب المستخدمين','استبدال الحساسات'],
+safety:['تدريب على الاستخدام','فهم حدود الكشف','PPE مناسب']},
+
+{id:'drone_monitoring',category:'monitoring',icon:'🛸',severity:'medium',sectors:['بيئة','زراعة','تعدين','طوارئ'],
+nameAr:'المراقبة بالطائرات المسيّرة (Drone Monitoring)',nameEn:'Drone-Based Environmental Monitoring',
+descAr:'طائرات مسيّرة مزودة بحساسات للكشف عن التسربات والانبعاثات ورصد مواقع يصعب أو يخطر الوصول إليها بشرياً',descEn:'Unmanned aerial vehicles equipped with sensors to detect leaks and emissions and monitor sites difficult or dangerous for humans to access',
+standards:['EPA Unmanned Aircraft Systems (UAS) Guidance','ISO 21384 (Unmanned Aircraft Systems)'],
+solutions:[
+{abbr:'Thermal Drone',full:'Thermal/Infrared Imaging Drone',ar:'طائرة مسيّرة بالتصوير الحراري',mechAr:'كاميرا حرارية محمولة على طائرة مسيّرة تكشف تسربات الغاز والحرارة الزائدة من مسافة آمنة',mechEn:'Thermal camera mounted on a drone detects gas leaks and excess heat from a safe distance',
+whenAr:{ideal:'خطوط أنابيب طويلة، منشآت يصعب الوصول لها أرضياً',adv:'سريع، يغطي مساحات واسعة، يقلل مخاطر العاملين',lim:'يتأثر بالطقس، يحتاج طيار مدرب',ex:'حقول نفط وغاز، مناجم'},
+whenEn:{ideal:'Long pipelines, facilities hard to access on foot',adv:'Fast, covers wide areas, reduces worker risk',lim:'Weather-dependent, requires trained pilot',ex:'Oil & gas fields, mining sites'}},
+
+{abbr:'Gas Sensor Drone',full:'Gas Sensor-Equipped Drone',ar:'طائرة مسيّرة بحساسات الغازات',mechAr:'حساسات غاز محمولة جواً تأخذ قراءات مباشرة من أعمدة الانبعاثات وتحدد مصدرها بدقة',mechEn:'Airborne gas sensors take direct readings from emission plumes and precisely locate their source',
+whenAr:{ideal:'رصد انبعاثات هاربة من مصانع أو مكبات',adv:'يحدد مصدر التسرب بدقة، بيانات فورية',lim:'مدى طيران محدود، حساسات تحتاج معايرة',ex:'مصافي، مكبات نفايات'},
+whenEn:{ideal:'Monitoring fugitive emissions from plants or landfills',adv:'Pinpoints leak source accurately, real-time data',lim:'Limited flight range, sensors need calibration',ex:'Refineries, landfills'}}
+],
+emergency:['إطلاق طائرة استطلاع فورية عند بلاغ تسرب','تحديد موقع المصدر قبل إرسال فرق أرضية'],
+cap:['برنامج رصد جوي دوري مجدول','دمج بيانات الطائرات مع CEMS الثابتة','صيانة ومعايرة الحساسات'],
+safety:['تدريب وترخيص طيار مسيّرة','الالتزام بقيود الطيران المحلية','خطة طوارئ لفقدان الاتصال بالطائرة']},
+
+// ===== مخاطر أخرى =====
+{id:'radiation_leak',category:'other',icon:'☢️',severity:'high',sectors:['طاقة نووية','مستشفيات','معامل'],
+nameAr:'التسرب الإشعاعي',nameEn:'Radiation Leak',
+descAr:'إطلاق مواد مشعة يشكل خطراً صحياً وبيئياً فورياً',descEn:'Release of radioactive materials poses immediate health and environmental risk',
+standards:['IAEA Safety Standards','WHO Radiation Emergency Guidelines','EPA Radiological Emergency Response'],
+solutions:[
+{abbr:'Containment',full:'Emergency Containment',ar:'الاحتواء الطارئ',mechAr:'عزل المصدر وإغلاق المنافذ',mechEn:'Isolate source and close openings',
+whenAr:{ideal:'تسرب محدود، مصدر معروف',adv:'يمنع الانتشار',lim:'يحتاج معرفة المصدر',ex:'معامل'},
+whenEn:{ideal:'Limited leak, known source',adv:'Prevents spread',lim:'Needs source identification',ex:'Laboratories'}},
+
+{abbr:'Decontamination',full:'Radiological Decontamination',ar:'إزالة التلوث الإشعاعي',mechAr:'غسل الأسطح بمحاليل خاصة',mechEn:'Wash surfaces with special solutions',
+whenAr:{ideal:'أسطح ملوثة',adv:'يزيل التلوث',lim:'ينتج نفايات سائلة',ex:'مناطق ملوثة'},
+whenEn:{ideal:'Contaminated surfaces',adv:'Removes contamination',lim:'Produces liquid waste',ex:'Contaminated areas'}},
+
+{abbr:'Shielding',full:'Radiation Shielding',ar:'الحماية بالإشعاع',mechAr:'حواجز رصاص أو خرسانة',mechEn:'Lead or concrete barriers',
+whenAr:{ideal:'مصادر إشعاعية ثابتة',adv:'حماية دائمة',lim:'ثقيل، مكلف',ex:'غرف أشعة'},
+whenEn:{ideal:'Fixed radiation sources',adv:'Permanent protection',lim:'Heavy, expensive',ex:'X-ray rooms'}}
+],
+emergency:['إخلاء فوري واسع','ارتداء بدلات إشعاعية','إبلاغ هيئة الرقابة النووية','إغلاق المنطقة'],
+cap:['نظام احتواء متقدم','صيانة دورية','تدريب متخصص','خطة طوارئ شاملة'],
+safety:['بدلات رصاص','Dosimeters','SCBA','تدريب إشعاعي متقدم']},
+
+{id:'fire_explosion',category:'other',icon:'🔥',severity:'high',sectors:['كيماويات','نفط','غاز','مصانع'],
+nameAr:'الحريق والانفجار',nameEn:'Fire and Explosion',
+descAr:'خطر فوري يهدد الأرواح والممتلكات',descEn:'Immediate risk threatening lives and property',
+standards:['NFPA Fire Codes','OSHA Process Safety Management','EPA Risk Management Program (RMP)'],
+solutions:[
+{abbr:'Fire Suppression',full:'Automatic Fire Suppression System',ar:'نظام إطفاء آلي',mechAr:'أنظمة رغوة، مسحوق، أو غاز (FM-200)',mechEn:'Foam, powder, or gas (FM-200) systems',
+whenAr:{ideal:'جميع المنشآت',adv:'استجابة فورية',lim:'تكلفة',ex:'جميع المصانع'},
+whenEn:{ideal:'All facilities',adv:'Immediate response',lim:'Cost',ex:'All factories'}},
+
+{abbr:'Explosion Venting',full:'Explosion Venting Panels',ar:'لوحات تنفيس الانفجار',mechAr:'لوحات ضعيفة تنفتح عند الضغط العالي',mechEn:'Weak panels that open at high pressure',
+whenAr:{ideal:'غبار قابل للانفجار، غازات',adv:'يحمي المنشأة',lim:'يطلق الانفجار للخارج',ex:'صوامع، مطاحن'},
+whenEn:{ideal:'Explosive dust, gases',adv:'Protects structure',lim:'Releases explosion outward',ex:'Silos, mills'}},
+
+{abbr:'Inert Gas System',full:'Inert Gas Blanketing',ar:'نظام الغاز الخامل',mechAr:'نيتروجين أو CO2 في الخزانات',mechEn:'Nitrogen or CO2 in tanks',
+whenAr:{ideal:'خزانات سوائل قابلة للاشتعال',adv:'يمنع الاشتعال',lim:'يحتاج إمداد غاز',ex:'خزانات نفط'},
+whenEn:{ideal:'Flammable liquid tanks',adv:'Prevents ignition',lim:'Needs gas supply',ex:'Oil tanks'}}
+],
+emergency:['تفعيل الإنذار','إخلاء فوري','اتصال بالدفاع المدني','استخدام الطفايات'],
+cap:['نظام إطفاء آلي','تدريب دوري','صيانة أنظمة الحريق','خطة إخلاء'],
+safety:['معدات إطفاء','بدلات حريق','SCBA','تدريب مكافحة حريق']},
+
+{id:'zoonotic_diseases',category:'other',icon:'🦠',severity:'high',sectors:['مزارع','مجازر','حدائق حيوان'],
+nameAr:'الأمراض المشتركة (Zoonotic Diseases)',nameEn:'Zoonotic Diseases',
+descAr:'أمراض تنتقل من الحيوانات للإنسان',descEn:'Diseases transmitted from animals to humans',
+standards:['WHO Zoonoses Guidelines','OIE (WOAH) Terrestrial Code','CDC One Health Approach'],
+solutions:[
+{abbr:'Biosecurity',full:'Farm Biosecurity Program',ar:'الأمن الحيوي للمزرعة',mechAr:'بروتوكولات صارمة: تعقيم، عزل، تقييد دخول',mechEn:'Strict protocols: disinfection, isolation, access restriction',
+whenAr:{ideal:'جميع المزارع',adv:'وقائي',lim:'يحتاج انضباط',ex:'مزارع'},
+whenEn:{ideal:'All farms',adv:'Preventive',lim:'Needs discipline',ex:'Farms'}},
+
+{abbr:'Vaccination',full:'Animal and Worker Vaccination',ar:'تطعيم الحيوانات والعاملين',mechAr:'برامج تطعيم شاملة',mechEn:'Comprehensive vaccination programs',
+whenAr:{ideal:'أمراض معروفة التطعيم',adv:'يمنع المرض',lim:'لا لكل الأمراض',ex:'إنفلونزا طيور'},
+whenEn:{ideal:'Known vaccine-preventable diseases',adv:'Prevents disease',lim:'Not for all diseases',ex:'Bird flu'}},
+
+{abbr:'Surveillance',full:'Disease Surveillance System',ar:'نظام الترصد الوبائي',mechAr:'مراقبة مستمرة للأعراض',mechEn:'Continuous symptom monitoring',
+whenAr:{ideal:'كشف مبكر',adv:'استجابة سريعة',lim:'يحتاج موارد',ex:'جميع المزارع'},
+whenEn:{ideal:'Early detection',adv:'Quick response',lim:'Needs resources',ex:'All farms'}}
+],
+emergency:['عزل الحيوانات المصابة','إبلاغ الصحة والزراعة','تطهير شامل','تتبع المخالطين'],
+cap:['برنامج تطعيم','أمن حيوي صارم','تدريب العاملين','رصد مستمر'],
+safety:['PPE كامل','تطعيمات','فحوصات دورية','تدريب بيولوجي']},
+
+{id:'heat_stress',category:'other',icon:'🌡️',severity:'medium',sectors:['بناء','زراعة','مصانع'],
+nameAr:'الإجهاد الحراري',nameEn:'Heat Stress',
+descAr:'تعرض العمال لحرارة عالية',descEn:'Worker exposure to high heat',
+standards:['WHO Heat and Health Guidelines','OSHA Heat Stress Standards','NIOSH Heat Stress Criteria'],
+solutions:[
+{abbr:'Hydration Stations',full:'Hydration and Rest Stations',ar:'محطات الترطيب والراحة',mechAr:'توفير ماء بارد ومناطق مكيفة',mechEn:'Provide cold water and air-conditioned rest areas',
+whenAr:{ideal:'جميع الأعمال في حر',adv:'بسيط، فعال',lim:'تكلفة',ex:'بناء، زراعة'},
+whenEn:{ideal:'All work in heat',adv:'Simple, effective',lim:'Cost',ex:'Construction, agriculture'}},
+
+{abbr:'Work-Rest Cycles',full:'Work-Rest Cycle Management',ar:'إدارة دورات العمل والراحة',mechAr:'تناوب فترات العمل والراحة',mechEn:'Alternate work and rest periods',
+whenAr:{ideal:'حرارة عالية',adv:'يحمي العمال',lim:'يقلل إنتاجية',ex:'جميع القطاعات'},
+whenEn:{ideal:'High heat',adv:'Protects workers',lim:'Reduces productivity',ex:'All sectors'}}
+],
+emergency:['نقل المصاب للظل','تبريد الجسم','اتصال بالإسعاف'],
+cap:['تدريب على أعراض الحرارة','جدولة العمل في الأوقات الباردة','مراقبة العمال'],
+safety:['ملابس خفيفة','ماء بارد','فحوصات طبية']},
+
+{id:'light_pollution',category:'other',icon:'💡',severity:'low',sectors:['مدن','إعلانات','مطارات'],
+nameAr:'التلوث الضوئي',nameEn:'Light Pollution',
+descAr:'إضاءة مفرطة تؤثر على الحياة البرية',descEn:'Excessive lighting affecting wildlife',
+standards:['IDA (International Dark-Sky Association)','WHO Light at Night Guidelines','EU Light Pollution Regulations'],
+solutions:[
+{abbr:'LED with Shielding',full:'Shielded LED Lighting',ar:'إضاءة LED محمية',mechAr:'مصابيح LED موجهة للأسفل مع حواجز',mechEn:'Downward-directed LED lamps with shields',
+whenAr:{ideal:'إضاءة خارجية',adv:'يقلل تلوث',lim:'تكلفة ترقية',ex:'شوارع'},
+whenEn:{ideal:'Outdoor lighting',adv:'Reduces pollution',lim:'Upgrade cost',ex:'Streets'}},
+
+{abbr:'Smart Lighting',full:'Smart Lighting Controls',ar:'أنظمة إضاءة ذكية',mechAr:'أجهزة استشعار حركة وتخفيف',mechEn:'Motion sensors and dimming',
+whenAr:{ideal:'مناطق قليلة الحركة',adv:'يوفر طاقة',lim:'تكلفة',ex:'حدائق'},
+whenEn:{ideal:'Low-traffic areas',adv:'Saves energy',lim:'Cost',ex:'Parks'}}
+],
+emergency:['إطفاء الأضواء غير الضرورية'],
+cap:['ترقية أنظمة الإضاءة','توعية المجتمع','مراقبة التلوث الضوئي'],
+safety:['نظارات','تدريب']},
+
+{id:'electromagnetic_radiation',category:'other',icon:'📡',severity:'low',sectors:['اتصالات','محطات كهرباء','بث إذاعي'],
+nameAr:'الإشعاع الكهرومغناطيسي (EMF)',nameEn:'Electromagnetic Field (EMF) Exposure',
+descAr:'حقول كهرومغناطيسية من أبراج الاتصالات وخطوط الجهد العالي، محل جدل علمي حول آثارها الصحية طويلة الأمد',descEn:'Electromagnetic fields from telecom towers and high-voltage lines, subject to ongoing scientific debate over long-term health effects',
+standards:['ICNIRP Guidelines for Limiting EMF Exposure','WHO EMF Project','FCC RF Exposure Limits'],
+solutions:[
+{abbr:'Buffer Zones',full:'Exposure Buffer Zones',ar:'مناطق عازلة للتعرض',mechAr:'تحديد مسافة أمان دنيا بين أبراج الاتصال/خطوط الجهد العالي والمناطق السكنية بناءً على شدة المجال',mechEn:'Set minimum safe distance between telecom towers/high-voltage lines and residential areas based on field strength',
+whenAr:{ideal:'تخطيط مواقع أبراج جديدة أو خطوط نقل كهرباء',adv:'وقائي، بسيط التطبيق',lim:'يحتاج مساحة أرض متاحة',ex:'أبراج اتصال، محطات تحويل كهرباء'},
+whenEn:{ideal:'Planning new tower sites or power transmission lines',adv:'Preventive, simple to apply',lim:'Requires available land',ex:'Telecom towers, electrical substations'}},
+
+{abbr:'EMF Shielding',full:'EMF Shielding Materials',ar:'مواد عازلة للمجال الكهرومغناطيسي',mechAr:'استخدام طلاءات أو شبكات معدنية (Faraday) تعكس أو تمتص الموجات الكهرومغناطيسية قبل وصولها للمناطق المأهولة',mechEn:'Use metallic coatings or Faraday mesh that reflect or absorb electromagnetic waves before reaching occupied areas',
+whenAr:{ideal:'مبانٍ قريبة من مصادر إشعاع قائمة يصعب نقلها',adv:'حل بدون الحاجة لنقل المصدر',lim:'تكلفة وتغطية جزئية فقط',ex:'مبانٍ سكنية قرب محطات إرسال'},
+whenEn:{ideal:'Buildings near existing radiation sources that are hard to relocate',adv:'Solution without relocating the source',lim:'Cost and only partial coverage',ex:'Residential buildings near transmission stations'}}
+],
+emergency:['إيقاف البث مؤقتاً عند شكاوى صحية موثقة قريبة من مصدر قوي','قياس فوري لشدة المجال'],
+cap:['قياس دوري لمستويات EMF حول المنشأة','مراجعة مواقع الأبراج القريبة من المدارس والمستشفيات','توعية المجتمع بالمعايير الدولية'],
+safety:['قياس التعرض المهني للعاملين قرب أبراج الإرسال','الالتزام بحدود ICNIRP','تدريب فرق الصيانة']},
+
+{id:'odor_pollution',category:'other',icon:'👃',severity:'low',sectors:['محطات معالجة صرف','مكبات نفايات','مصانع أغذية'],
+nameAr:'التلوث بالروائح الكريهة (Odor Pollution)',nameEn:'Odor Pollution',
+descAr:'انبعاث روائح كريهة من محطات المعالجة والمكبات تسبب إزعاجاً للسكان المجاورين رغم عدم خطورتها الصحية المباشرة غالباً',descEn:'Foul odors emitted from treatment plants and landfills causing nuisance to nearby residents, though often not directly hazardous',
+standards:['EPA Odor Management Guidance','EN 13725 (Determination of Odour Concentration)','WHO Community Noise/Odor Nuisance Guidelines'],
+solutions:[
+{abbr:'Biofilter',full:'Biological Odor Biofilter',ar:'المرشح الحيوي للروائح',mechAr:'تمرير الهواء المحمّل بالروائح عبر طبقة عضوية حيث تحلل البكتيريا المركبات المسببة للرائحة',mechEn:'Pass odor-laden air through an organic layer where bacteria break down odor-causing compounds',
+whenAr:{ideal:'محطات معالجة صرف صحي، منشآت تسميد',adv:'فعال وصديق للبيئة، تكلفة تشغيل منخفضة',lim:'يحتاج مساحة، أقل فعالية للروائح شديدة التركيز',ex:'محطات صرف، مصانع تسميد عضوي'},
+whenEn:{ideal:'Wastewater treatment plants, composting facilities',adv:'Effective and eco-friendly, low operating cost',lim:'Requires space, less effective for very concentrated odors',ex:'Wastewater plants, composting facilities'}},
+
+{abbr:'Chemical Neutralization',full:'Chemical Odor Neutralization Spray Systems',ar:'أنظمة رش محايدة كيميائياً للروائح',mechAr:'رش مركبات كيميائية متخصصة تتفاعل مع جزيئات الرائحة وتحيّدها بدلاً من تغطيتها فقط',mechEn:'Spray specialized chemical compounds that react with and neutralize odor molecules rather than merely masking them',
+whenAr:{ideal:'مصادر روائح متقطعة أو طارئة',adv:'استجابة سريعة، سهل التركيب',lim:'تكلفة تشغيل مستمرة، حل غير جذري',ex:'مكبات نفايات، محطات نقل نفايات'},
+whenEn:{ideal:'Intermittent or emergency odor sources',adv:'Fast response, easy to install',lim:'Ongoing operating cost, not a root-cause solution',ex:'Landfills, waste transfer stations'}}
+],
+emergency:['تشغيل أنظمة الرش المحايد فوراً عند بلاغات مكثفة','تحديد مصدر الرائحة بسرعة'],
+cap:['تركيب مرشح حيوي دائم عند المصادر الثابتة','برنامج رصد دوري لشكاوى السكان','مراجعة تصميم أغطية أحواض المعالجة'],
+safety:['لا مخاطر صحية مباشرة عادة، لكن يُنصح بتقييم التعرض المهني المطول للعاملين بالموقع']}
+];
+
+function init(){
+renderCategories();
+renderIssues();
+updateStats();
+}
+
+function renderCategories(){
+const tabs=document.getElementById('categoryTabs');
+tabs.innerHTML='';
+categories.forEach(cat=>{
+const count=cat.id==='all'?issues.length:issues.filter(i=>i.category===cat.id).length;
+const tab=document.createElement('div');
+tab.className='tab'+(currentCategory===cat.id?' active':'');
+tab.onclick=()=>{currentCategory=cat.id;renderCategories();renderIssues()};
+tab.innerHTML=`${cat.icon} ${translations[currentLang][cat.id]} <span class="count">${count}</span>`;
+tabs.appendChild(tab);
+});
+}
+
+function renderIssues(){
+const grid=document.getElementById('issuesGrid');
+grid.innerHTML='';
+const search=document.getElementById('searchInput').value.toLowerCase();
+const filtered=issues.filter(i=>{
+const matchCategory=currentCategory==='all'||i.category===currentCategory;
+const matchSearch=!search||i.nameAr.toLowerCase().includes(search)||i.nameEn.toLowerCase().includes(search)||i.descAr.toLowerCase().includes(search);
+return matchCategory&&matchSearch;
+});
+filtered.forEach(issue=>{
+const card=document.createElement('div');
+card.className='issue-card'+(selectedIssues.has(issue.id)?' selected':'');
+card.onclick=()=>toggleIssue(issue.id);
+const t=translations[currentLang];
+card.innerHTML=`
+<div class="checkbox"></div>
+<div class="icon">${issue.icon}</div>
+<h3>${currentLang==='ar'?issue.nameAr:issue.nameEn}</h3>
+<div class="desc">${currentLang==='ar'?issue.descAr:issue.descEn}</div>
+<div class="meta">
+<span class="badge badge-${issue.severity}">${t[issue.severity]}</span>
+${issue.sectors.slice(0,3).map(s=>`<span class="badge badge-sector">${s}</span>`).join('')}
+</div>
+`;
+grid.appendChild(card);
+});
+}
+
+function toggleIssue(id){
+if(selectedIssues.has(id))selectedIssues.delete(id);
+else selectedIssues.add(id);
+renderIssues();
+updateStats();
+}
+
+function updateStats(){
+document.getElementById('selectedCount').textContent=selectedIssues.size;
+document.getElementById('selectedCountBar').textContent=selectedIssues.size;
+document.getElementById('totalIssues').textContent=issues.length;
+document.getElementById('categoryCount').textContent=categories.length-1;
+}
+
+function clearSelection(){
+selectedIssues.clear();
+renderIssues();
+updateStats();
+}
+
+function filterIssues(){renderIssues()}
+
+function generateReport(){
+if(selectedIssues.size===0){
+alert(translations[currentLang].noSelection);
+return;
+}
+const t=translations[currentLang];
+const reportContent=document.getElementById('reportContent');
+const today=new Date().toLocaleDateString(currentLang==='ar'?'ar-EG':'en-US',{year:'numeric',month:'long',day:'numeric'});
+
+let html=`
+<div class="report-header">
+<h2>📊 ${t.reportTitle}</h2>
+<p>${t.reportSubtitle}</p>
+<p style="margin-top:10px;color:var(--text-light)">${currentLang==='ar'?'التاريخ':'Date'}: ${today} | ${currentLang==='ar'?'عدد المشاكل':'Problems'}: ${selectedIssues.size}</p>
+</div>
+`;
+
+selectedIssues.forEach((id,idx)=>{
+const issue=issues.find(i=>i.id===id);
+if(!issue)return;
+html+=`
+<div class="problem-report">
+<div class="problem-title">${idx+1}. ${issue.icon} ${currentLang==='ar'?issue.nameAr:issue.nameEn}</div>
+
+<div class="standards-box">
+<h4>📋 ${t.standards}</h4>
+${issue.standards.map(s=>`<span class="std-badge">${expandAbbr(s)}</span>`).join(' ')}
+</div>
+
+<div class="solution-block">
+<h4>✅ ${t.solution}</h4>
+${issue.solutions.map((s,i)=>`
+<div class="solution-item">
+<strong>${i+1}. <span class="abbreviation">${s.abbr}</span> ${s.full}</strong><br>
+<strong>${currentLang==='ar'?'الاسم بالعربي':'Arabic Name'}:</strong> ${s.ar}<br>
+<strong>${t.mechanism}:</strong> ${expandAbbr(currentLang==='ar'?s.mechAr:s.mechEn)}
+</div>
+<div class="when-to-use">
+<strong>${t.whenToUse}</strong><br>
+<strong>${t.idealFor}:</strong> ${expandAbbr(currentLang==='ar'?s.whenAr.ideal:s.whenEn.ideal)}<br>
+<strong>${t.advantages}:</strong> ${expandAbbr(currentLang==='ar'?s.whenAr.adv:s.whenEn.adv)}<br>
+<strong>${t.limitations}:</strong> ${expandAbbr(currentLang==='ar'?s.whenAr.lim:s.whenEn.lim)}<br>
+<strong>${t.examples}:</strong> ${expandAbbr(currentLang==='ar'?s.whenAr.ex:s.whenEn.ex)}
+</div>
+`).join('')}
+</div>
+
+<div class="emergency-block">
+<h4>🚨 ${t.emergency}</h4>
+<ol>${issue.emergency.map(e=>`<li>${expandAbbr(e)}</li>`).join('')}</ol>
+</div>
+
+<div class="cap-block">
+<h4>🔧 ${t.cap}</h4>
+<ol>${issue.cap.map(c=>`<li>${expandAbbr(c)}</li>`).join('')}</ol>
+</div>
+
+<div class="safety-block">
+<h4>🦺 ${t.safety}</h4>
+<ul>${issue.safety.map(s=>`<li>${expandAbbr(s)}</li>`).join('')}</ul>
+</div>
+
+${issue.category==='monitoring'?`
+<div class="monitoring-box">
+<h4>📡 ${currentLang==='ar'?'ملاحظات تقنية على أنظمة المراقبة':'Technical Notes on Monitoring Systems'}</h4>
+<ul>
+<li>${currentLang==='ar'?'<strong>CEMS (الثابت):</strong> الأدق، يقيس 24/7، يصل إلى PM1.0، مطلوب للمصانع الكبيرة وفق EPA':'<strong>CEMS (Fixed):</strong> Most accurate, measures 24/7, reaches PM1.0, required for large plants per EPA'}</li>
+<li>${currentLang==='ar'?'<strong>Mobile Systems (المتحرك):</strong> مرن، يأخذ عينات من مواقع متعددة، مثالي للتفتيش':'<strong>Mobile Systems:</strong> Flexible, samples multiple locations, ideal for inspections'}</li>
+<li>${currentLang==='ar'?'<strong>Satellite/GIS:</strong> يغطي مناطق واسعة، مثالي للكوارث والتغير المناخي':'<strong>Satellite/GIS:</strong> Covers large areas, ideal for disasters and climate change'}</li>
+<li>${currentLang==='ar'?'<strong>Filter Sampling:</strong> الطريقة المرجعية (Reference Method)، الأدق للتحليل الكيميائي':'<strong>Filter Sampling:</strong> Reference Method, most accurate for chemical analysis'}</li>
+<li>${currentLang==='ar'?'<strong>Portable Detectors:</strong> سريع للميدان، أقل دقة، للسلامة المهنية':'<strong>Portable Detectors:</strong> Fast for field, less accurate, for occupational safety'}</li>
+</ul>
+</div>
+`:''}
+</div>
+`;
+});
+
+html+=`
+<div style="margin-top:40px;padding-top:20px;border-top:2px solid var(--primary);text-align:center;color:var(--text-light);font-size:0.9em">
+<p><strong>${currentLang==='ar'?'تم إعداد التقرير وفقاً للمعايير الدولية':'Report prepared according to international standards'}:</strong> EPA, WHO, IFC, ISO, IAEA, NFPA, OSHA</p>
+<p><strong>${currentLang==='ar'?'ملاحظة':'Note'}:</strong> ${currentLang==='ar'?'يجب مراجعة التقرير من استشاري بيئي معتمد':'Must be reviewed by accredited environmental consultant'}</p>
+</div>
+`;
+
+reportContent.innerHTML=html;
+document.getElementById('reportSection').classList.add('active');
+document.getElementById('reportSection').scrollIntoView({behavior:'smooth'});
+}
+
+function closeReport(){
+document.getElementById('reportSection').classList.remove('active');
+window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleLanguage(){
+currentLang=currentLang==='ar'?'en':'ar';
+document.documentElement.lang=currentLang;
+document.documentElement.dir=currentLang==='ar'?'rtl':'ltr';
+const t=translations[currentLang];
+document.getElementById('mainTitle').textContent=t.mainTitle;
+document.getElementById('mainSubtitle').textContent=t.mainSubtitle;
+document.getElementById('searchInput').placeholder=t.searchPlaceholder;
+document.getElementById('selectedLabel').textContent=t.selectedLabel;
+document.getElementById('selectedLabelBar').textContent=t.selectedLabelBar;
+document.getElementById('clearBtn').textContent=t.clearBtn;
+document.getElementById('generateBtn').textContent=t.generateBtn;
+document.getElementById('totalLabel').textContent=t.totalLabel;
+document.getElementById('categoryLabel').textContent=t.categoryLabel;
+document.querySelector('.lang-toggle').textContent=t.langBtn;
+renderCategories();
+renderIssues();
+if(document.getElementById('reportSection').classList.contains('active')){
+generateReport();
+}
+}
+
+init();
+</script>
+</body>
+</html>
