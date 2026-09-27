@@ -1,32 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp">
+    android:background="@drawable/bg_gradient"
+    android:fillViewport="true">
 
-    <Button
-        android:id="@+id/btnEis"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:textSize="16sp"
-        android:text="@string/btn_eis" />
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingStart="26dp"
+        android:paddingEnd="26dp"
+        android:paddingTop="52dp"
+        android:paddingBottom="40dp">
 
-    <Button
-        android:id="@+id/btnAudit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:textSize="16sp"
-        android:text="@string/btn_audit" />
+        <ImageView
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_marginBottom="18dp"
+            android:src="@mipmap/ic_launcher"
+            android:contentDescription="@string/app_name" />
 
-    <Button
-        android:id="@+id/btnProblemSolver"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:text="@string/btn_problem_solver" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:gravity="center" />
 
-</LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="42dp"
+            android:text="@string/app_subtitle"
+            android:textColor="#D8EFDC"
+            android:textSize="14sp"
+            android:gravity="center" />
+
+        <Button
+            android:id="@+id/btnEis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:background="@drawable/card_bg"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:elevation="6dp"
+            android:paddingTop="22dp"
+            android:paddingBottom="22dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textAllCaps="false"
+            android:textColor="#1B5E20"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:text="@string/btn_eis" />
+
+        <Button
+            android:id="@+id/btnAudit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:background="@drawable/card_bg"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:elevation="6dp"
+            android:paddingTop="22dp"
+            android:paddingBottom="22dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textAllCaps="false"
+            android:textColor="#1B5E20"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:text="@string/btn_audit" />
+
+        <Button
+            android:id="@+id/btnProblemSolver"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/card_bg"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:elevation="6dp"
+            android:paddingTop="22dp"
+            android:paddingBottom="22dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textAllCaps="false"
+            android:textColor="#1B5E20"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:text="@string/btn_problem_solver" />
+
+    </LinearLayout>
+</ScrollView>
