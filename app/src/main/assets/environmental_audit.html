@@ -3576,7 +3576,7 @@ function generateReport(overrideName, overrideProject) {
   const reportContent = document.getElementById('reportContent');
   const today = new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const t = translations[currentLang];
-  const auditType = document.getElementById('auditType').value;
+  const auditType = document.getElementById('auditType').value === 'pre-purchase' ? 'prePurchase' : document.getElementById('auditType').value;
   
   const totalAreas = project.auditAreas.length;
   const compliantAreas = project.auditAreas.filter(a => a.status === 'compliant').length;
@@ -3585,6 +3585,31 @@ function generateReport(overrideName, overrideProject) {
   const complianceRate = Math.round((compliantAreas / totalAreas) * 100);
   const totalNCRs = project.ncrs.length;
   const criticalIssues = project.ncrs.filter(n => n.severity === 'high').length;
+  const ar = currentLang === 'ar';
+
+  const auditTypeContent = {
+    compliance: {
+      scope: ar ? 'تقييم شامل للامتثال البيئي للمنشأة مقابل التصاريح والقوانين المعمول بها، يشمل: الهواء، المياه، النفايات، الطاقة، السلامة، والتصاريح.' : 'Comprehensive assessment of the facility\'s environmental compliance against applicable permits and laws, covering: air, water, waste, energy, safety, and permits.',
+      methodology: ar ? 'مراجعة الوثائق والتصاريح الحالية، جولات ميدانية، مقابلات مع العاملين، أخذ عينات وتحليل، ومقارنة النتائج مباشرة بالحدود القانونية المسموح بها.' : 'Review of current documents and permits, field inspections, staff interviews, sampling and analysis, and direct comparison of results against legal permissible limits.',
+      criteria: ar ? 'قوانين البيئة المحلية، اشتراطات التصريح البيئي الممنوح للمنشأة، معايير NCEC (السعودية) وجهاز شؤون البيئة (مصر).' : 'Local environmental laws, the facility\'s granted environmental permit conditions, NCEC standards (Saudi Arabia) and the Environmental Affairs Agency (Egypt).'
+    },
+    gap: {
+      scope: ar ? 'تحديد الفجوة (Gap) بين الممارسات الحالية فعلياً في هذه المنشأة وبين الوضع المستهدف (سواء تصريح أحدث، معيار دولي، أو أفضل ممارسة صناعية)، وليس مجرد نسبة امتثال عامة.' : 'Identifying the actual gap between this facility\'s current practices and a target state (a newer permit, an international standard, or industry best practice) — not merely a generic compliance percentage.',
+      methodology: ar ? 'تسجيل الوضع الحالي لكل بند مقابل الوضع المستهدف، تصنيف حجم الفجوة (بسيطة/متوسطة/جوهرية)، ثم بناء خطة إغلاق فجوات (Gap Closure Plan) بأولويات وجداول زمنية واضحة لكل بند.' : 'Recording the current state of each item against the target state, classifying the gap size (minor/moderate/major), then building a Gap Closure Plan with clear priorities and timelines for each item.',
+      criteria: ar ? 'الفارق المحدد بين الوضع الحالي والمرجع المستهدف (تصريح مُحدَّث متوقع، معيار ISO/IFC، أو ممارسة القطاع)، وليس فقط القانون المحلي القائم.' : 'The defined gap between the current state and the target reference (an expected updated permit, an ISO/IFC standard, or sector practice) — not just the existing local law.'
+    },
+    iso: {
+      scope: ar ? 'تدقيق نظام الإدارة البيئية (EMS) للمنشأة مقابل بنود مواصفة ISO 14001:2015 (السياق، القيادة، التخطيط، الدعم، التشغيل، تقييم الأداء، التحسين)، وليس تدقيق امتثال قانوني بحت.' : 'Auditing the facility\'s Environmental Management System (EMS) against ISO 14001:2015 clauses (context, leadership, planning, support, operation, performance evaluation, improvement) — not a pure legal-compliance audit.',
+      methodology: ar ? 'تدقيق بند ببند (Clause-by-Clause) حسب هيكل ISO 14001، مراجعة أدلة الامتثال والسجلات لكل بند، مقابلات لتقييم مدى تطبيق النظام فعلياً (وليس فقط توثيقه)، وتحديد أي عدم مطابقة (Non-Conformity) حسب تصنيف ISO.' : 'Clause-by-clause audit following the ISO 14001 structure, review of conformity evidence and records per clause, interviews to assess how genuinely the system is implemented (not just documented), and identification of any non-conformities per ISO classification.',
+      criteria: ar ? 'متطلبات مواصفة ISO 14001:2015 نفسها، بالإضافة إلى السياسة والأهداف البيئية الداخلية التي حددتها المنشأة ذاتها ضمن نظامها.' : 'The requirements of the ISO 14001:2015 standard itself, in addition to the facility\'s own internal environmental policy and objectives set within its system.'
+    },
+    prePurchase: {
+      scope: ar ? 'تقييم المخاطر والالتزامات البيئية المحتملة المرتبطة بصفقة استحواذ أو شراء لهذه المنشأة تحديداً: التلوث التاريخي، الالتزامات القانونية القائمة أو المحتملة، قابلية نقل التصاريح، والمخالفات/الغرامات السابقة — وليس تقييم تشغيلي عام.' : 'Assessing the potential environmental risks and liabilities tied specifically to an acquisition/purchase transaction for this facility: historical contamination, existing or contingent legal liabilities, permit transferability, and past violations/fines — not a general operational assessment.',
+      methodology: ar ? 'مراجعة سجلات المخالفات والغرامات والدعاوى البيئية التاريخية، فحص ميداني من النوع (Phase I ESA)، مراجعة قابلية نقل التصاريح للمالك الجديد، وتقدير الالتزام المالي المحتمل (Contingent Liability) الناتج عن أي مخاطر مكتشفة.' : 'Reviewing historical violation, fine, and environmental litigation records, a Phase I ESA-style site walkthrough, reviewing permit transferability to the new owner, and estimating the potential contingent financial liability from any identified risks.',
+      criteria: ar ? 'مدى التعرض القانوني والمالي المحتمل (Contingent Liability) الذي قد ينتقل للمشتري، وليس فقط نسبة الامتثال الحالية — إذ قد تكون المنشأة "ممتثلة" حالياً لكن بها التزامات بيئية تاريخية غير مُفصح عنها.' : 'The extent of potential legal and financial exposure (contingent liability) that could transfer to the buyer, not just the current compliance percentage — a facility may be currently "compliant" while still carrying undisclosed historical environmental liabilities.'
+    }
+  };
+  const atc = auditTypeContent[auditType] || auditTypeContent.compliance;
   
   let html = `
     <div class="report-cover">
@@ -3623,13 +3648,13 @@ function generateReport(overrideName, overrideProject) {
     
     <h2 class="report-section-title"><span class="num">1</span> ${t.section1}</h2>
     <div class="report-block">
-      <strong>${t.auditScope}:</strong> ${currentLang === 'ar' ? 'تقييم شامل للامتثال البيئي للمنشأة بما في ذلك: الهواء، المياه، النفايات، الطاقة، السلامة، والتصاريح.' : 'Comprehensive assessment of environmental compliance including: air, water, waste, energy, safety, and permits.'}
+      <strong>${t.auditScope}:</strong> ${atc.scope}
     </div>
     <div class="report-block">
-      <strong>${t.auditMethodology}:</strong> ${currentLang === 'ar' ? 'مراجعة الوثائق، جولات ميدانية، مقابلات مع العاملين، أخذ عينات وتحليل، مقارنة مع المعايير المحلية والدولية.' : 'Document review, field inspections, staff interviews, sampling and analysis, comparison with local and international standards.'}
+      <strong>${t.auditMethodology}:</strong> ${atc.methodology}
     </div>
     <div class="report-block">
-      <strong>${t.auditCriteria}:</strong> ${currentLang === 'ar' ? 'قوانين البيئة المحلية، معايير NCEC (السعودية) وجهاز شؤون البيئة (مصر)، ISO 14001، معايير IFC.' : 'Local environmental laws, NCEC standards (Saudi Arabia) and Environmental Affairs Agency (Egypt), ISO 14001, IFC standards.'}
+      <strong>${t.auditCriteria}:</strong> ${atc.criteria}
     </div>
     
     <h2 class="report-section-title"><span class="num">2</span> ${t.section2}</h2>

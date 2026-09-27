@@ -1743,12 +1743,14 @@ let html=`
 </div>
 `;
 
-selectedIssues.forEach((id,idx)=>{
+let idx=0;
+selectedIssues.forEach((id)=>{
+idx++;
 const issue=issues.find(i=>i.id===id);
 if(!issue)return;
 html+=`
 <div class="problem-report">
-<div class="problem-title">${idx+1}. ${issue.icon} ${currentLang==='ar'?issue.nameAr:issue.nameEn}</div>
+<div class="problem-title">${idx}. ${issue.icon} ${currentLang==='ar'?issue.nameAr:issue.nameEn}</div>
 
 <div class="standards-box">
 <h4>📋 ${t.standards}</h4>
