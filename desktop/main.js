@@ -8,8 +8,7 @@ function goHome() {
 }
 
 function goBack() {
-  const h = win.webContents.navigationHistory;
-  if (h.canGoBack()) h.goBack();
+  if (win.webContents.canGoBack()) win.webContents.goBack();
 }
 
 function createWindow() {

@@ -6,13 +6,18 @@
   "author": "abumohamed",
   "license": "UNLICENSED",
   "devDependencies": {
-    "electron": "^33.2.0",
-    "electron-builder": "^25.1.8"
+    "electron": "22.3.27",
+    "electron-builder": "24.13.3"
   },
   "build": {
     "appId": "com.abumohamed.ecotools.desktop",
     "productName": "EcoTools",
-    "files": ["main.js", "index.html", "header.png", "pages/**/*"],
+    "files": [
+      "main.js",
+      "index.html",
+      "header.png",
+      "pages/**/*"
+    ],
     "win": {
       "target": "portable",
       "icon": "icon.ico"
