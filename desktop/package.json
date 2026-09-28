@@ -1,0 +1,22 @@
+{
+  "name": "ecotools-desktop",
+  "version": "1.0.0",
+  "description": "EcoTools desktop",
+  "main": "main.js",
+  "author": "abumohamed",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.abumohamed.ecotools.desktop",
+    "productName": "EcoTools",
+    "files": ["main.js", "index.html", "header.png", "pages/**/*"],
+    "win": {
+      "target": "portable",
+      "icon": "icon.ico"
+    },
+    "artifactName": "EcoTools-Windows.exe"
+  }
+}
