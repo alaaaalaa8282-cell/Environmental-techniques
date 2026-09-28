@@ -12,8 +12,14 @@ jobs:
   build:
     runs-on: windows-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ ia32, x64 ]
+
     defaults:
       run:
+        shell: bash
         working-directory: desktop
 
     steps:
@@ -28,17 +34,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Ensure electron and electron-builder
-        run: npm install --no-save electron electron-builder
-
-      - name: Build portable EXE
+      - name: Build portable EXE (${{ matrix.arch }})
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-        run: npx electron-builder --win portable --publish never
+        run: npx electron-builder --win portable --${{ matrix.arch }} --publish never -c.artifactName=EcoTools-Windows-${{ matrix.arch }}.exe
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
-          name: EcoTools-Windows-EXE
+          name: EcoTools-Windows-${{ matrix.arch }}
           path: desktop/dist/*.exe
           if-no-files-found: error
