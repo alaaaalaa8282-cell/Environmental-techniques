@@ -3,9 +3,10 @@ name: Build APK
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -36,22 +37,31 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Decode keystore and detect alias
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.p12"
+          keytool -list -keystore "$RUNNER_TEMP/release.p12" -storetype PKCS12 -storepass "$STORE_PASSWORD" > "$RUNNER_TEMP/aliases.txt"
+          cat "$RUNNER_TEMP/aliases.txt"
+          ALIAS=$(grep -m1 "PrivateKeyEntry" "$RUNNER_TEMP/aliases.txt" | cut -d, -f1 | xargs)
+          echo "Detected alias: $ALIAS"
+          echo "DETECTED_ALIAS=$ALIAS" >> "$GITHUB_ENV"
 
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: EcoTools-debug-${{ github.run_number }}
-          path: app/build/outputs/apk/debug/*.apk
-          retention-days: 30
-
-      - name: Build Release APK (unsigned)
+      - name: Build Release APK (signed)
+        env:
+          KEYSTORE_PATH: ${{ runner.temp }}/release.p12
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ env.DETECTED_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease --stacktrace
 
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: EcoTools-release-${{ github.run_number }}
-          path: app/build/outputs/apk/release/*.apk
-          retention-days: 30
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v1.0.${{ github.run_number }}" \
+            app/build/outputs/apk/release/app-release.apk \
+            --title "EcoTools v1.0.${{ github.run_number }}" \
+            --notes "Signed release APK"
