@@ -108,7 +108,7 @@ body{background:#fff}
 
 <div class="container">
 <div class="search-box">
-<input type="text" id="searchInput" class="search-input" placeholder="🔍 ابحث عن مشكلة..." oninput="filterIssues()">
+<input type="text" id="searchInput" class="search-input" placeholder="🔍 ابحث عن مشكلة..." oninput="suggestOpen=true;filterIssues()">
 </div>
 
 <div class="stats-bar">
@@ -3757,7 +3757,63 @@ safety:['أسوار ولافتات حول الحفر','فحص ثبات الجد�
 {"id":"cmp_1078","category":"waste","icon":"♻️","severity":"medium","domain":"waste","src":"comprehensive","stages":["إغلاق"],"sectors":["محطة بيوغاز"],"nameAr":"تفكيك الخزانات وتنظيف الموقع","nameEn":"تفكيك الخزانات وتنظيف الموقع","descAr":"بقايا عضوية وحمأة","descEn":"بقايا عضوية وحمأة","standards":["IFC EHS General Guidelines: Waste Management","Basel Convention","مصر: قائمة (ب) - أثر بيئي متوسط","السعودية: الفئة الثانية - نشاط متوسط الخطورة"],"solutions":[{"abbr":"تنظيف","full":"","ar":"تنظيف","mechAr":"تنظيف.","mechEn":"تنظيف.","whenAr":{"ideal":"بقايا عضوية وحمأة","adv":"","lim":"","ex":"محطة بيوغاز (مرحلة: إغلاق)"},"whenEn":{"ideal":"بقايا عضوية وحمأة","adv":"","lim":"","ex":"محطة بيوغاز (stage: إغلاق)"}},{"abbr":"معالجة","full":"","ar":"معالجة","mechAr":"معالجة.","mechEn":"معالجة.","whenAr":{"ideal":"بقايا عضوية وحمأة","adv":"","lim":"","ex":"محطة بيوغاز (مرحلة: إغلاق)"},"whenEn":{"ideal":"بقايا عضوية وحمأة","adv":"","lim":"","ex":"محطة بيوغاز (stage: إغلاق)"}},{"abbr":"تسليم آمن","full":"","ar":"تسليم آمن","mechAr":"تسليم آمن.","mechEn":"تسليم آمن.","whenAr":{"ideal":"بقايا عضوية وحمأة","adv":"","lim":"","ex":"محطة بيوغاز (مرحلة: إغلاق)"},"whenEn":{"ideal":"بقايا عضوية وحمأة","adv":"","lim":"","ex":"محطة بيوغاز (stage: إغلاق)"}}],"emergency":["عزل المخلفات ومنع انتشارها","تأمين المنطقة ومنع الدخول","احتواء أي سوائل أو عصارة متسربة","إبلاغ الجهة المختصة عند الخطورة"],"cap":["فرز وتصنيف المخلفات عند المصدر","التعاقد مع جهة مرخصة للنقل والمعالجة","حفظ سجلات وسندات نقل كاملة","مراجعة دورية لخطة إدارة المخلفات"],"safety":["قفازات ومعدات وقاية شخصية","تخزين آمن في حاويات مغلقة ومعلّمة","تدريب العاملين على المناولة","نظافة شخصية وتطعيمات حسب الحاجة"]}
 ];
 
+function renderSuggest(){
+const inp=document.getElementById('searchInput');
+let box=document.getElementById('sectorSuggest');
+if(!box){
+box=document.createElement('div');box.id='sectorSuggest';
+box.style.cssText='display:none;position:absolute;left:20px;right:20px;top:calc(100% - 12px);z-index:50;background:#fff;border:2px solid var(--primary);border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,.18);max-height:320px;overflow-y:auto';
+inp.parentNode.style.position='relative';
+inp.parentNode.appendChild(box);
+}
+const hasText=getSearchWords().length>0;
+const sl=hasText?sectorMatches():sectorGroups.filter(g=>g.id!=='all');
+const pl=hasText?projectMatches().filter(p=>!(sl.length===0&&false)).slice(0,10):[];
+if(!suggestOpen||(!sl.length&&!pl.length)||projectExact()){box.style.display='none';box.innerHTML='';return;}
+box.innerHTML='';
+const head=t=>{const h=document.createElement('div');h.style.cssText='padding:6px 12px;font-size:.8em;color:#777;background:#f4f7fb';h.textContent=t;box.appendChild(h)};
+const item=(label,n,fn)=>{
+const it=document.createElement('div');
+it.style.cssText='padding:10px 14px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;border-top:1px solid #eef1f5';
+it.innerHTML='<span>'+label+'</span><b style="color:var(--primary)">'+n+'</b>';
+it.onmouseover=()=>{it.style.background='#e8f0fb'};
+it.onmouseout=()=>{it.style.background=''};
+it.onmousedown=(e)=>{e.preventDefault();fn()};
+box.appendChild(it);
+};
+if(sl.length){
+head(currentLang==='ar'?'القطاعات':'Sectors');
+sl.forEach(g=>item(g.icon+' '+(currentLang==='ar'?g.ar:g.en),issues.filter(i=>inSector(i,g)).length,()=>pickSector(g)));
+}
+if(pl.length){
+head(currentLang==='ar'?'أنواع المشاريع':'Project types');
+pl.forEach(p=>item('🏷️ '+p.name,projectScope(p).all.length,()=>pickProject(p)));
+}
+box.style.display='block';
+}
+function pickProject(p){
+document.getElementById('searchInput').value=p.name;
+suggestOpen=false;
+currentDomain='all';currentCategory='all';
+filterIssues();
+}
+function pickSector(g){
+const inp=document.getElementById('searchInput');
+inp.value=currentLang==='ar'?g.ar:g.en;
+suggestOpen=false;
+currentDomain=g.id;currentCategory='all';
+filterIssues();
+}
+let suggestOpen=false;
+let lastSectorMode=false;
+function setupSuggest(){
+const inp=document.getElementById('searchInput');
+inp.addEventListener('focus',()=>{suggestOpen=true;renderSuggest()});
+inp.addEventListener('input',()=>{suggestOpen=true});
+inp.addEventListener('blur',()=>{suggestOpen=false;renderSuggest()});
+}
 function init(){
+setupSuggest();
 renderDomains();
 renderCategories();
 renderIssues();
@@ -3767,12 +3823,20 @@ updateStats();
 function renderDomains(){
 const el=document.getElementById('domainTabs');
 el.innerHTML='';
+const _searching=getSearchWords().length>0;
+const _sm=_searching?sectorMatches():[];
+const _base=_searching?searchBase():null;
 sectorGroups.forEach(g=>{
+const cnt=_searching?_base.filter(i=>inSector(i,g)).length:issues.filter(i=>inSector(i,g)).length;
+if(_searching){
+if(_sm.length){
+if(g.id==='all'?_sm.length<2:!_sm.includes(g))return;
+}else if(g.id!=='all'&&cnt===0)return;
+}
 const tab=document.createElement('div');
 tab.className='tab'+(currentDomain===g.id?' active':'');
 tab.style.fontWeight='bold';
 tab.onclick=()=>{currentDomain=g.id;currentCategory='all';renderDomains();renderCategories();renderIssues();updateStats()};
-const cnt=issues.filter(i=>inSector(i,g)).length;
 tab.innerHTML=`${g.icon} ${currentLang==='ar'?g.ar:g.en} <span class="count">${cnt}</span>`;
 el.appendChild(tab);
 });
@@ -3781,7 +3845,7 @@ el.appendChild(tab);
 function renderCategories(){
 const tabs=document.getElementById('categoryTabs');
 tabs.innerHTML='';
-const pool=domainIssues();
+const pool=poolForTabs();
 activeCategories().forEach(cat=>{
 const count=cat.id==='all'?pool.length:pool.filter(i=>i.category===cat.id).length;
 if(cat.id!=='all'&&count===0)return;
@@ -3793,15 +3857,172 @@ tabs.appendChild(tab);
 });
 }
 
+function normSearch(x){
+return String(x||'').toLowerCase()
+.replace(/[\u064B-\u065F\u0670\u0640]/g,'')
+.replace(/[\u0623\u0625\u0622\u0671]/g,'\u0627')
+.replace(/\u0649/g,'\u064A')
+.replace(/\u0629/g,'\u0647')
+.replace(/\s+/g,' ').trim();
+}
+function issueSearchText(i){
+if(i._st)return i._st;
+const parts=[i.nameAr,i.nameEn,i.descAr,i.descEn,(i.sectors||[]).join(' '),(i.stages||[]).join(' ')];
+(i.solutions||[]).forEach(s=>{parts.push(s.abbr,s.full,s.ar)});
+(i.standards||[]).forEach(s=>parts.push(s));
+sectorGroups.forEach(g=>{if(g.id!=='all'&&inSector(i,g))parts.push(g.ar,g.en)});
+const cat=activeCategories().find(c=>c.id===i.category);
+if(cat){parts.push(translations.ar[cat.id],translations.en[cat.id])}
+i._st=normSearch(parts.join(' '));
+return i._st;
+}
+function getSearchWords(){
+const q=normSearch(document.getElementById('searchInput').value);
+return q?q.split(' '):[];
+}
+function searchMatches(){
+const words=getSearchWords();
+const res=[];
+issues.forEach(i=>{
+const txt=issueSearchText(i);
+if(!words.every(w=>txt.includes(w)))return;
+const nm=normSearch(i.nameAr+' '+i.nameEn);
+const ds=normSearch(i.descAr+' '+i.descEn);
+let sc=0;
+words.forEach(w=>{sc+=nm.includes(w)?3:(ds.includes(w)?2:1)});
+res.push({i,sc});
+});
+res.sort((x,y)=>y.sc-x.sc);
+return res.map(r=>r.i);
+}
+const projectAlias={'مخازن زيوت ومواد بترولية':{tags:['خزانات نفط','مخازن','مصنع مواد تشحيم وزيوت','محطة تدوير الزيوت المستعملة']},'استخراج البترول البحري':{sector:'offshore'}};
+let _projects=null;
+const _CONT=['مصنع','مصانع','محطه','محط','موقع','مواقع'];
+const _STOP=['طاقه','مياه','ميا','انتاج','نفايات','نفايه','تدوير','خطوط','سيارات','نقل','صناعه','بناء'];
+function _toks(name){
+return normSearch(name).replace(/\(.*?\)/g,' ').split(/[\s\/،,\-]+/).filter(Boolean).map(w=>{
+w=w.replace(/^(وال|بال|ال)/,'');
+if(w.length>3&&w[0]==='و')w=w.slice(1);
+if(w.length>4&&w.endsWith('ات'))w=w.slice(0,-2);
+return w;
+});
+}
+function projectList(){
+if(_projects)return _projects;
+const cnt={};
+issues.forEach(i=>(i.sectors||[]).forEach(t=>{cnt[t]=(cnt[t]||0)+1}));
+const groups={};
+Object.keys(cnt).filter(t=>t.length>2).forEach(t=>{
+const all=_toks(t);
+const hasCont=all.some(w=>_CONT.includes(w));
+const core=all.filter(w=>!_CONT.includes(w));
+const key=core.slice().sort().join(' ');
+(groups[key]=groups[key]||{core,tags:[],hasCont:false}).tags.push(t);
+if(hasCont)groups[key].hasCont=true;
+});
+const G=Object.values(groups);
+G.forEach(g=>{g.total=new Set(issues.filter(i=>(i.sectors||[]).some(t=>g.tags.includes(t))).map(i=>i.id)).size});
+// generic = بدون كلمة مصنع/محطة وبتطابق اسم قطاع => يمثله القطاع نفسه
+const sectorish=g=>sectorGroups.some(x=>x.id!=='all'&&(x.kw.some(k=>g.tags.includes(k))||g.tags.some(t=>normSearch(x.ar+' '+x.en).includes(normSearch(t)))));
+const small=G.filter(g=>!g.hasCont&&g.total<=5&&g.core.length&&!g.core.some(w=>_STOP.includes(w)));
+const list=[];
+G.forEach(g=>{
+if(!g.hasCont&&sectorish(g))return;
+const name=g.tags.slice().sort((x,y)=>(cnt[y]-cnt[x])||(y.length-x.length))[0];
+if(projectAlias[name])return;
+let tags=g.tags.slice();
+small.forEach(sg=>{if(sg!==g&&sg.core.every(w=>g.core.includes(w)))tags=tags.concat(sg.tags)});
+list.push({name,tags,_s:g.tags.map(normSearch).join(' ')});
+});
+Object.keys(projectAlias).forEach(k=>list.push(Object.assign({name:k,tags:[],_s:normSearch(k)},projectAlias[k])));
+list.forEach(p=>{p.n=issuesOfProject(p).length;p._n=normSearch(p.name);p._s=p._s+' '+p._n});
+list.sort((a,b)=>b.n-a.n);
+_projects=list;return list;
+}
+function projectScope(p){
+if(p._scope)return p._scope;
+const own=issuesOfProject(p);
+if(p.sector){return p._scope={own,all:own,main:sectorGroups.find(x=>x.id===p.sector)}}
+let best=null,bn=-1;
+sectorGroups.forEach(g=>{
+if(g.id==='all')return;
+const n=own.filter(i=>inSector(i,g)).length;
+if(n>bn){bn=n;best=g}
+});
+const ids=new Set(own.map(i=>i.id));
+const rest=best?issues.filter(i=>inSector(i,best)&&!ids.has(i.id)):[];
+return p._scope={own,all:own.concat(rest),main:best};
+}
+function issuesOfProject(p){
+if(p.sector){const g=sectorGroups.find(x=>x.id===p.sector);return issues.filter(i=>inSector(i,g))}
+return issues.filter(i=>(i.sectors||[]).some(t=>p.tags.includes(t)));
+}
+function projectMatches(){
+const w=getSearchWords();
+if(!w.length)return [];
+return projectList().filter(p=>w.every(x=>p._s.includes(x)));
+}
+function projectExact(){
+const q=normSearch(document.getElementById('searchInput').value);
+if(!q)return null;
+if(sectorMatchesRaw().length)return null;
+return projectList().find(p=>p._n===q)||null;
+}
+function sectorMatchesRaw(){
+const w=getSearchWords();
+if(!w.length)return [];
+return sectorGroups.filter(g=>g.id!=='all'&&w.every(x=>normSearch(g.ar+' '+g.en).includes(x)));
+}
+function sectorMatches(){
+if(projectExact())return [];
+const w=getSearchWords();
+if(!w.length)return [];
+return sectorGroups.filter(g=>g.id!=='all'&&w.every(x=>normSearch(g.ar+' '+g.en).includes(x)));
+}
+function searchBase(){
+const pe=projectExact();
+if(pe)return projectScope(pe).all;
+const sm=sectorMatches();
+if(sm.length)return issues.filter(i=>sm.some(g=>inSector(i,g)));
+return searchMatches();
+}
+function poolForTabs(){
+if(!getSearchWords().length)return domainIssues();
+const g=sectorGroups.find(x=>x.id===currentDomain)||sectorGroups[0];
+return searchBase().filter(i=>inSector(i,g));
+}
+function getFilteredIssues(){
+const words=getSearchWords();
+if(!words.length){
+return domainIssues().filter(i=>currentCategory==='all'||i.category===currentCategory);
+}
+return poolForTabs().filter(i=>currentCategory==='all'||i.category===currentCategory);
+}
 function renderIssues(){
 const grid=document.getElementById('issuesGrid');
 grid.innerHTML='';
-const search=document.getElementById('searchInput').value.toLowerCase();
-const filtered=domainIssues().filter(i=>{
-const matchCategory=currentCategory==='all'||i.category===currentCategory;
-const matchSearch=!search||i.nameAr.toLowerCase().includes(search)||i.nameEn.toLowerCase().includes(search)||i.descAr.toLowerCase().includes(search);
-return matchCategory&&matchSearch;
-});
+const searching=getSearchWords().length>0;
+let info=document.getElementById('searchInfo');
+if(!info){
+info=document.createElement('div');
+info.id='searchInfo';
+info.style.cssText='margin:0 0 12px;padding:10px 14px;background:#e8f0fb;border-radius:8px;font-weight:bold;color:#1a365d;display:none';
+grid.parentNode.insertBefore(info,grid);
+}
+const filtered=getFilteredIssues();
+if(searching){
+info.style.display='block';
+const _pe=projectExact();
+if(_pe){const sc=projectScope(_pe);info.textContent=currentLang==='ar'?('«'+_pe.name+'»: '+sc.own.length+' مشكلة خاصة بالمشروع (في الأول) + باقي مشاكل قطاع '+(sc.main?sc.main.ar:'')+' — الإجمالي '+sc.all.length):('"'+_pe.name+'": '+sc.own.length+' project-specific first, then the rest of '+(sc.main?sc.main.en:'')+' — total '+sc.all.length);}
+else info.textContent=(currentLang==='ar'?'نتائج البحث: ':'Search results: ')+filtered.length;
+}else{
+info.style.display='none';
+}
+if(searching&&filtered.length===0){
+grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:#777">'+(currentLang==='ar'?'لا توجد نتائج مطابقة':'No matching results')+'</div>';
+updateStats();
+return;
+}
 filtered.forEach(issue=>{
 const card=document.createElement('div');
 card.className='issue-card'+(selectedIssues.has(issue.id)?' selected':'');
@@ -3831,8 +4052,10 @@ updateStats();
 function updateStats(){
 document.getElementById('selectedCount').textContent=selectedIssues.size;
 document.getElementById('selectedCountBar').textContent=selectedIssues.size;
-document.getElementById('totalIssues').textContent=domainIssues().length;
-document.getElementById('categoryCount').textContent=activeCategories().slice(1).filter(c=>domainIssues().some(i=>i.category===c.id)).length;
+const searching=getSearchWords().length>0;
+const pool=poolForTabs();
+document.getElementById('totalIssues').textContent=pool.length;
+document.getElementById('categoryCount').textContent=activeCategories().slice(1).filter(c=>pool.some(i=>i.category===c.id)).length;
 }
 
 function clearSelection(){
@@ -3841,7 +4064,23 @@ renderIssues();
 updateStats();
 }
 
-function filterIssues(){renderIssues()}
+function filterIssues(){
+if(getSearchWords().length){
+const sm=sectorMatches();
+if(!sm.length&&lastSectorMode){currentDomain='all';currentCategory='all';}
+lastSectorMode=sm.length>0;
+const m=searchBase();
+if(sm.length===1)currentDomain=sm[0].id;
+else if(sm.length>1&&currentDomain!=='all'&&!sm.some(x=>x.id===currentDomain))currentDomain='all';
+const g=sectorGroups.find(x=>x.id===currentDomain)||sectorGroups[0];
+if(!m.some(i=>inSector(i,g)))currentDomain='all';
+const g2=sectorGroups.find(x=>x.id===currentDomain)||sectorGroups[0];
+if(currentCategory!=='all'&&!m.some(i=>inSector(i,g2)&&i.category===currentCategory))currentCategory='all';
+}
+else if(lastSectorMode){currentDomain='all';currentCategory='all';lastSectorMode=false;}
+renderSuggest();
+renderDomains();renderCategories();renderIssues();updateStats();
+}
 
 function generateReport(){
 if(selectedIssues.size===0){
