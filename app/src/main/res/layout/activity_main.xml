@@ -19,7 +19,7 @@
             android:layout_width="88dp"
             android:layout_height="88dp"
             android:layout_marginBottom="18dp"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/header_image"
             android:contentDescription="@string/app_name" />
 
         <TextView
