@@ -3,5 +3,6 @@
     <string name="app_subtitle">أدوات ذكية للتحليل والتدقيق البيئي</string>
     <string name="btn_eis">مولد تقارير الأثر البيئي 📊</string>
     <string name="btn_audit">التدقيق البيئي 🌱</string>
-    <string name="btn_problem_solver">حلول المشكلات البيئية 🧩</string>
+    <string name="btn_problem_solver">حلال المشكلات البيئية 🧩</string>
+    <string name="btn_dictionary">القاموس البيئي الشامل 📚</string>
 </resources>

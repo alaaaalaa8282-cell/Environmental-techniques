@@ -15,10 +15,12 @@ public class MainActivity extends Activity {
         Button btnEis = findViewById(R.id.btnEis);
         Button btnAudit = findViewById(R.id.btnAudit);
         Button btnProblemSolver = findViewById(R.id.btnProblemSolver);
+        Button btnDictionary = findViewById(R.id.btnDictionary);
 
         btnEis.setOnClickListener(v -> openTool("eis_generator.html"));
         btnAudit.setOnClickListener(v -> openTool("environmental_audit.html"));
         btnProblemSolver.setOnClickListener(v -> openTool("problem_solver_expert.html"));
+        btnDictionary.setOnClickListener(v -> openTool("environmental_dictionary.html"));
     }
 
     private void openTool(String fileName) {

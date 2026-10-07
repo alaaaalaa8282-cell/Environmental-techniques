@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> القاموس البيئي الشامل | Environmental Dictionary</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,sans-serif}
+:root{--bg:#f1f5f9;--card:#fff;--tx:#1e293b;--bd:#e2e8f0;--p:#0f3460;--ok:#059669;--a:#e94560;--w:#d97706;--info:#0284c7;--purple:#7c3aed}
+body{background:var(--bg);color:var(--tx);line-height:1.6;padding:20px;padding-top:70px}
+body.dark{--bg:#0f172a;--card:#1e293b;--tx:#f1f5f9;--bd:#334155}
+.theme-toggle{position:fixed;top:10px;left:10px;background:var(--card);border:2px solid var(--bd);border-radius:50%;width:45px;height:45px;cursor:pointer;font-size:1.3em;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center}
+.container{max-width:1200px;margin:0 auto}
+.card{background:var(--card);padding:25px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:20px}
+h1{color:var(--p);text-align:center;margin-bottom:10px;font-size:1.8em}
+body.dark h1{color:#60a5fa}
+h2{color:var(--p);margin-bottom:15px;font-size:1.3em;border-bottom:2px solid var(--bd);padding-bottom:8px}
+body.dark h2{color:#60a5fa}
+.subtitle{text-align:center;color:var(--tx);opacity:0.7;margin-bottom:25px}
+.search-box{width:100%;padding:12px;border:2px solid var(--bd);border-radius:8px;font-size:1em;margin-bottom:20px;background:var(--card);color:var(--tx)}
+.search-box:focus{outline:none;border-color:var(--p)}
+.category-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;justify-content:center}
+.cat-tab{padding:8px 16px;background:var(--bg);border:2px solid var(--bd);border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.9em;transition:all 0.2s}
+.cat-tab.active{background:var(--p);color:#fff;border-color:var(--p)}
+.cat-tab:hover{transform:translateY(-2px)}
+.terms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:15px}
+.term-card{background:var(--card);padding:15px;border-radius:8px;border-right:4px solid var(--info);box-shadow:0 2px 4px rgba(0,0,0,0.05);transition:all 0.2s}
+.term-card:hover{transform:translateY(-3px);box-shadow:0 4px 8px rgba(0,0,0,0.1)}
+.term-card.cat-general{border-right-color:#0284c7}
+.term-card.cat-offshore{border-right-color:#78350f}
+.term-card.cat-industrial{border-right-color:#059669}
+.term-card.cat-agri{border-right-color:#854d0e}
+.term-card.cat-nuclear{border-right-color:#dc2626}
+.term-card.cat-management{border-right-color:#7c3aed}
+.term-card.cat-standards{border-right-color:#d97706}
+.term-card.cat-units{border-right-color:#475569}
+.term-abbr{font-size:1.3em;font-weight:bold;color:var(--p);margin-bottom:5px}
+body.dark .term-abbr{color:#60a5fa}
+.term-full{font-size:0.9em;color:var(--info);font-style:italic;margin-bottom:8px}
+.term-arabic{font-size:1.05em;font-weight:bold;color:var(--ok);margin-bottom:8px}
+.term-desc{font-size:0.9em;color:var(--tx);opacity:0.9;line-height:1.5}
+.term-example{background:var(--bg);padding:8px;border-radius:6px;margin-top:8px;font-size:0.85em;border-right:3px solid var(--w)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px}
+.stat-card{background:var(--card);padding:15px;border-radius:8px;text-align:center;border-top:4px solid var(--p)}
+.stat-num{font-size:2em;font-weight:bold;color:var(--p)}
+body.dark .stat-num{color:#60a5fa}
+.stat-label{font-size:0.85em;color:var(--tx);opacity:0.8}
+.hidden{display:none}
+@media(max-width:768px){.terms-grid{grid-template-columns:1fr}h1{font-size:1.4em}}
+@media print{.theme-toggle,.search-box,.category-tabs{display:none}.term-card{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+
+<div class="container">
+<div class="card">
+<h1>📚 القاموس البيئي الشامل</h1>
+<p class="subtitle">Environmental Terminology Dictionary - جميع المصطلحات والاختصارات مع شرحها</p>
+
+<div class="stats" id="statsContainer"></div>
+
+<input type="text" class="search-box" id="searchBox" placeholder="🔍 ابحث عن مصطلح (عربي أو إنجليزي)..." oninput="filterTerms()">
+
+<div class="category-tabs" id="categoryTabs"></div>
+
+<div class="terms-grid" id="termsGrid"></div>
+</div>
+</div>
+
+<script>
+// ============ قاعدة بيانات المصطلحات الشاملة ============
+var termsDB = [
+// === مصطلحات التقييم البيئي العام ===
+{abbr:'EIA',full:'Environmental Impact Assessment',arabic:'تقييم الأثر البيئي',desc:'الدراسة الشاملة لتقييم الآثار البيئية المحتملة للمشروع قبل تنفيذه',example:'مطلوبة للمشاريع كبيرة الحجم مثل المصافي والمحطات',cat:'general'},
+{abbr:'IEE',full:'Initial Environmental Examination',arabic:'الفحص البيئي المبدئي',desc:'دراسة مبسطة للمشاريع ذات الأثر البيئي المنخفض أو المتوسط',example:'تُستخدم للمشاريع الصغيرة مثل المكاتب والمحلات',cat:'general'},
+{abbr:'NCEC',full:'National Center for Environmental Compliance',arabic:'المركز الوطني للرقابة على الالتزام البيئي',desc:'الجهة السعودية المختصة بإصدار التصاريح البيئية ومراقبة الالتزام',example:'يجب رفع جميع تقارير EIA على بوابة NCEC',cat:'general'},
+{abbr:'EMP',full:'Environmental Management Plan',arabic:'خطة الإدارة البيئية',desc:'خطة تفصيلية تحدد الإجراءات والمسؤوليات ومؤشرات الأداء البيئي',example:'تشمل جدول زمني وميزانية لكل إجراء بيئي',cat:'general'},
+{abbr:'Baseline',full:'Environmental Baseline Study',arabic:'دراسة خط الأساس البيئي',desc:'توصيف الوضع البيئي الحالي قبل تنفيذ المشروع',example:'تشمل رصد جودة الهواء والماء والتربة والتنوع الحيوي',cat:'general'},
+{abbr:'Scoping',full:'Environmental Scoping',arabic:'تحديد نطاق الدراسة البيئية',desc:'عملية تحديد الحدود الجغرافية والزمنية والمواضيع التي ستغطيها الدراسة',example:'يتم بالتعاون مع NCEC والجهات المعنية',cat:'general'},
+{abbr:'KPI',full:'Key Performance Indicator',arabic:'مؤشر الأداء الرئيسي',desc:'مقياس كمي لتقييم فعالية الإجراءات البيئية',example:'مثل: BOD < 30 mg/L في مياه الصرف',cat:'general'},
+{abbr:'NCR',full:'Non-Conformance Report',arabic:'تقرير عدم المطابقة',desc:'وثيقة تسجل أي مخالفة للمتطلبات البيئية المتفق عليها',example:'يُصدر عند تجاوز حدود الانبعاثات المسموحة',cat:'general'},
+{abbr:'Leopold Matrix',full:'Leopold Environmental Impact Matrix',arabic:'مصفوفة ليوبولد للأثر البيئي',desc:'أداة تقييم كمية تربط أنشطة المشروع بالعناصر البيئية المتأثرة',example:'تقيم الشدة والاحتمالية لكل أثر على مقياس من 1-10',cat:'general'},
+{abbr:'Precautionary Principle',full:'Precautionary Principle',arabic:'مبدأ التحوط/الاحتياط',desc:'مبدأ ينص على اتخاذ إجراءات وقائية عند وجود شك في الأثر البيئي',example:'تطبيق معايير أكثر صرامة عند عدم اكتمال البيانات',cat:'general'},
+{abbr:'Mitigation Hierarchy',full:'Mitigation Hierarchy',arabic:'التسلسل الهرمي للتخفيف',desc:'ترتيب أولويات التعامل مع الآثار: تجنب → تقليل → استعادة → تعويض',example:'تجنب المنطقة الحساسة أولاً، ثم تقليل الأثر إذا لم يمكن التجنب',cat:'general'},
+{abbr:'Cumulative Impact',full:'Cumulative Environmental Impact',arabic:'الأثر البيئي التراكمي',desc:'الأثر الكلي الناتج عن تفاعل مشروع مع مشاريع أخرى قائمة أو مخطط لها',example:'مصنع جديد في منطقة صناعية قائمة قد يتجاوز الحد الكلي للمنطقة',cat:'general'},
+{abbr:'Stakeholder',full:'Environmental Stakeholder',arabic:'أصحاب المصلحة البيئيون',desc:'الأفراد والجهات المتأثرة بالمشروع أو المؤثرة فيه',example:'المجتمع المحلي، NCEC، الجمعيات البيئية',cat:'general'},
+{abbr:'NTS',full:'Non-Technical Summary',arabic:'الملخص غير الفني',desc:'نسخة مبسطة من تقرير EIA بلغة يفهمها عامة الناس',example:'يُنشر على بوابة NCEC لمدة 30 يوماً للمشورة العامة',cat:'general'},
+{abbr:'ToR',full:'Terms of Reference',arabic:'نطاق الأعمال/الشروط المرجعية',desc:'وثيقة تحدد متطلبات ومعيار دراسة بيئية معينة',example:'ToR لمعمل رصد جودة الهواء يحدد عدد النقاط والمدة',cat:'general'},
+{abbr:'RFQ',full:'Request for Quotation',arabic:'طلب عرض أسعار',desc:'وثيقة تُرسل للمعامل والشركات لطلب عروض أسعار للخدمات البيئية',example:'إرسال RFQ لـ 3 معامل معتمدة من NCEC',cat:'general'},
+{abbr:'ESIA',full:'Environmental and Social Impact Assessment',arabic:'تقييم الأثر البيئي والاجتماعي',desc:'دراسة شاملة تقيس الآثار البيئية والاجتماعية معاً',example:'مطلوبة للمشاريع التي تؤثر على مجتمعات محلية',cat:'general'},
+
+// === مصطلحات البترول البحري ===
+{abbr:'Produced Water',full:'Produced Water',arabic:'مياه الإنتاج',desc:'المياه التي تخرج مع البترول والغاز من البئر، تحتوي على هيدروكربونات ومعادن',example:'تحتوي على TPH وبكتيريا ومواد كيميائية مستخدمة في الحفر',cat:'offshore'},
+{abbr:'TPH',full:'Total Petroleum Hydrocarbons',arabic:'إجمالي الهيدروكربونات البترولية',desc:'مقياس لكمية التلوث النفطي في الماء أو التربة',example:'الحد المسموح في الصرف البحري حسب OSPAR: 30 mg/L',cat:'offshore'},
+{abbr:'Hydrocyclones',full:'Hydrocyclone Separators',arabic:'فواصل الهيدروسيكلون',desc:'أجهزة تفصل النفط عن الماء باستخدام القوة الطاردة المركزية',example:'كفاءة فصل تصل إلى 90% في المرحلة الأولى',cat:'offshore'},
+{abbr:'DAF',full:'Dissolved Air Flotation',arabic:'التعويم بالهواء المذاب',desc:'تقنية تستخدم فقاعات هواء دقيقة لرفع قطرات النفط للسطح',example:'مرحلة معالجة ثانوية بعد الهيدروسيكلون',cat:'offshore'},
+{abbr:'Reinjection',full:'Water/Cuttings Reinjection',arabic:'إعادة الحقن',desc:'ضخ المياه المعالجة أو قطع الحفر مرة أخرى في المكمن الجوفي',example:'تحقق مبدأ Zero Discharge وتحافظ على ضغط المكمن',cat:'offshore'},
+{abbr:'ZLD',full:'Zero Liquid Discharge',arabic:'التصريف الصفري للسوائل',desc:'نظام لا يسمح بأي صرف سائل للبيئة الخارجية',example:'مطلوب في المناطق البحرية الحساسة',cat:'offshore'},
+{abbr:'Drilling Cuttings',full:'Drilling Cuttings',arabic:'قطع/حمأة الحفر',desc:'الصخور المفتتة والموائع الناتجة عن عملية حفر الآبار',example:'تحتوي على معادن ثقيلة ومواد كيميائية',cat:'offshore'},
+{abbr:'CRI',full:'Cuttings Reinjection',arabic:'إعادة حقن قطع الحفر',desc:'تقنية طحن قطع الحفر وحقنها في المكمن الجوفي',example:'بديل آمن بيئياً للتخلص في البحر',cat:'offshore'},
+{abbr:'PAM',full:'Passive Acoustic Monitoring',arabic:'الرصد الصوتي السلبي',desc:'استخدام ميكروفونات تحت الماء (هيدروفونات) لكشف الثدييات البحرية',example:'يُستخدم قبل وأثناء عمليات الحفر والدق',cat:'offshore'},
+{abbr:'Bubble Curtain',full:'Bubble Curtain System',arabic:'ستارة الفقاعات',desc:'نظام يطلق فقاعات هواء حول مصدر الضوضاء تحت الماء',example:'يقلل الضوضاء 10-20 dB لحماية الحيتان',cat:'offshore'},
+{abbr:'Soft Start',full:'Soft Start Procedure',arabic:'الإجراء التدريجي للبدء',desc:'تشغيل المعدات الصاخبة بطاقة منخفضة ثم زيادتها تدريجياً',example:'يعطي الحيتان والدلافين وقتاً للمغادرة',cat:'offshore'},
+{abbr:'MMO',full:'Marine Mammal Observer',arabic:'مراقب الثدييات البحرية',desc:'شخص مدرب يرصد وجود الحيتان والدلافين بصرياً',example:'يجب أن يكون حاضرًا قبل بدء العمليات الصاخبة',cat:'offshore'},
+{abbr:'OSRP',full:'Oil Spill Response Plan',arabic:'خطة الاستجابة لتسرب النفط',desc:'خطة طوارئ مفصلة للتعامل مع حوادث التسرب النفطي',example:'تشمل المعدات والبروتوكول وسلسلة القيادة',cat:'offshore'},
+{abbr:'PSSA',full:'Particularly Sensitive Sea Area',arabic:'منطقة بحرية ذات حساسية خاصة',desc:'مناطق بحرية محمية تصنفها IMO لاحتياجها حماية خاصة',example:'البحر الأحمر يحتوي على عدة PSSAs',cat:'offshore'},
+{abbr:'OSPAR',full:'Oslo-Paris Convention',arabic:'اتفاقية أوسلو-باريس',desc:'اتفاقية دولية لحماية البيئة البحرية في شمال شرق الأطلسي',example:'مرجع عالمي لمعايير الصرف البحري (TPH < 30 mg/L)',cat:'offshore'},
+{abbr:'MARPOL',full:'Marine Pollution Convention',arabic:'اتفاقية ماربول لمنع التلوث البحري',desc:'اتفاقية دولية رئيسية لمنع تلوث البحار من السفن والمنصات',example:'الملحق الأول خاص بالنفط، الخامس بالنفايات',cat:'offshore'},
+{abbr:'BOP',full:'Blowout Preventer',arabic:'مانع الانفجار',desc:'جهاز أمان حرج يُركب على رأس البئر لمنع الانفجار',example:'يجب اختباره دورياً حسب معايير API',cat:'offshore'},
+{abbr:'ESD',full:'Emergency Shutdown',arabic:'نظام الإغلاق الطارئ',desc:'نظام أمان يوقف العمليات تلقائياً عند اكتشاف خطر',example:'يُفعّل عند اكتشاف تسرب غاز أو حريق',cat:'offshore'},
+{abbr:'BTEX',full:'Benzene, Toluene, Ethylbenzene, Xylene',arabic:'مركبات البنزين والتولوين والإيثيل بنزين والزيلين',desc:'مجموعة مركبات عضوية متطايرة سامة توجد في البترول',example:'Benzene مادة مسرطنة يجب رصدها في مياه الشرب',cat:'offshore'},
+{abbr:'FGRS',full:'Flare Gas Recovery System',arabic:'نظام استرداد غاز الشعلة',desc:'نظام يلتقط الغاز المحترق ويعيد استخدامه',example:'يقلل انبعاثات CO2 وVOCs مع عائد اقتصادي',cat:'offshore'},
+{abbr:'FWKO',full:'Free Water Knockout',arabic:'فاصل المياه الحرة',desc:'وعاء فصل أولي يزيل الماء الحر من النفط الخام',example:'المرحلة الأولى في معالجة مياه الإنتاج',cat:'offshore'},
+{abbr:'NORM',full:'Naturally Occurring Radioactive Materials',arabic:'المواد المشعة ذات المنشأ الطبيعي',desc:'مواد مشعة تتراكم في معدات البترول والغاز',example:'توجد في الأنابيب والمبادلات الحرارية',cat:'offshore'},
+
+// === مصطلحات المعالجة الصناعية ===
+{abbr:'VOCs',full:'Volatile Organic Compounds',arabic:'المركبات العضوية المتطايرة',desc:'مركبات كيميائية تتبخر بسهولة في درجة حرارة الغرفة',example:'توجد في الدهانات والمذيبات والبتروكيماويات',cat:'industrial'},
+{abbr:'RTO',full:'Regenerative Thermal Oxidizer',arabic:'المؤكسد الحراري المتجدد',desc:'جهاز يحرق المركبات العضوية عند 800-1000°C بكفاءة عالية',example:'كفاءة تدمير تصل إلى 99%+ مع استرداد حرارة',cat:'industrial'},
+{abbr:'VRU',full:'Vapor Recovery Unit',arabic:'وحدة استرداد الأبخرة',desc:'نظام يلتقط الأبخرة من خزانات التخزين ويعيد تسييلها',example:'يُركب على خزانات البترول والمذيبات',cat:'industrial'},
+{abbr:'LDAR',full:'Leak Detection and Repair',arabic:'كشف وإصلاح التسربات',desc:'برنامج دوري للكشف عن تسربات VOCs وإصلاحها',example:'يُطبق ربع سنوياً على جميع الصمامات والوصلات',cat:'industrial'},
+{abbr:'SCR',full:'Selective Catalytic Reduction',arabic:'الاختزال الحفزي الانتقائي',desc:'تقنية تقلل انبعاثات NOx باستخدام حفاز وأمونيا',example:'كفاءة 90-95% في محطات الطاقة والمصانع',cat:'industrial'},
+{abbr:'SNCR',full:'Selective Non-Catalytic Reduction',arabic:'الاختزال غير الحفزي الانتقائي',desc:'تقنية تقلل NOx بحقن يوريا مباشرة في الفرن',example:'أرخص من SCR لكن كفاءة أقل (50-70%)',cat:'industrial'},
+{abbr:'FGD',full:'Flue Gas Desulfurization',arabic:'إزالة الكبريت من غازات المداخن',desc:'نظام يزيل SO2 من الغازات باستخدام محلول جيري',example:'ينتج جبس كمنتج ثانوي قابل للبيع',cat:'industrial'},
+{abbr:'CCS',full:'Carbon Capture and Storage',arabic:'احتجاز وتخزين الكربون',desc:'تقنية تلتقط CO2 من الانبعاثات وتخزنه جيولوجياً',example:'تقلل الانبعاثات بنسبة 90%+ لكن تكلفتها عالية',cat:'industrial'},
+{abbr:'CEMS',full:'Continuous Emission Monitoring System',arabic:'نظام الرصد المستمر للانبعاثات',desc:'أجهزة تقيس الانبعاثات من المداخن بشكل مستمر 24/7',example:'ترسل بيانات مباشرة لـ NCEC',cat:'industrial'},
+{abbr:'Bag Filters',full:'Baghouse Filters',arabic:'فلاتر الأكياس (البيت هاوس)',desc:'أكياس قماشية تحجز الجسيمات من الغازات بكفاءة عالية',example:'كفاءة 99%+ في مصانع الأسمنت',cat:'industrial'},
+{abbr:'ESP',full:'Electrostatic Precipitator',arabic:'المرسب الكهروستاتيكي',desc:'جهاز يشحن الجسيمات بجهد عالي ثم يجذبها لألواح',example:'كفاءة 99.5% في محطات الطاقة',cat:'industrial'},
+{abbr:'AOP',full:'Advanced Oxidation Process',arabic:'عمليات الأكسدة المتقدمة',desc:'تقنيات تستخدم جذور الهيدروكسيل لتكسير الملوثات المعقدة',example:'فعالة في معالجة APIs والمبيدات',cat:'industrial'},
+{abbr:'MBR',full:'Membrane Bioreactor',arabic:'المفاعل الحيوي الغشائي',desc:'نظام يجمع بين المعالجة البيولوجية والأغشية',example:'جودة مياه عالية في مساحة صغيرة',cat:'industrial'},
+{abbr:'BOD',full:'Biochemical Oxygen Demand',arabic:'الطلب البيوكيميائي على الأكسجين',desc:'مقياس كمية الأكسجين التي تستهلكها البكتيريا لتحليل المواد العضوية',example:'الحد في الصرف الصناعي حسب NCEC: 250 mg/L',cat:'industrial'},
+{abbr:'COD',full:'Chemical Oxygen Demand',arabic:'الطلب الكيميائي على الأكسجين',desc:'مقياس كمية الأكسجين اللازمة لأكسدة المواد كيميائياً',example:'الحد في الصرف الصناعي: 400 mg/L',cat:'industrial'},
+{abbr:'TSS',full:'Total Suspended Solids',arabic:'إجمالي المواد الصلبة العالقة',desc:'كمية المواد الصلبة العالقة في الماء',example:'الحد في الصرف: 30 mg/L',cat:'industrial'},
+{abbr:'FOG',full:'Fats, Oils, and Grease',arabic:'الدهون والزيوت والشحوم',desc:'ملوثات عضوية دهنية في مياه الصرف',example:'تُزال بمصيدة الشحوم (Grease Trap)',cat:'industrial'},
+{abbr:'TCLP',full:'Toxicity Characteristic Leaching Procedure',arabic:'إجراء تسرب الخصائص السمية',desc:'اختبار يحدد إذا كانت النفايات خطرة بمحاكاة ظروف الطمر',example:'يقيس تسرب المعادن الثقيلة للمياه الجوفية',cat:'industrial'},
+{abbr:'API Separator',full:'American Petroleum Institute Separator',arabic:'فاصل API',desc:'حوض ترسيب يزيل الزيت الحر من المياه الصناعية',example:'المرحلة الأولى في معالجة مياه المصافي',cat:'industrial'},
+{abbr:'PM10/PM2.5',full:'Particulate Matter 10/2.5 micron',arabic:'الجسيمات العالقة 10/2.5 ميكرون',desc:'جسيمات دقيقة في الهواء قطرها 10 أو 2.5 ميكرون',example:'PM2.5 أخطر لأنه يدخل الرئة مباشرة',cat:'industrial'},
+{abbr:'NOx',full:'Nitrogen Oxides',arabic:'أكاسيد النيتروجين',desc:'غازات ملوثة (NO, NO2) تنتج من الاحتراق',example:'تسبب الأمطار الحمضية ومشاكل تنفسية',cat:'industrial'},
+{abbr:'SOx',full:'Sulfur Oxides',arabic:'أكاسيد الكبريت',desc:'غازات ملوثة (SO2, SO3) تنتج من حرق الوقود',example:'تسبب الأمطار الحمضية',cat:'industrial'},
+{abbr:'CO2',full:'Carbon Dioxide',arabic:'ثاني أكسيد الكربون',desc:'غاز دفيئ رئيسي ينتج من احتراق الوقود',example:'الحد الداخلي WHO: 1000 ppm',cat:'industrial'},
+{abbr:'H2S',full:'Hydrogen Sulfide',arabic:'كبريتيد الهيدروجين',desc:'غاز سام برائحة البيض الفاسد، قاتل عند تركيز عالي',example:'حد OSHA: 20 ppm، قاتل عند 100 ppm',cat:'industrial'},
+{abbr:'NH3',full:'Ammonia',arabic:'الأمونيا',desc:'غاز سام برائحة نفاذة ينتج من تحلل المواد العضوية',example:'حد WHO: 200 μg/m³',cat:'industrial'},
+{abbr:'CH4',full:'Methane',arabic:'الميثان',desc:'غاز دفيئ قوي (25x أقوى من CO2) ينتج من التحلل',example:'يُسترد كـ Biogas في الهضم اللاهوائي',cat:'industrial'},
+{abbr:'Cr(VI)',full:'Hexavalent Chromium',arabic:'الكروم سداسي التكافؤ',desc:'شكل سام ومسرطن من الكروم يستخدم في الدباغة',example:'يجب اختزاله إلى Cr(III) قبل الصرف',cat:'industrial'},
+
+// === مصطلحات الزراعة والمياه ===
+{abbr:'FCR',full:'Feed Conversion Ratio',arabic:'معامل التحويل الغذائي',desc:'كمية العلف اللازمة لإنتاج 1 كجم من اللحم/السمك',example:'FCR < 1.5 يعتبر جيداً في مزارع الأسماك',cat:'agri'},
+{abbr:'ASC',full:'Aquaculture Stewardship Council',arabic:'مجلس الإشراف على تربية الأحياء المائية',desc:'معيار دولي للاستزراع المائي المسؤول',example:'شهادة ASC تضمن ممارسات مستدامة',cat:'agri'},
+{abbr:'Eutrophication',full:'Eutrophication',arabic:'الإثراء الغذائي',desc:'نمو مفرط للطحالب بسبب زيادة المغذيات (N, P)',example:'يستهلك الأكسجين ويقتل الأسماك',cat:'agri'},
+{abbr:'Benthic Monitoring',full:'Benthic Monitoring',arabic:'المراقبة القاعية',desc:'فحص قاع البحر لتقييم تأثير المزارع السمكية',example:'يقيس الأكسجين والكبريتيد في الرواسب',cat:'agri'},
+{abbr:'BNR',full:'Biological Nutrient Removal',arabic:'الإزالة البيولوجية للمغذيات',desc:'معالجة تزيل النيتروجين والفوسفور بيولوجياً',example:'كفاءة 80-90% في محطات الصرف',cat:'agri'},
+{abbr:'DO',full:'Dissolved Oxygen',arabic:'الأكسجين المذاب',desc:'كمية الأكسجين المذاب في الماء',example:'يجب أن يكون > 5 mg/L للأسماك',cat:'agri'},
+{abbr:'pH',full:'Potential of Hydrogen',arabic:'الأس الهيدروجيني (درجة الحموضة)',desc:'مقياس حموضة أو قلوية الماء',example:'المدى الآمن: 6.5-8.5',cat:'agri'},
+
+// === مصطلحات الإشعاع والنووي ===
+{abbr:'IAEA',full:'International Atomic Energy Agency',arabic:'الوكالة الدولية للطاقة الذرية',desc:'المنظمة الدولية المشرفة على الاستخدام الآمن للطاقة النووية',example:'تضع معايير الحماية الإشعاعية العالمية',cat:'nuclear'},
+{abbr:'Vitrification',full:'Vitrification',arabic:'التزجيج',desc:'تحويل النفايات المشعة إلى زجاج مستقر',example:'مستقر لآلاف السنين لكن مكلف جداً',cat:'nuclear'},
+{abbr:'mSv',full:'Milli-Sievert',arabic:'ملي سيفرت',desc:'وحدة قياس الجرعة الإشعاعية',example:'الحد العام: 1 mSv/سنة، المهني: 20 mSv/سنة',cat:'nuclear'},
+{abbr:'Shielding',full:'Radiation Shielding',arabic:'التدريع الإشعاعي',desc:'حواجز من الرصاص أو الخرسانة للحماية من الإشعاع',example:'ضروري في أقسام الأشعة بالمستشفيات',cat:'nuclear'},
+{abbr:'NORM',full:'Naturally Occurring Radioactive Materials',arabic:'المواد المشعة طبيعياً',desc:'مواد مشعة موجودة في الطبيعة تتراكم في المعدات',example:'توجد في أنابيب البترول والمبادلات',cat:'nuclear'},
+{abbr:'Bq',full:'Becquerel',arabic:'بيكريل',desc:'وحدة قياس النشاط الإشعاعي (تحلل واحد في الثانية)',example:'حد النفايات: 1 Bq/g',cat:'nuclear'},
+
+// === مصطلحات الإدارة والجودة ===
+{abbr:'HSE',full:'Health, Safety, and Environment',arabic:'الصحة والسلامة والبيئة',desc:'قسم مسؤول عن حماية العاملين والبيئة',example:'مدير HSE مسؤول عن تطبيق EMP',cat:'management'},
+{abbr:'PPE',full:'Personal Protective Equipment',arabic:'معدات الوقاية الشخصية',desc:'معدات تحمي العاملين (خوذات، قفازات، كمامات)',example:'كمامات P100 للعاملين مع السيليكا',cat:'management'},
+{abbr:'HAZMAT',full:'Hazardous Materials',arabic:'المواد الخطرة',desc:'مواد تشكل خطراً على الصحة أو البيئة',example:'يتطلب تدريب خاص للتعامل معها',cat:'management'},
+{abbr:'HACCP',full:'Hazard Analysis Critical Control Point',arabic:'تحليل المخاطر ونقاط التحكم الحرجة',desc:'نظام إدارة سلامة الأغذية',example:'إلزامي في المسالخ ومصانع الأغذية',cat:'management'},
+{abbr:'GMP',full:'Good Manufacturing Practice',arabic:'ممارسات التصنيع الجيدة',desc:'معايير جودة في صناعة الأدوية',example:'تتطلب غرف نظيفة ومعقمة',cat:'management'},
+{abbr:'ISO 14001',full:'ISO 14001 Environmental Management',arabic:'معيار إدارة البيئة الدولي',desc:'معيار دولي لأنظمة الإدارة البيئية',example:'شهادة ISO 14001 تعزز مصداقية الشركة',cat:'management'},
+{abbr:'IFC EHS',full:'IFC Environmental, Health, and Safety Guidelines',arabic:'معايير البنك الدولي للبيئة والصحة والسلامة',desc:'معايير دولية للتمويل الدولي',example:'مرجع مهم للمشاريع الممولة دولياً',cat:'management'},
+{abbr:'ZDHC',full:'Zero Discharge of Hazardous Chemicals',arabic:'عدم تصريف المواد الكيميائية الخطرة',desc:'مبادرة عالمية في صناعة النسيج',example:'تقيد استخدام مواد كيميائية معينة',cat:'management'},
+{abbr:'LEED',full:'Leadership in Energy and Environmental Design',arabic:'الريادة في تصميمات الطاقة والبيئة',desc:'شهادة المباني الخضراء',example:'مطلوبة للمولات والمباني الحديثة',cat:'management'},
+{abbr:'Mostadam',full:'Mostadam Sustainability Standard',arabic:'معيار الاستدامة السعودي',desc:'نظام تقييم استدامة المباني في السعودية',example:'بديل سعودي لـ LEED',cat:'management'},
+{abbr:'Green Key',full:'Green Key Certification',arabic:'شهادة المفتاح الأخضر',desc:'شهادة بيئية للفنادق والمنشآت السياحية',example:'تشترط ترشيد المياه والطاقة',cat:'management'},
+{abbr:'NCR',full:'Non-Conformance Report',arabic:'تقرير عدم المطابقة',desc:'وثيقة رسمية تسجل مخالفة للمتطلبات',example:'يُلزم المقاول بخطة تصحيحية خلال 48 ساعة',cat:'management'},
+{abbr:'ESG',full:'Environmental, Social, and Governance',arabic:'البيئة والمجتمع والحوكمة',desc:'معايير استثمار تقيس استدامة الشركات',example:'شركات أرامكو وسابك تنشر تقارير ESG سنوياً',cat:'management'},
+
+// === المعايير والاتفاقيات الدولية ===
+{abbr:'WHO',full:'World Health Organization',arabic:'منظمة الصحة العالمية',desc:'تضع معايير جودة الهواء والماء العالمية',example:'AQG 2021: PM2.5 = 5 μg/m³ سنوياً',cat:'standards'},
+{abbr:'EPA',full:'Environmental Protection Agency',arabic:'وكالة حماية البيئة الأمريكية',desc:'جهة أمريكية تضع معايير بيئية صارمة',example:'NAAQS لمعايير جودة الهواء',cat:'standards'},
+{abbr:'OSHA',full:'Occupational Safety and Health Administration',arabic:'إدارة السلامة والصحة المهنية',desc:'معايير حماية العاملين في الولايات المتحدة',example:'حد H2S المهني: 20 ppm',cat:'standards'},
+{abbr:'ICAO',full:'International Civil Aviation Organization',arabic:'منظمة الطيران المدني الدولي',desc:'معايير بيئية للمطارات والطيران',example:'معايير ضوضاء المطارات',cat:'standards'},
+{abbr:'IMO',full:'International Maritime Organization',arabic:'المنظمة البحرية الدولية',desc:'تنظم الشحن البحري وحماية البيئة البحرية',example:'تصنف مناطق PSSA',cat:'standards'},
+{abbr:'ICMM',full:'International Council on Mining and Metals',arabic:'المجلس الدولي للتعدين والمعادن',desc:'معايير الاستدامة في التعدين',example:'مبادئ إدارة السيانيد في تعدين الذهب',cat:'standards'},
+{abbr:'Cyanide Code',full:'International Cyanide Management Code',arabic:'المدونة الدولية لإدارة السيانيد',desc:'معايير استخدام السيانيد في تعدين الذهب',example:'إلزامي لجميع مناجم الذهب الكبرى',cat:'standards'},
+{abbr:'FAO',full:'Food and Agriculture Organization',arabic:'منظمة الأغذية والزراعة',desc:'معايير الزراعة والثروة الحيوانية',example:'معايير استخدام المبيدات',cat:'standards'},
+{abbr:'API',full:'American Petroleum Institute',arabic:'معهد البترول الأمريكي',desc:'معايير صناعة النفط والغاز',example:'معايير تصميم فواصل API',cat:'standards'},
+{abbr:'IEC',full:'International Electrotechnical Commission',arabic:'اللجنة الكهروتقنية الدولية',desc:'معايير المعدات الكهربائية والإلكترونية',example:'معايير الألواح الشمسية',cat:'standards'},
+{abbr:'REACH',full:'Registration, Evaluation, Authorisation of Chemicals',arabic:'تسجيل وتقييم وترخيص المواد الكيميائية',desc:'لائحة أوروبية للمواد الكيميائية',example:'تقيد استخدام مواد معينة',cat:'standards'},
+{abbr:'Basel Convention',full:'Basel Convention on Hazardous Wastes',arabic:'اتفاقية بازل للنفايات الخطرة',desc:'اتفاقية دولية تتحكم في نقل النفايات الخطرة',example:'تمنع تصدير النفايات للدول النامية',cat:'standards'},
+{abbr:'OPRC',full:'Oil Pollution Preparedness, Response and Co-operation',arabic:'اتفاقية الاستعداد والتعاون لمكافحة التلوث النفطي',desc:'اتفاقية دولية للاستجابة لتسربات النفط',example:'تتطلب خطط OSRP معتمدة',cat:'standards'},
+
+// === وحدات القياس ===
+{abbr:'mg/L',full:'Milligrams per Liter',arabic:'ميليغرام لكل لتر',desc:'وحدة قياس تركيز الملوثات في الماء',example:'حد BOD في الصرف: 30 mg/L',cat:'units'},
+{abbr:'μg/m³',full:'Micrograms per Cubic Meter',arabic:'ميكروغرام لكل متر مكعب',desc:'وحدة قياس تركيز الملوثات في الهواء',example:'حد PM2.5 WHO: 5 μg/m³',cat:'units'},
+{abbr:'ppm',full:'Parts Per Million',arabic:'جزء في المليون',desc:'وحدة قياس التركيز (1 جزء في مليون جزء)',example:'حد CO2 الداخلي: 1000 ppm',cat:'units'},
+{abbr:'dB',full:'Decibel',arabic:'ديسيبل',desc:'وحدة قياس شدة الصوت',example:'حد الضوضاء السكني نهاراً: 55 dB',cat:'units'},
+{abbr:'°C',full:'Degrees Celsius',arabic:'درجة مئوية',desc:'وحدة قياس درجة الحرارة',example:'حرق النفايات عند >1100°C',cat:'units'},
+{abbr:'pH',full:'Potential of Hydrogen',arabic:'الأس الهيدروجيني',desc:'مقياس الحموضة من 0 (حامضي) إلى 14 (قلوي)',example:'المدى الآمن للماء: 6.5-8.5',cat:'units'},
+{abbr:'mSv/year',full:'Milli-Sievert per Year',arabic:'ملي سيفرت في السنة',desc:'وحدة قياس الجرعة الإشعاعية السنوية',example:'الحد العام: 1 mSv/سنة',cat:'units'},
+{abbr:'OU',full:'Odor Unit',arabic:'وحدة الرائحة',desc:'وحدة قياس شدة الرائحة',example:'الحد المقبول: < 5 OU',cat:'units'},
+{abbr:'Pt-Co',full:'Platinum-Cobalt Scale',arabic:'مقياس البلاتين-كوبالت',desc:'مقياس لون الماء',example:'حد الألوان في الصرف: < 50 Pt-Co',cat:'units'},
+{abbr:'FCR',full:'Feed Conversion Ratio',arabic:'معامل التحويل الغذائي',desc:'كجم علف / كجم منتج',example:'FCR < 1.5 في مزارع الأسماك',cat:'units'}
+];
+
+var categories = {
+general:{name:'🌍 التقييم البيئي العام',color:'#0284c7'},
+offshore:{name:'🛢️ البترول البحري',color:'#78350f'},
+industrial:{name:'🏭 المعالجة الصناعية',color:'#059669'},
+agri:{name:'🐟 الزراعة والمياه',color:'#854d0e'},
+nuclear:{name:'☢️ الإشعاع والنووي',color:'#dc2626'},
+management:{name:'📋 الإدارة والجودة',color:'#7c3aed'},
+standards:{name:'📜 المعايير الدولية',color:'#d97706'},
+units:{name:'📏 وحدات القياس',color:'#475569'}
+};
+
+var currentCategory = 'all';
+
+function init(){
+renderStats();
+renderCategoryTabs();
+renderTerms();
+loadTheme();
+}
+
+function toggleTheme(){
+document.body.classList.toggle('dark');
+document.getElementById('themeBtn').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+}
+
+function loadTheme(){
+if(localStorage.getItem('theme')==='dark'){
+document.body.classList.add('dark');
+document.getElementById('themeBtn').textContent='☀️';
+}
+}
+
+function renderStats(){
+var h='';
+h+='<div class="stat-card"><div class="stat-num">'+termsDB.length+'</div><div class="stat-label">إجمالي المصطلحات</div></div>';
+h+='<div class="stat-card"><div class="stat-num">'+Object.keys(categories).length+'</div><div class="stat-label">الأقسام</div></div>';
+var uniqueAbbr = new Set(termsDB.map(t=>t.abbr)).size;
+h+='<div class="stat-card"><div class="stat-num">'+uniqueAbbr+'</div><div class="stat-label">اختصار فريد</div></div>';
+document.getElementById('statsContainer').innerHTML=h;
+}
+
+function renderCategoryTabs(){
+var h='<div class="cat-tab active" onclick="filterCategory(\'all\')">📚 الكل</div>';
+for(var cat in categories){
+h+='<div class="cat-tab" onclick="filterCategory(\''+cat+'\')">'+categories[cat].name+'</div>';
+}
+document.getElementById('categoryTabs').innerHTML=h;
+}
+
+function filterCategory(cat){
+currentCategory = cat;
+document.querySelectorAll('.cat-tab').forEach(function(t){t.classList.remove('active')});
+event.target.classList.add('active');
+renderTerms();
+}
+
+function renderTerms(){
+var search = document.getElementById('searchBox').value.toLowerCase();
+var h='';
+termsDB.forEach(function(t){
+if(currentCategory !== 'all' && t.cat !== currentCategory) return;
+if(search && !t.abbr.toLowerCase().includes(search) && !t.full.toLowerCase().includes(search) && !t.arabic.includes(search) && !t.desc.includes(search)) return;
+
+h+='<div class="term-card cat-'+t.cat+'">';
+h+='<div class="term-abbr">'+t.abbr+'</div>';
+h+='<div class="term-full">'+t.full+'</div>';
+h+='<div class="term-arabic">'+t.arabic+'</div>';
+h+='<div class="term-desc">'+t.desc+'</div>';
+if(t.example) h+='<div class="term-example"><strong>💡 مثال:</strong> '+t.example+'</div>';
+h+='</div>';
+});
+
+if(h==='') h='<div style="text-align:center;padding:40px;color:#666">لا توجد نتائج</div>';
+document.getElementById('termsGrid').innerHTML=h;
+}
+
+function filterTerms(){
+renderTerms();
+}
+
+init();
+</script>
+</body>
+</html>

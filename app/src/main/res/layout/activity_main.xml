@@ -81,6 +81,7 @@
             android:id="@+id/btnProblemSolver"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
             android:background="@drawable/card_bg"
             android:foreground="?android:attr/selectableItemBackground"
             android:elevation="6dp"
@@ -93,6 +94,23 @@
             android:textSize="17sp"
             android:textStyle="bold"
             android:text="@string/btn_problem_solver" />
+
+        <Button
+            android:id="@+id/btnDictionary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/card_bg"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:elevation="6dp"
+            android:paddingTop="22dp"
+            android:paddingBottom="22dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textAllCaps="false"
+            android:textColor="#1B5E20"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:text="@string/btn_dictionary" />
 
     </LinearLayout>
 </ScrollView>
