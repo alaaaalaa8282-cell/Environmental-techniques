@@ -2590,8 +2590,8 @@ function generateReport() {
   
   const egyptClass = (project.classification && project.classification.egypt) || '';
   const saudiClass = (project.classification && project.classification.saudi) || '';
-  const impactTier = tierOf(project); // precautionary tier for monitoring/planning only
-  const regulatoryTier = egyptRegulatoryTier(project); // Egypt procedure must use Egypt classification only
+  let impactTier = tierOf(project); // precautionary tier for monitoring/planning only
+  let regulatoryTier = egyptRegulatoryTier(project); // Egypt procedure must use Egypt classification only
   const classLabel = ((activeProj.classification || {}).egypt) || egyptClass || (currentLang === 'ar' ? 'غير محدد — يلزم التحقق من القائمة الرسمية' : 'Unspecified — verify against the official list');
   const saudiClassLabel = ((activeProj.classification || {}).saudi) || saudiClass || (currentLang === 'ar' ? 'غير محدد — يلزم التحقق من التصنيف السعودي' : 'Unspecified — verify Saudi classification');
   const solutionReview = reviewSolutionsForReport(Object.assign({}, activeProj, { problems: (project.problems || []).concat(activeProj.problems || []) }), name);
@@ -2621,6 +2621,11 @@ function generateReport() {
   if (manualAddress) { geoLocationData.address = manualAddress; }
   const addressContext = [manualAddress, geoLocationData.address].filter(Boolean).join(' ');
   if (/الخليج\s*العربي|الخليج\s*الفارسي|Arabian Gulf|Persian Gulf/i.test(addressContext) && !selectedLocations.includes('sea')) { selectedLocations.push('sea'); const seaOption = document.querySelector('.location-option[data-location="sea"]'); if (seaOption) seaOption.classList.add('selected'); }
+  // Site-sensitivity escalation: location in a sensitive area is a classification criterion in the EEAA EIA guidelines (2009).
+  // A sensitive receptor (residential / protected area / sea / river / lake / groundwater) raises the preliminary tier by one level, max C.
+  const siteBump = selectedLocations.some(l => ['residential','protected','sea','river','lake','groundwater'].includes(l));
+  const raiseTier = x => x === 'low' ? 'medium' : (x === 'medium' ? 'high' : x);
+  if (siteBump) { impactTier = raiseTier(impactTier); if (regulatoryTier !== 'unknown') regulatoryTier = raiseTier(regulatoryTier); }
   const hasInputs = pWater || pEnergy || pMaterials || pOtherIn;
   const hasOutputs = pProduct || pWastewater || pSolidWaste || pOtherOut;
   const hasFacilityData = pArea || pWorkers || pShifts || hasInputs || hasOutputs || geoLocationData.lat || geoLocationData.address;
@@ -2855,6 +2860,7 @@ function generateReport() {
       : regulatoryTier === 'low'
       ? `مبدئيًا، إذا أكدت الجهة الإدارية المختصة مطابقة النشاط للقائمة (أ) وفق القائمة الرسمية السارية، فيُستكمل نموذج التصنيف البيئي (أ) عبر المسار الإداري المعتمد. لا يعني ذلك إعفاء النشاط من الاشتراطات البيئية، وقد تطلب الجهة المختصة استكمال متطلبات أو اتباع مسار أوسع بحسب طبيعة النشاط والموقع. التصنيف المسجل في قاعدة المولّد غير معتمد قانونيًا بذاته.`
       : `مبدئيًا، إذا أكدت الجهة الإدارية المختصة مطابقة النشاط للقائمة (ب) وفق القائمة الرسمية السارية، فيُستكمل نموذج التصنيف البيئي (ب) والمتطلبات المحددة للنشاط. وقد تطلب الجهة دراسة بيئية محددة أو تنقل النشاط إلى مسار القائمة (ج) بحسب طبيعته وآثاره. لا يُعتمد التصنيف المسجل في قاعدة المولّد قانونيًا بذاته؛ ويجب التحقق من القائمة السارية ومتطلبات الجهة المختصة قبل تحديد المستندات المطلوبة.`;
+    if (siteBump) regulatoryTextDynamic += ` وبسبب وجود مستقبِل حساس قريب (سكن/محمية/مياه) رُفع التصنيف الأولي درجة واحدة عن تصنيف النشاط في القائمة، لأن موقع المشروع من معايير التصنيف في دليل جهاز شؤون البيئة؛ والقرار النهائي للجهة الإدارية المختصة وجهاز شؤون البيئة.`;
     if (hasEscalation) regulatoryTextDynamic += ` ونظراً لوجود اعتبارات تصعيد فعلية لهذا الموقع تحديداً (تفاصيلها في القسم 4)، يُوصى بمراجعة تنظيمية إضافية قبل الموافقة النهائية.`;
   } else {
     regulatoryTextDynamic = regulatoryTier === 'unknown'
@@ -2864,6 +2870,7 @@ function generateReport() {
       : regulatoryTier === 'low'
       ? `Provisionally, if the competent administrative authority confirms that the activity matches the current official List A, the applicable Form A process should be followed through the competent administrative authority. This does not exempt the activity from environmental requirements, and the authority may require additional information or a broader review. The classification stored in this generator is not a legal determination.`
       : `Provisionally, if the competent administrative authority confirms that the activity matches the current official List B, the applicable Form B process and activity-specific requirements should be followed. The authority may require a more specific study or move the activity to the List C route depending on its nature and impacts. The classification stored in this generator is not a legal determination; verify the current official list and authority requirements before deciding the required submissions.`;
+    if (siteBump) regulatoryTextDynamic += ` Because a sensitive receptor is nearby (residential / protected area / water), the preliminary tier was raised one level above the activity's list tier, since project location is a classification criterion in the EEAA EIA guidelines; the final decision rests with the competent administrative authority and EEAA.`;
     if (hasEscalation) regulatoryTextDynamic += ` Given actual site-specific escalation factors identified for this location (see Section 4), additional regulatory review is recommended before final approval.`;
   }
 

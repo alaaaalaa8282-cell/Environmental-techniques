@@ -1065,7 +1065,7 @@ function renderOver(){
   const top=plan.list.slice(0,3);
   let h=`<div class="card hero"><div class="hico">${p.i}</div><div><h2>${esc(p.n)}</h2><div class="meta"><span class="chip">${esc(p.sec)}</span><span class="chip">${PHASE[state.phase].ic} ${PHASE[state.phase].n}</span></div></div></div>`;
   if(p.d)h+=`<p class="desc">${esc(p.d)}</p>`;
-  h+=siteCard();h+=dataCard();h+=`<div class="card tier t${p.t}"><div class="row"><b>${t.lab}</b></div><p class="big">المطلوب: <b>${t.study}</b></p><p>${t.txt}</p><p class="mut">${state.country==='EG'?'وبعد الموافقة البيئية: ترخيص الإنشاء ثم التشغيل مع الالتزام بالرصد والتقارير الدورية.':'وبعد الموافقة: تصريح الإنشاء (EPC) ثم تصريح التشغيل (EPO).'}</p></div>`;
+  h+=siteCard();h+=dataCard();h+=`<div class="card tier t${p.t}"><div class="row"><b>${t.lab}</b></div><p class="big">المطلوب: <b>${t.study}</b></p><p>${t.txt}</p>${p.siteUp?'<p class="mut">⚠️ التصنيف اترفع درجة واحدة عن تصنيف النشاط الأصلي بسبب القرب من مستقبِل حساس (سكن/محمية/مياه)، والقرار النهائي للجهة المختصة.</p>':''}<p class="mut">${state.country==='EG'?'وبعد الموافقة البيئية: ترخيص الإنشاء ثم التشغيل مع الالتزام بالرصد والتقارير الدورية.':'وبعد الموافقة: تصريح الإنشاء (EPC) ثم تصريح التشغيل (EPO).'}</p></div>`;
   h+=`<div class="card"><h3>أهم 3 حاجات تركّز عليها</h3>${top.map((x,i)=>{const f=famInfo(x.fam);return `<div class="topitem"><span class="num">${i+1}</span><div><b>${f.ic} ${f.n}</b> ${chipSev(x.sev)}<p>${esc(f.why.split('.')[0])}.</p></div></div>`}).join('')}</div>`;
   h+=`<div class="card"><h3>خريطة الطريق</h3><ol class="steps">${stepsL().map(s=>`<li><b>${s[0]}</b><span>${s[1]}</span></li>`).join('')}</ol></div>`;
   const rj=REJECT.filter(r=>r[2](p.t));
@@ -1192,6 +1192,8 @@ function toast(m,ms){const t=$('toast');t.textContent=m;t.classList.add('show');
 const TABS=[['over','🧭','الصورة'],['haz','⚠️','المشاكل'],['sol','🛠️','الحلول'],['mon','📏','الرصد'],['emg','🚨','الطوارئ'],['docs','📋','المطلوب'],['cons','🔗','التوافق'],['wr','✍️','اكتب'],['office','🏢','المكتب']];
 function compute(){
   const p=state.proj;
+  /* رفع التصنيف درجة واحدة (حد أقصى 3) عند وجود مستقبِل حساس: الموقع من معايير التصنيف في دليل EEAA 2009، ومن شروط NCEC (500 م من منطقة حساسة) */
+  if(state.base){const b0=state.country==='EG'?egTier(state.base):state.base.t;const hit=['residential','protected','sea','river','lake','groundwater'].some(l=>state.locs.has(l));p.t=hit?Math.min(3,b0+1):b0;p.siteUp=p.t>b0}
   state.plan=buildPlan(p,state.phase,state.locs);
   state.scs=scenariosFor(p,state.plan,state.phase,state.locs);
   state.cons=consistency(p,state.plan,state.scs,p.t,state.locs);
