@@ -5,4 +5,5 @@
     <string name="btn_audit">التدقيق البيئي 🌱</string>
     <string name="btn_problem_solver">حلول المشكلات البيئية 🧩</string>
     <string name="btn_dictionary">القاموس البيئي الشامل 📚</string>
+    <string name="btn_impact_finder">تحديد المشاكل البيئية 🎯</string>
 </resources>
