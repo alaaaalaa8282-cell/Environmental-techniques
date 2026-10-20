@@ -113,7 +113,7 @@
             android:text="@string/btn_dictionary" />
 
         <Button
-            android:id="@+id/btnComprehensive"
+            android:id="@+id/btnImpactFinder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
@@ -128,7 +128,7 @@
             android:textColor="#1B5E20"
             android:textSize="17sp"
             android:textStyle="bold"
-            android:text="@string/btn_comprehensive" />
+            android:text="@string/btn_impact_finder" />
 
     </LinearLayout>
 </ScrollView>
