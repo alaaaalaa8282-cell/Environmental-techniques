@@ -1672,19 +1672,43 @@ function norm(x){return String(x||'').toLowerCase().replace(/[\u064B-\u0652\u064
 termsDB.forEach(function(t){t._s=norm(t.abbr+' '+t.full+' '+t.arabic+' '+t.desc)});
 var searchTimer;
 function filterTerms(){clearTimeout(searchTimer);searchTimer=setTimeout(renderTerms,300)}
-function renderTerms(){
-var q=norm(document.getElementById('searchBox').value.trim());
-var h=[];
-termsDB.forEach(function(t){
-if(currentCategory!=='all'&&t.cat!==currentCategory)return;
-if(q&&t._s.indexOf(q)<0)return;
+var PAGE_SIZE=40,shownCount=0,currentList=[];
+function buildCard(t){
 var c='<div class="term-card cat-'+t.cat+'"><div class="term-abbr">'+t.abbr+'</div><div class="term-full">'+t.full+'</div><div class="term-arabic">'+t.arabic+'</div><div class="term-desc">'+t.desc+'</div>';
 if(t.example)c+='<div class="term-example">💡 '+t.example+'</div>';
 if(t.formula)c+='<div class="interview-formula">🎯 <strong>صيغة الإجابة في المقابلة:</strong><br>'+t.formula+'</div>';
-h.push(c+'</div>');
-});
-document.getElementById('termsGrid').innerHTML=h.length?h.join(''):'<div style="text-align:center;padding:40px;color:#666;grid-column:1/-1">لا توجد نتائج مطابقة</div>';
+return c+'</div>';
 }
+function renderTerms(){
+var q=norm(document.getElementById('searchBox').value.trim());
+currentList=termsDB.filter(function(t){
+if(currentCategory!=='all'&&t.cat!==currentCategory)return false;
+if(q&&t._s.indexOf(q)<0)return false;
+return true;
+});
+shownCount=0;
+var grid=document.getElementById('termsGrid');
+grid.innerHTML='';
+if(!currentList.length){grid.innerHTML='<div style="text-align:center;padding:40px;color:#666;grid-column:1/-1">لا توجد نتائج مطابقة</div>';return}
+showMore();
+}
+function showMore(){
+var grid=document.getElementById('termsGrid');
+var old=document.getElementById('moreBtn');
+if(old)old.remove();
+var end=Math.min(shownCount+PAGE_SIZE,currentList.length);
+var h=[];
+for(var i=shownCount;i<end;i++)h.push(buildCard(currentList[i]));
+shownCount=end;
+grid.insertAdjacentHTML('beforeend',h.join(''));
+if(shownCount<currentList.length){
+grid.insertAdjacentHTML('beforeend','<div id="moreBtn" style="grid-column:1/-1;text-align:center;padding:15px"><button onclick="showMore()" style="padding:12px 30px;border:2px solid var(--p);border-radius:20px;background:var(--p);color:#fff;font-size:1em;font-weight:bold;cursor:pointer">عرض المزيد ('+shownCount+' من '+currentList.length+')</button></div>');
+}
+}
+window.addEventListener('scroll',function(){
+if(shownCount>=currentList.length)return;
+if(window.innerHeight+window.pageYOffset>=document.documentElement.scrollHeight-600)showMore();
+},{passive:true});
 init();
 </script>
 </body>
