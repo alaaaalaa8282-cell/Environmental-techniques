@@ -17,13 +17,13 @@ public class MainActivity extends Activity {
         Button btnAudit = findViewById(R.id.btnAudit);
         Button btnProblemSolver = findViewById(R.id.btnProblemSolver);
         Button btnDictionary = findViewById(R.id.btnDictionary);
-        Button btnGuide = findViewById(R.id.btnimpact);
+        Button btnComprehensive = findViewById(R.id.btnComprehensive);
 
         btnEis.setOnClickListener(v -> openTool("eis_generator.html"));
         btnAudit.setOnClickListener(v -> openTool("environmental_audit.html"));
         btnProblemSolver.setOnClickListener(v -> openTool("problem_solver_expert.html"));
         btnDictionary.setOnClickListener(v -> openTool("environmental_dictionary.html"));
-        btnGuide.setOnClickListener(v -> openTool("environmental_impact_finder"));
+        btnComprehensive.setOnClickListener(v -> openTool("comprehensive_analyzer.html"));
     }
 
     private void openTool(String fileName) {
