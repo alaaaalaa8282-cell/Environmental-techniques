@@ -96,10 +96,27 @@
             android:text="@string/btn_problem_solver" />
 
         <Button
+            android:id="@+id/btnDictionary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/card_bg"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:elevation="6dp"
+            android:paddingTop="22dp"
+            android:paddingBottom="22dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textAllCaps="false"
+            android:textColor="#1B5E20"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:text="@string/btn_dictionary" />
+
+        <Button
             android:id="@+id/btnComprehensive"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
+            android:layout_marginTop="18dp"
             android:background="@drawable/card_bg"
             android:foreground="?android:attr/selectableItemBackground"
             android:elevation="6dp"
@@ -112,52 +129,6 @@
             android:textSize="17sp"
             android:textStyle="bold"
             android:text="@string/btn_comprehensive" />
-
-
-        <Button
-            android:id="@+id/btnWorkflow"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
-            android:background="@drawable/card_bg"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:elevation="6dp"
-            android:paddingTop="22dp"
-            android:paddingBottom="22dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:textAllCaps="false"
-            android:textColor="#1B5E20"
-            android:textSize="17sp"
-            android:textStyle="bold"
-           android:text="@string/btn_workflow" />
-
-        <Button
-            android:id="@+id/btnGuide"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
-            android:background="@drawable/card_bg"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:elevation="6dp"
-            android:paddingTop="22dp"
-            android:paddingBottom="22dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:textAllCaps="false"
-            android:textColor="#1B5E20"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:text="@string/btn_guide" />
-        <TextView
-            android:id="@+id/btnLogout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:padding="12dp"
-            android:text="@string/menu_logout"
-            android:textColor="#D8EFDC"
-            android:textSize="14sp" />
 
     </LinearLayout>
 </ScrollView>
