@@ -183,18 +183,205 @@ function norm(s){
 const ALIAS = [
  ["بنزينه","محطه وقود"],["بنزين","محطه وقود"],["كسارات","محاجر"],["كساره","محاجر"],["مجزر","مسلخ"],["مجزره","مسلخ"],
  ["فراخ","دواجن"],["مول","مولات"],["سمنت","اسمنت"],["مدبغه","مدبغه جلود"],["معمل","مصنع"],["مستشفيات","مستشفي"],
- ["فندق","فنادق"],["مدرسه","مدارس"],["مقلب","مكب"],["طاحونه","مطحنه"],["مصفاه","تكرير بترول"],["نفط","بترول"],["معامل","مصنع"],["مصانع","مصنع"],["محطات","محطه"],["محروقات","وقود"],["كهربا","كهرباء"]
+ ["فندق","فنادق"],["مدرسه","مدارس"],["مقلب","مكب"],["طاحونه","مطحنه"],["مصفاه","تكرير بترول"],["نفط","بترول"],["معامل","مصنع"],["مصانع","مصنع"],["محطات","محطه"],["محروقات","وقود"],["كهربا","كهرباء"],["مغسلة سيارات","محطة غسيل سيارات"],["محطة تموين","محطة وقود"],["صوبة","دفيئات"],["صوب","دفيئات"]
 ].map(function(p){ return [norm(p[0]),norm(p[1])]; });
 const MAR=[15,44,47,53,56,58];
 PROJ.forEach(function(p){ p.l = !(p.a.some(function(x){ return MAR.indexOf(x)>-1; }) || (p.a.indexOf(14)>-1 && p.a.indexOf(17)>-1)); });
+/*FIXES*/
+/* ===== تصنيف الصرف الصحي (12) حسب الحجم، والصرف الصناعي (11) حسب النوع ===== */
+(function(){
+  var ASSIGN_PF = {
+    "مصنع زجاج مسطح":"mineral","مصنع زجاج":"mineral","مصنع زجاجات وعبوات زجاجية":"mineral","مصنع سيراميك":"mineral","مصنع رخام وجرانيت":"mineral","مصنع خرسانة جاهزة":"mineral",
+    "مصنع أجهزة كهربائية":"metal","مصنع محولات كهربائية":"metal","مصنع أسلاك وكابلات":"metal","مصنع إلكترونيات":"metal","مصنع أجهزة طبية":"metal","مصنع أسلحة وذخيرة":"metal","مصنع تجميع سيارات":"metal","مصنع بطاريات ليثيوم":"metal",
+    "مصنع أشباه موصلات":"chem","مصنع خلايا شمسية (تصنيع من السليكون)":"chem",
+    "مزارع هيدروبونيك":"hydro","معمل تفريخ دواجن":"hatch","مزرعة أسماك":"aqua","مصنع تعبئة مياه معدنية":"bottled","مصنع تبغ وسجائر":"tobacco","محطة تدوير الزيوت المستعملة":"oilrec",
+    "مغسلة صناعية":"laundry","مغسلة ملابس":"laundry","محطة غسيل سيارات":"carwash",
+    "مركز غسيل كلوي":"clinical","مستشفى":"clinical","معمل تحاليل طبية":"clinical","مركز أبحاث ومعامل كيميائية":"lab","مركز أبحاث ومختبرات":"lab",
+    "محطة معالجة نفايات":"leachate","مصنع تدوير نفايات":"leachate","مدفن نفايات خطرة":"leachate","مكب نفايات صحي (مدفن صحي)":"leachate","مصنع سماد عضوي (كمبوست)":"leachate",
+    "محطة تحويل نفايات إلى طاقة":"wte","محطة صرف صحي":"stp","محطة معالجة مياه صناعية":"ietp"
+  };
+  PROJ.forEach(function(p){ if(!p.pf && ASSIGN_PF[p.n]) p.pf = ASSIGN_PF[p.n]; });
+
+  PROF.mineral = {"11":"مياه تبريد وتشكيل وغسيل: مواد صلبة معلقة وعكارة، أملاح وقلوية (pH مرتفع)، وزيوت قليلة. الحمل العضوي (BOD/COD) ضعيف أو معدوم"};
+  PROF.clinical = {"11":"مطهرات (كلور وكحول)، بقايا أدوية، مواد عضوية، وممرضات، ومعادن بنسب بسيطة من المعامل"};
+  PROF.laundry = {"11":"منظفات وفوسفات، ألياف ومواد صلبة، حرارة، ومواد عضوية معتدلة (COD)"};
+  PROF.carwash = {"11":"زيوت وشحوم ومنظفات ومواد صلبة وأتربة، ومعادن بنسب بسيطة. الحمل العضوي ضعيف"};
+  PROF.lab = {"11":"كواشف ومذيبات وأحماض وقلويات ومعادن بكميات صغيرة، وقد تحمل ممرضات في المختبرات الحيوية"};
+  PROF.leachate = {"11":"رشح (Leachate) عالي المواد العضوية (BOD/COD) والأمونيا والأملاح، مع معادن ثقيلة وملوثات حسب نوع النفايات"};
+  PROF.wte = {"11":"مياه غسيل الغازات وتبريد الغلايات ومخلفات الرماد: أملاح وكلوريدات ومعادن ثقيلة وحرارة"};
+  PROF.stp = {"11":"مياه معالجة خارجة من المحطة (للتصريف أو الري): بقايا BOD/COD وأمونيا ونيتروجين وفوسفور وممرضات بحسب كفاءة المعالجة والتطهير"};
+  PROF.ietp = {"11":"مياه معالجة خارجة من المحطة: بقايا COD ومعادن وأملاح وتغيّر pH بحسب كفاءة المعالجة وطبيعة الصناعات الواردة"};
+  PROF.hydro = {"11":"محلول مغذٍّ مصروف: نترات وفوسفات وأملاح، ومواد عضوية قليلة، وقد يحمل بقايا مبيدات"};
+  PROF.hatch = {"11":"مياه غسيل أرضيات ومعدات المفرخ: مواد عضوية (قشور بيض وريش ودهون) ومطهرات"};
+  PROF.aqua = {"11":"فضلات وأعلاف غير مأكولة: مواد صلبة معلقة وأمونيا ونترات وفوسفات، وبقايا أدوية ومطهرات"};
+  PROF.bottled = {"11":"مياه غسيل الفلاتر والعبوات والخطوط: مطهرات ومنظفات ومواد صلبة قليلة، وملوحة من وحدات RO إن وُجدت"};
+  PROF.tobacco = {"11":"مياه غسيل ومعالجة التبغ: نيكوتين ومواد عضوية وصبغات ومواد صلبة"};
+  PROF.oilrec = {"11":"مياه تحمل زيوتاً مستحلبة ومعادن ثقيلة ومذيبات (COD مرتفع)"};
+
+  /* حلول جديدة */
+  function S(a,f,e,m,i,v,l,x){ return {a:a,f:f,e:e,m:m,i:i,v:v,l:l,x:x}; }
+  var NEW = {
+   "san_small:0":S("خزان تحليل محكم مع نقل بصهريج مرخص","Sealed Tank","Sealed Holding Tank with Licensed Vacuum Truck","خزان خرساني محكم مانع للتسرب بدون بئر امتصاص، يُفرَّغ دورياً بصهريج مرخص إلى محطة معالجة","عدد قليل من الأفراد وعدم توفر شبكة عامة","يمنع تسرب الصرف إلى المياه الجوفية، بسيط ورخيص","لا يعالج بل ينقل فقط، ويحتاج تفريغاً دورياً ومراقبة مستوى الامتلاء","مكاتب ومحطات وقود ومواقع بعيدة"),
+   "san_small:1":S("الربط بشبكة الصرف العامة","Sewer Connection","Connection to Public Sewer Network","توصيل صرف المنشأة بالشبكة العامة لمعالجته في محطة مركزية","وجود شبكة عامة قريبة وطاقة استيعابية","أنسب حل عند توفر الشبكة، ولا يحتاج تشغيلاً داخل المنشأة","يتطلب شبكة قريبة وتصريحاً بالربط، وقد تقيّد الشبكة نوعية الصرف","مناطق صناعية وعمرانية بها شبكة"),
+   "san_small:2":S("وحدة معالجة مدمجة (تهوية ممتدة أو MBBR)","Package Plant","Package Treatment Plant (Extended Aeration / MBBR)","وحدة جاهزة تجمع الترسيب والتهوية بالبكتيريا الهوائية وفصل الحمأة، وتزيل BOD عادة بنسبة 90% أو أكثر عند حسن التشغيل","مئات الأفراد أو غياب الشبكة العامة","تركيب سريع ومساحة صغيرة وجودة مياه تسمح بالتطهير وإعادة الاستخدام","تحتاج تشغيلاً وصيانة منتظمة وتنتج حمأة تُنقل بصهريج مرخص","مصانع ومعسكرات عمال ومجمعات صغيرة"),
+   "san_marine:0":S("وحدة معالجة صرف بحرية معتمدة","Marine STP","Type-approved Marine Sewage Treatment Plant (MARPOL)","وحدة معالجة بيولوجية أو كيميائية معتمدة تلتزم بمعايير مرفق MARPOL الخاص بالصرف الصحي، مع تفتيت مخلفات المطبخ وفق قواعد المرفق الخاص بالمخلفات","منصات وسفن دعم وطاقم محدود","تلتزم بالاتفاقية الدولية وتقلل الحمل العضوي والممرضات للبحر","تحتاج صيانة وفحصاً دورياً وسجلات تصريف","منصات بحرية وسفن"),
+   "reuse_ww:0":S("إعادة استخدام المياه المعالجة","Reuse","Treated Water Reuse","استخدام المياه المعالجة والمطهَّرة في ري المسطحات والتشجير أو الأغراض الصناعية غير الشرب، وفق الاشتراطات المحلية","توفر معالجة ثانوية أو ثلاثية وتطهير، وحاجة فعلية للمياه","يقلل التصريف وسحب المياه العذبة","يحتاج رقابة جودة وتخزين وشبكة توزيع منفصلة","مجمعات سكنية وملاعب جولف ومدن جديدة"),
+   "ww_bypass:0":S("أحواض طوارئ وطاقة احتياطية","Emergency Storage","Emergency Storage Basins and Standby Power","أحواض تخزين تستقبل الفائض أثناء الأعطال أو الأمطار الغزيرة مع مولد احتياطي لتشغيل المضخات والتهوية","محطات معالجة قد تتوقف أو تتجاوز سعتها","يمنع تصريف الصرف الخام عند الطوارئ","تكلفة إنشاء ومساحة، ويلزم تفريغها وإعادة معالجتها بعد الحدث","محطات صرف صحي ومعالجة صناعية"),
+   "ww_coag:0":S("التجلط والتلبد والترسيب","Coag-Floc","Coagulation, Flocculation and Sedimentation","إضافة شبّ أو كلوريد الحديديك وبوليمر لتجميع الجسيمات والمواد الغروية والألوان وترسيبها","صرف صناعي بمواد معلقة أو ألوان أو معادن ذائبة جزئياً","فعال لإزالة العكارة واللون والمعادن مع ترسيب كيميائي","ينتج حمأة كيميائية تحتاج تخلصاً مرخصاً وتستهلك كيماويات","نسيج وورق ودهانات وتصنيع معادن"),
+   "ww_neutral:0":S("تعادل الرقم الهيدروجيني (pH)","Neutralization","pH Neutralization","خلط الصرف الحمضي أو القلوي مع قاعدة أو حمض وتحكم آلي في pH قبل التصريف أو المعالجة اللاحقة","صرف صناعي حمضي أو قلوي","بسيط وسريع ويحمي شبكة الصرف والكائنات المائية","يستهلك كيماويات وقد ينتج رواسب","مصانع كيماويات ومعادن وبطاريات وزجاج"),
+   "intake_entrainment:0":S("مأخذ بسرعة منخفضة وشبكات حماية","Low-velocity Intake","Low-velocity Intake with Screens","تصميم المأخذ بحيث تكون سرعة العبور عند الشبكة منخفضة (في حدود 0.15 م/ث وفق مرجع EPA 316(b)) مع شبكات دقيقة لتقليل شفط البيض واليرقات","محطات تبريد وتحلية تسحب مياه بحرية","يقلل الشفط والتصادم مع الكائنات","شبكات تحتاج تنظيفاً وتزيد تكلفة المأخذ","محطات تحلية وطاقة ساحلية"),
+   "intake_entrainment:1":S("موقع المأخذ وعمقه وإرجاع الكائنات","Intake Siting","Intake Siting and Organism Return Systems","وضع المأخذ بعيداً عن مواطن التفريخ والشعاب وفي عمق أقل غنى بالبيض واليرقات، مع نظام يعيد الأسماك والكائنات المحتجزة إلى البحر","محطات جديدة أو تعديل مأخذ قائم","يخفض الأثر من المصدر","يحتاج دراسة بيئية بحرية قبل التصميم","محطات تحلية وطاقة ساحلية"),
+   "extreme_weather:0":S("تصميم لفترات رجوع أعلى ومنسوب آمن","Resilient Design","Design for Higher Return Periods and Safe Elevation","اختيار منسوب المنشأة وأحواض الاحتواء فوق مستوى السيول والمد المتوقع، وتصميم قنوات تصريف السيول لفترات رجوع أطول مع الأخذ في الاعتبار تغير المناخ","منشآت في مجاري سيول أو على ساحل منخفض","يمنع وصول التلوث من الخزانات والمخلفات عند السيول","يرفع تكلفة الإنشاء وقد يغيّر اختيار الموقع","منشآت بترول وكيماويات وتعدين وساحلية"),
+   "extreme_weather:1":S("خطة طوارئ وإنذار مبكر وتشغيل آمن","Early Warning","Emergency Plan, Early Warning and Safe Shutdown","مراقبة الأرصاد وإنذار مبكر وإجراءات إيقاف آمن وفصل الخدمات وحماية الخزانات قبل العاصفة أو السيول أو الحر الشديد","كل المنشآت المعرضة لظواهر متطرفة","يقلل الخسائر والانسكابات الثانوية","يتطلب تدريباً وتمارين دورية","منشآت صناعية وساحلية"),
+   "habitat:0":S("مسح بيئي وتجنب المواسم والمواقع الحساسة","Avoidance","Ecological Survey, Avoidance and Seasonal Restrictions","مسح قبل البدء لتحديد الأنواع والموائل، وتعديل الموقع أو المسار لتجنبها، وإيقاف الأعمال الصاخبة في مواسم التعشيش والتكاثر","مشاريع قرب محميات أو مسارات هجرة أو موائل حساسة","التجنب أرخص وأنجح من التعويض","قد يؤخر الجدول الزمني ويقيد مواقع المشروع","طرق وخطوط ومحطات رياح وطاقة"),
+   "habitat:1":S("ممرات وعبور للحياة البرية","Wildlife Crossings","Wildlife Crossings and Passages","أنفاق وجسور وفتحات في الأسوار والخطوط والقنوات تسمح بحركة الحيوانات، مع علامات وسرعات منخفضة","مشاريع خطية تقطع مسارات حيوانات","تقلل العزل وحوادث الدهس","تكلفة إنشاء وتحتاج دراسة مواقع العبور","طرق وسكك حديد وقنوات وأنابيب"),
+   "habitat:2":S("إعادة التأهيل والتعويض البيئي","Offset","Habitat Restoration and Biodiversity Offset","إعادة تشجير وتأهيل المناطق المتأثرة وتعويض الفاقد بموطن مماثل محمي، مع متابعة لسنوات","عند تعذر تجنب الأثر بالكامل","يعيد جزءاً من القيمة البيئية المفقودة","لا يعوض بالكامل ويحتاج متابعة طويلة","كل المشاريع واسعة المساحة"),
+   "antifoul:0":S("دهانات منخفضة السمية وتنظيف مجهز للهياكل","Low-toxicity Coatings","Foul-release Coatings and Controlled Hull Cleaning","استخدام دهانات سيليكونية لا تعتمد على المبيدات الحيوية، وتنظيف الهياكل في أحواض مجهزة مع جمع المخلفات بدل الرمي في الميناء، مع الالتزام باتفاقية IMO بحظر القصدير العضوي","موانئ ومراسٍ ومناطق صيانة سفن","يخفض تراكم النحاس والمبيدات في الرواسب","تكلفة أعلى وتحتاج أحواضاً مجهزة","موانئ ومارينا وأحواض سفن"),
+   "landuse:0":S("اختيار موقع بديل وتقليل البصمة","Site Selection","Alternative Siting and Footprint Minimization","تفضيل الأراضي المتدهورة أو غير المنتجة وتجنب الأراضي الزراعية والموائل، وتقليل مساحة المشروع وإعادة التأهيل التدريجي","كل المشاريع واسعة المساحة","أرخص وسيلة لتقليل الأثر من البداية","قد يرفع تكلفة الوصول أو الخدمات","طاقة شمسية ورياح وتعدين وتطوير عمراني"),
+   "resettle:0":S("خطة تعويض وإعادة توطين","Resettlement","Compensation and Resettlement Action Plan (IFC PS5)","تحديد الأسر المتأثرة وتعويضها بقيمة الاستبدال وتوفير بدائل مسكن ودخل مع متابعة بعد الانتقال","مشاريع تستلزم نزع ملكية أو إزاحة","تحمي سبل العيش وتقلل النزاعات","تستغرق وقتاً وتتطلب تمويلاً وإدارة دقيقة","سدود وطرق وسكك حديد ومدن جديدة"),
+   "resettle:1":S("المشاورات المجتمعية وآلية الشكاوى","Engagement","Stakeholder Engagement and Grievance Mechanism (IFC PS1)","التشاور المبكر مع الأهالي والصيادين والرعاة، ونشر المعلومات، وقناة موثقة لتلقي الشكاوى والرد عليها","كل مشروع قريب من مجتمعات محلية","يخفض النزاعات ويكشف المشكلات مبكراً","يحتاج التزاماً مستمراً وفريقاً مخصصاً","كل المشاريع"),
+   "visual:0":S("حزام شجري وتصميم متوافق مع المحيط","Visual Screening","Landscape Screening and Context-sensitive Design","أحزمة تشجير وألوان وخامات متوافقة وخفض الارتفاع وحجب الإضاءة المزعجة","مشاريع قرب سكان أو مناطق سياحية","يخفف الأثر البصري بتكلفة صغيرة","الأشجار تحتاج ري وسنوات للنمو","مصانع ومولات وخطوط كهرباء وأبراج"),
+   "heritage:0":S("مسح أثري وإجراءات الاكتشاف العرضي","Chance Find","Archaeological Survey and Chance-find Procedure (IFC PS8)","مسح أثري قبل الحفر، وإجراء مكتوب للتوقف وإبلاغ الجهة المختصة فور العثور على أي أثر أثناء العمل","مشاريع حفر أو إنشاء في مناطق قديمة أو غير ممسوحة أثرياً","يحمي التراث الذي لا يُعوَّض","قد يوقف العمل مؤقتاً","طرق وسكك حديد وسدود وتعدين"),
+   "heritage:1":S("تعويض سبل العيش وإتاحة الوصول","Livelihood Restoration","Livelihood Restoration and Continued Access","تحديد المتضررين من فقد مرعى أو مصيد أو أرض، وتعويضهم أو توفير بدائل، والحفاظ على منافذ الوصول للبحر أو المرعى","فقد مصدر رزق مرتبط بموقع المشروع","يحافظ على الدخل المحلي","يحتاج حصراً دقيقاً للمتضررين","مشاريع ساحلية وتعدين وطاقة"),
+   "ash:0":S("إعادة استخدام الرماد والتداول الجاف","Ash Reuse","Fly/Bottom Ash Reuse and Dry Handling","تداول الرماد المتطاير والقاعي جافاً وإعادة استخدامه في الأسمنت والخرسانة والردم المنضبط بدل التخزين في أحواض مفتوحة","محطات الفحم وكل مصدر ينتج رماداً بكميات كبيرة","يقلل المخزون ويخلق سوقاً للرماد","يحتاج سوقاً وفحصاً للجودة والمعادن","محطات فحم ومحارق"),
+   "ash:1":S("أحواض رماد مبطنة مع رصد المياه الجوفية","Lined Ash Basin","Lined Ash Storage with Groundwater Monitoring","تخزين الرماد غير القابل للاستخدام في خلايا مبطنة ومغطاة مع جمع الرشح وآبار رصد للمياه الجوفية وتغطية دورية لمنع الغبار","عند تعذر إعادة الاستخدام","يمنع تسرب المعادن (زرنيخ وزئبق وغيرها) للتربة والمياه","تكلفة تبطين ورصد وإغلاق طويل الأمد","محطات فحم")
+  };
+  Object.keys(NEW).forEach(function(k){ SOL[k] = NEW[k]; });
+
+  /* حلول لأنشطة كانت بلا حلول */
+  var NC = {"17":["intake_entrainment:0","intake_entrainment:1"],"49":["extreme_weather:0","extreme_weather:1"],"54":["habitat:0","habitat:2"],"55":["habitat:0","habitat:1"],"58":["antifoul:0"],"59":["habitat:1","habitat:2"],"63":["landuse:0"],"66":["resettle:0","resettle:1"],"69":["visual:0"],"70":["heritage:0","heritage:1"]};
+  Object.keys(NC).forEach(function(k){ CTL[k] = NC[k]; });
+  /* مؤشرات رصد ناقصة */
+  MONI["48"] = ["سلامة السد (ضغط المياه والإزاحة والميل)"];
+  MONI["49"] = ["الأرصاد والإنذار المبكر وحالة منشآت التصريف والاحتواء"];
+  MONI["66"] = ["متابعة تنفيذ التعويض وشكاوى المجتمع"];
+  MONI["69"] = ["الأثر البصري (صور مقارنة من نقاط مرجعية)"];
+  MONI["70"] = ["الرقابة الأثرية أثناء الحفر وسبل العيش المتأثرة"];
+
+  /* حلول الصرف الصحي (12) حسب الفئة */
+  window.CTL12C = {
+    s:["san_small:0","san_small:1","san_small:2"],
+    m:["san_small:1","san_small:2","pathogens_water:0","reuse_ww:0"],
+    l:["bod_cod:0","bod_cod:1","eutrophication:0","pathogens_water:0","reuse_ww:0"],
+    p:["ww_bypass:0","eutrophication:0","pathogens_water:0"],
+    o:["san_marine:0","pathogens_water:0"]
+  };
+  /* حلول الصرف الصناعي (11) حسب النوع */
+  window.CTL11PF = {
+    food:["oil_water:2","oil_water:1","bod_cod:0","bod_cod:1"],
+    metal:["ww_neutral:0","heavy_metals_water:0","oil_water:0","oil_water:1"],
+    tannery:["heavy_metals_water:0","ww_coag:0","bod_cod:0"],
+    textile:["ww_coag:0","ww_neutral:0","bod_cod:0"],
+    paint:["ww_coag:0","oil_water:1","heavy_metals_water:0"],
+    paper:["ww_coag:0","bod_cod:0","bod_cod:1"],
+    pharma:["apis_water:0","apis_water:1","bod_cod:1"],
+    plastic:["oil_water:0","oil_water:1","ww_coag:0"],
+    chem:["ww_neutral:0","heavy_metals_water:0","apis_water:0","bod_cod:0"],
+    mineral:["ww_coag:0","ww_neutral:0","oil_water:0"],
+    clinical:["pathogens_water:0","bod_cod:1","apis_water:1"],
+    laundry:["ww_coag:0","thermal_pollution:2","bod_cod:0"],
+    carwash:["oil_water:0","oil_water:1","ww_coag:0"],
+    lab:["ww_neutral:0","heavy_metals_water:0","chemical_spill:0"],
+    leachate:["bod_cod:0","bod_cod:1","heavy_metals_water:0"],
+    wte:["thermal_pollution:0","heavy_metals_water:0","ww_neutral:0"],
+    stp:["eutrophication:0","eutrophication:2","pathogens_water:0","reuse_ww:0"],
+    ietp:["heavy_metals_water:0","ww_coag:0","bod_cod:1"],
+    hydro:["eutrophication:1","reuse_ww:0"],
+    hatch:["bod_cod:0","oil_water:2","pathogens_water:0"],
+    aqua:["eutrophication:1","bod_cod:0","pathogens_water:0"],
+    bottled:["ww_coag:0","reuse_ww:0"],
+    tobacco:["bod_cod:0","ww_coag:0"],
+    oilrec:["oil_water:0","oil_water:1","heavy_metals_water:0"],
+    gen:["ww_neutral:0","oil_water:0","ww_coag:0","bod_cod:0"]
+  };
+  window.CTL34I = ["sludge:1","hazardous_chemical_waste:2"];
+  window.CTLP = {"محطة كهرباء تعمل بالفحم":{"34":["ash:0","ash:1"]}};
+  window.SEWTXT = {
+    s:["صرف صحي منزلي من دورات مياه ومطعم العاملين (كمية صغيرة): مواد عضوية (BOD/COD) ومغذيات وممرضات","عدد الأفراد، ونوع الخزان (محكم أم ماص)، وإمكانية الربط بالشبكة، وعمق المياه الجوفية."],
+    m:["صرف صحي من مئات العاملين أو المترددين (حمل عضوي ومغذيات وممرضات يعادل تجمعاً صغيراً)","عدد الأفراد، ووجود شبكة عامة، وكفاءة وحدة المعالجة المدمجة، ووجهة التصريف."],
+    l:["صرف صحي بحجم تجمع سكاني: حمل عضوي (BOD/COD) ومغذيات (نيتروجين وفوسفور) وأمونيا وممرضات","عدد السكان أو الزوار يومياً، ومستوى المعالجة (ثانوية أم ثلاثية)، وإعادة الاستخدام، ووجهة التصريف."],
+    p:["صرف خام أو معالجة جزئية (تجاوز أو فيضان أو تشغيل خارج التصميم): BOD/COD عالٍ وأمونيا وممرضات","سعة الاستيعاب، وجود أحواض طوارئ، وانتظام الصيانة وتوفر كهرباء احتياطية."],
+    o:["صرف صحي ومخلفات مطبخ من طاقم المنصة وسفن الدعم: مواد عضوية ومغذيات وممرضات تُصرف للبحر بعد المعالجة","عدد الطاقم، ووجود وحدة معالجة معتمدة وفق مرفقي MARPOL للصرف الصحي والمخلفات، والمسافة من الساحل والشعاب."]
+  };
+  window.INORG34 = "حمأة معالجة الصرف الصناعي: معادن وهيدروكسيدات وأملاح وكيماويات المعالجة (بدون ممرضات تُذكر)";
+
+  /* فئات الصرف الصحي لكل مشروع */
+  var L = ["كمبوند سكني","مدينة جديدة","حي سكني متكامل","تطوير مخططات أراضٍ وبنية تحتية","مدينة جامعية","جامعة","مستشفى","فنادق ومجمعات سكنية","مولات","هايبرماركت","مبنى أبراج تجارية","مجمع ترفيهي","مدينة ملاهي","استاد رياضي","مطار","ميناء بحري","مرفأ حاويات","محطة نقل ركاب","منتجع سياحي ساحلي","مارينا / ميناء سياحي بحري","مجمع صناعي (منطقة صناعية جديدة)","مشروع ساحلي وكورنيش"];
+  var Sm = ["مكاتب","مركز فحص سيارات","محطة وقود طائرات","مجمع عيادات","مركز أشعة وطب نووي","معمل تحاليل طبية","مركز أبحاث ومعامل كيميائية","مركز أبحاث ومختبرات","مركز بيانات (Data Center)","ورشة كبرى لصيانة السيارات","مستودعات لوجستية","مركز توزيع وتجارة إلكترونية","مخازن تبريد","مخازن مواد خطرة","محطة ضغط غاز","محطة تعبئة غاز","محطة رفع مياه","محطة تحلية صغيرة (RO Plant)","مصنع/محطة توليد ثلج وتبريد","صومعة تخزين حبوب","مطحنة دقيق","مركز غسيل كلوي","نادي رياضي وسبا","محطة غسيل سيارات","مغسلة ملابس","محطة وقود","محطة معالجة مياه صناعية","محطة مياه شرب سطحية كبرى","مرسى يخوت","ملعب جولف","مطبخ مركزي","مستودع وقود","مخازن زيوت ومواد بترولية","محطة تخزين غاز البترول المسال","تخزين هيدروجين","محطة إنتاج هيدروجين أخضر","مصنع أمونيا خضراء","ميناء جاف","منطقة حرة / مركز خدمات لوجستية","مشرحة ومحرقة جثث","مصنع تدوير الإطارات","محطة إعادة تدوير مخلفات البناء","حديقة حيوان","مصنع ملح وتكرير ملح"];
+  var Mm = ["محطة كهرباء","محطة طاقة حرارية","محطة كهرباء تعمل بالفحم","محطة توليد دورة مركبة","محطة طاقة نووية","مصنع تكرير بترول","مصنع بتروكيماويات","محطة تحويل نفايات إلى طاقة","محطة تحلية","مدارس","محطة معالجة نفايات","مصنع تدوير نفايات"];
+  var SEWC = window.SEWC = {};
+  var DEF = {"صناعي":"m","غذائي":"m","خدمي":"m","تجاري":"m","بنية تحتية":"m"};
+  /* مشاريع إضافية فيها معسكرات عمال أو طاقم: نضيف لها نشاط الصرف الصحي */
+  var CAMP = ["منصة حفر برية","حقل نفط وغاز","محطة معالجة غاز","وحدة استرجاع كبريت","استخراج البترول البحري"];
+  PROJ.forEach(function(p){
+    if(p.s==="تعديني" && p.n!=="استخراج رمال بحرية" && p.a.indexOf(12)<0){ p.a.push(12); p.g.push(12); }
+    if(CAMP.indexOf(p.n)>-1 && p.a.indexOf(12)<0){ p.a.push(12); if(p.g.indexOf(12)<0) p.g.push(12); }
+  });
+  PROJ.forEach(function(p){
+    if(p.a.indexOf(12)<0) return;
+    var c = DEF[p.s] || "s";
+    if(Mm.indexOf(p.n)>-1) c = "m";
+    if(Sm.indexOf(p.n)>-1) c = "s";
+    if(L.indexOf(p.n)>-1) c = "l";
+    if(p.n==="محطة صرف صحي") c = "p";
+    if(p.n==="استخراج البترول البحري") c = "o";
+    SEWC[p.n] = c;
+    var gi = p.g.indexOf(12);
+    if(c==="l" || c==="p"){ if(gi>-1) p.g.splice(gi,1); }
+    else if(gi<0) p.g.push(12);
+  });
+
+  /* الحمأة (34): عضوية أم غير عضوية */
+  var ORGN = ["محطة صرف صحي","محطة معالجة نفايات","مصنع تدوير نفايات","محطة بيوغاز","محطة طاقة كتلة حيوية","محطة تحويل نفايات إلى طاقة","مصنع سماد عضوي (كمبوست)","مكب نفايات صحي (مدفن صحي)"];
+  var INORGN = ["محطة تحلية","محطة تحلية صغيرة (RO Plant)","محطة مياه شرب سطحية كبرى","محطة معالجة مياه صناعية","مدفن نفايات خطرة","محطة تدوير الزيوت المستعملة","مصنع خلايا شمسية (تصنيع من السليكون)","مركز بيانات (Data Center)"];
+  var ORGS = ["غذائي","إنتاج حيواني","إنتاج مائي","زراعي","خدمي","تجاري","بنية تحتية"];
+  window.SLORG = {};
+  PROJ.forEach(function(p){
+    var org = p.pf==="food" || p.pf==="paper" || ORGS.indexOf(p.s)>-1;
+    if(ORGN.indexOf(p.n)>-1) org = true;
+    if(INORGN.indexOf(p.n)>-1) org = false;
+    SLORG[p.n] = org;
+  });
+
+  /* الاستخراج البحري: تصريفات المنصة */
+  var OFF = "استخراج البترول البحري";
+  var po = PROJ.filter(function(p){ return p.n===OFF; })[0];
+  if(po){
+    [2,13,62].forEach(function(id){ if(po.a.indexOf(id)<0) po.a.push(id); });
+    if(po.g.indexOf(13)<0) po.g.push(13);
+    RX[OFF] = RX[OFF] || {};
+    RX[OFF]["12"] = ["GWT","PUB","SWT"];
+    RX[OFF]["13"] = ["SWT","SOIL","GWT"];
+    OV[OFF] = OV[OFF] || {};
+    OV[OFF]["2"] = ["عوادم ديزل بحري من سفن الدعم والقاطرات ومولدات المنصة: NOx وSOx وجسيمات وCO2","نوع الوقود ونسبة الكبريت، وعدد رحلات سفن الدعم، وكفاءة المحركات."];
+    OV[OFF]["13"] = ["مياه تصريف سطح المنصة: زيوت وشحوم ومنظفات وبقايا كيماويات الحفر","تصريف عبر فاصل زيت معتمد وحدود الزيت المسموحة، وأحواض احتواء حول الخزانات ومناطق التحميل."];
+  }
+  /* محطة الفحم: رماد الفحم */
+  OV["محطة كهرباء تعمل بالفحم"] = OV["محطة كهرباء تعمل بالفحم"] || {};
+  OV["محطة كهرباء تعمل بالفحم"]["34"] = ["رماد متطاير وقاعي وحمأة غسيل الغازات (FGD)، تحمل معادن وزرنيخاً وزئبقاً وأملاحاً","نظام تداول الرماد (جاف أم أحواض رطبة)، وتبطين الأحواض ورصد المياه الجوفية، وإعادة استخدام الرماد."];
+})();
+/* فحص سلامة فهارس OV أثناء التطوير */
+(function(){ var bad = []; Object.keys(OV).forEach(function(n){ Object.keys(OV[n]).forEach(function(a){ var v = OV[n][a]; if(typeof v==="number" && !OVT[v]) bad.push(n+":"+a); }); }); if(bad.length && window.console) console.warn("OV index missing:", bad); })();
+function sewClass(){ return (typeof SEWC!=="undefined" && SEWC[state.name]) || "m"; }
+function ctlBase(id){
+  var n = state.name;
+  if(CTLP[n] && CTLP[n][id]) return CTLP[n][id];
+  if(id===12) return CTL12C[sewClass()];
+  if(id===11) return CTL11PF[state.pf] || CTL11PF.gen;
+  if(id===34 && SLORG[n]===false) return CTL34I;
+  return CTL[id] || [];
+}
+/*END FIXES*/
+
 const PN = PROJ.map(function(p){ return norm(p.n); });
 const PA = Object.create(null); Object.keys(PALIAS).forEach(function(k){ var t = PN.indexOf(norm(PALIAS[k])); if(t>-1) PA[norm(k)] = t; });
 const STOP = {"مصنع":1,"محطه":1,"مزرعه":1,"مشروع":1,"مركز":1,"موقع":1};
 
 function ovx(a){
+  if(a[0]===12){ var sc = sewClass(), tx = SEWTXT[sc]; if(tx) return [tx[0]+((sc==="s"||sc==="m") && state.acts.indexOf(11)>-1 ? " — مياه العمليات في بند «صرف صناعي»" : ""), tx[1]]; }
   var o = (OV[state.name] && OV[state.name][a[0]]) || (PROF[state.pf] && PROF[state.pf][a[0]]);
   if(typeof o==="number") o = OVT[o];
-  if(!o) return [a[4], a[5]];
+  if(!o){ if(a[0]===34 && SLORG[state.name]===false) return [INORG34, a[5]]; return [a[4], a[5]]; }
   if(typeof o === "string") return [o, a[5]];
   return [o[0] || a[4], o[1] || a[5]];
 }
@@ -236,7 +423,7 @@ function search(raw){
   var out = [];
   PN.forEach(function(n,i){
     var words = n.split(" ").map(strip), tot = 0, ok = true;
-    qt.forEach(function(t){ var best = 99; words.forEach(function(w){ best = Math.min(best, lev(t,w)); }); if(best>(t.length>=5?2:1)) ok = false; tot += best; });
+    qt.forEach(function(t){ var best = 99; words.forEach(function(w){ best = Math.min(best, lev(t,w)); }); if(t.length<4 || best>(t.length>=7?2:1)) ok = false; tot += best; });
     if(ok) out.push([tot,i]);
   });
   out.sort(function(a,b){ return a[0]-b[0] || PN[a[1]].length-PN[b[1]].length; }); if(out.length) FZ = true;
@@ -265,10 +452,11 @@ function compute(acts, phase, gen, damp, ctx, fuel, up, inl){
     var rx = (typeof state!=="undefined" && state && Object.prototype.hasOwnProperty.call(RX, state.name)) ? RX[state.name] : null;
     var inc = ((up && up.indexOf(id)>-1) || (id===1 && fuel==='coal')) ? 1 : 0;
     a[6].forEach(function(r){
-      if(!ctxOK(r[0], ctx, inl)) return;
       if(rx && rx[id] && rx[id].indexOf(r[0])>-1) return;
       var dec = (base || (gasDec && r[0]!=='CLM')) ? 1 : 0;
-      (by[r[0]] = by[r[0]] || []).push({a:a, sev:Math.min(4, Math.max(1, r[1]-dec+inc)), path:r[2]});
+      var sv = Math.min(4, Math.max(1, r[1]-dec+inc));
+      if(!ctxOK(r[0], ctx, inl) && !(sv>=4 && !(!ctx && inl && r[0]==='SEA'))) return;
+      (by[r[0]] = by[r[0]] || []).push({a:a, sev:sv, path:r[2]});
     });
   });
   var list = REC_ORDER.filter(function(k){ return by[k]; }).map(function(k){
@@ -309,7 +497,7 @@ function actSection(list){
   arr.forEach(function(x){ h += '<details class="item"><summary><b>'+esc(x.a[2])+'</b> <span class="sev s'+x.sev+'">'+SEV[x.sev]+'</span></summary>'+extraP(x.a[0])+'</details>'; });
   return h+'</div>';
 }
-function ctlOf(id){ var k = CTL[id]||[]; if(state.proj>=0 && PROJ[state.proj].l) k = k.filter(function(x){ return x.indexOf('off_')!==0 || x.indexOf('off_flaring')===0; }); return k; }
+function ctlOf(id){ var k = ctlBase(id).slice(); if(state.proj>=0 && PROJ[state.proj].l) k = k.filter(function(x){ return x.indexOf('off_')!==0 || x.indexOf('off_flaring')===0; }); return k; }
 function solNames(id){ return ctlOf(id).map(function(k){ var o = SOL[k]; return o.a+(o.f ? " ("+o.f+")" : ""); }); }
 function solCard(k){
   var o = SOL[k];
@@ -400,13 +588,13 @@ function showSug(){
 function genFor(p){ var cl = CLS[p.n], g = p.g.slice(); if(cl && (cl[0]==='ج'||cl[0]==='ك'||cl[1]===3)) g = g.filter(function(x){ return x!==64; }); return g; }
 function pick(i){
   var p = PROJ[i];
-  state = {proj:i, name:p.n, acts:p.a.slice(), base:p.a.slice(), gen:genFor(p), inl:!!p.l, up:(p.u||[]).slice(), damp:p.d, ctx:(p.c?p.c.slice():null), fuel:(p.f||null), pf:p.pf||"", phase:"all", custom:false, open:{}, _fresh:1};
+  state = {view:state.view, proj:i, name:p.n, acts:p.a.slice(), base:p.a.slice(), gen:genFor(p), inl:!!p.l, up:(p.u||[]).slice(), damp:p.d, ctx:(p.c?p.c.slice():null), fuel:(p.f||null), pf:p.pf||"", phase:"all", custom:false, open:{}, _fresh:1};
   $("q").value = p.n; $("sug").style.display="none"; $("miss").style.display="none";
   render(); scrollToResult();
 }
 function startCustom(text){
   var near = search(text).filter(function(x){ return !x.exact; }).slice(0,4);
-  state = {proj:-1, name:text.trim(), acts:[], base:[], gen:[], up:[], inl:false, damp:0, ctx:null, fuel:null, pf:"", phase:"all", custom:true, open:{}, _fresh:1};
+  state = {view:state.view, proj:-1, name:text.trim(), acts:[], base:[], gen:[], up:[], inl:false, damp:0, ctx:null, fuel:null, pf:"", phase:"all", custom:true, open:{}, _fresh:1};
   $("sug").style.display="none";
   var m = $("miss");
   var h = '<div class="sect-title">«'+esc(text.trim())+'» مش موجود بالاسم ده</div>';
@@ -463,7 +651,7 @@ function render(){
       h += '<button class="chip-btn'+(on?' on':'')+'" data-cx="'+c[0]+'" aria-pressed="'+(!!on)+'">'+c[1]+'</button>';
     });
     h += '<button class="chip-btn'+(state.ctx?'':' on')+'" data-cx="all">مش محدد (اعرض الكل)</button></div>';
-    h += '<p class="hint" style="margin:-4px 0 8px;font-size:.88rem">الاختيار المبدئي حسب نوع المشروع: علّم اللي موجود فعلاً حوالين موقعك، والمستقبلات اللي مش عندك بتختفي، وأي مستقبل خطورته عالية بيفضل ظاهر (المياه الجوفية والتربة ظاهرين دايماً).</p>';
+    h += '<p class="hint" style="margin:-4px 0 8px;font-size:.88rem">الاختيار المبدئي حسب نوع المشروع: علّم اللي موجود فعلاً حوالين موقعك، والمستقبلات اللي مش عندك بتختفي، وأي مستقبل خطورته حرجة بيفضل ظاهر (المياه الجوفية والتربة ظاهرين دايماً).</p>';
     if(state.ctx){
       var fullL = compute(state.acts, state.phase, state.gen, state.damp, null, state.fuel, state.up, state.inl);
       var hid = fullL.filter(function(r0){ return !list.some(function(x0){ return x0.k===r0.k; }); }).map(function(r0){ return SHORT[r0.k]+" ("+SEV[r0.max]+")"; });
@@ -525,7 +713,7 @@ function buildPanel(){
   });
   p.innerHTML = h; p.classList.add("show");
 }
-function scrollToResult(){ var r=$("result"); if(r) setTimeout(function(){ r.scrollIntoView({behavior:"smooth",block:"start"}); },60); }
+function scrollToResult(){ if(window.__loading) return; var r=$("result"); if(r) setTimeout(function(){ r.scrollIntoView({behavior:"smooth",block:"start"}); },60); }
 function snapDet(){ var o = {}; document.querySelectorAll("#result details[open]").forEach(function(d){ var k = detKey(d); if(k) o[k] = 1; }); return o; }
 function detKey(d){ var k = d.getAttribute("data-dk"); if(k) return k; var sm = d.querySelector("summary"); return sm ? "s:"+sm.textContent : ""; }
 function numSort(a){ return a.slice().sort(function(x,y){ return x-y; }); }
@@ -533,7 +721,7 @@ function writeHash(){
   try{
     if(state.proj<0 && !state.custom){ history.replaceState(null,"",location.pathname+location.search); return; }
     var P = [];
-    if(state.proj>=0) P.push("p="+state.proj); else P.push("c="+encodeURIComponent(state.name));
+    if(state.proj>=0) P.push("p="+encodeURIComponent(state.name)); else P.push("c="+encodeURIComponent(state.name));
     if(state.phase!=="all") P.push("ph="+state.phase);
     if(state.ctx) P.push("cx="+state.ctx.join(","));
     if(state.fuel) P.push("fu="+state.fuel);
@@ -547,7 +735,8 @@ function loadHash(){
   var m = {};
   location.hash.replace(/^#/,"").split("&").forEach(function(kv){ var i = kv.indexOf("="); if(i>0){ try{ m[kv.slice(0,i)] = decodeURIComponent(kv.slice(i+1)); }catch(e){} } });
   var ok = false;
-  if(m.p!==undefined && PROJ[+m.p]){ pick(+m.p); ok = true; }
+  var pi = m.p===undefined ? -1 : (/^\d+$/.test(m.p) ? +m.p : PN.indexOf(norm(m.p)));
+  if(pi>-1 && PROJ[pi]){ pick(pi); ok = true; }
   else if(m.c){ $("q").value = m.c; startCustom(m.c); ok = true; }
   if(!ok) return;
   if(["i","o","d"].indexOf(m.ph)>-1) state.phase = m.ph;
@@ -555,8 +744,9 @@ function loadHash(){
   if(["gas","liq","coal","elec"].indexOf(m.fu)>-1) state.fuel = m.fu;
   if(m.v==="m") state.view = "matrix";
   if(m.a!==undefined){ state.acts = m.a.split(",").map(Number).filter(function(x,i,arr){ return ACTBY[x] && arr.indexOf(x)===i; }); }
-  state._fresh = 1; render();
+  state._fresh = 1; render(); syncQuick();
 }
+function syncQuick(){ QUICK.forEach(function(q,ix){ var b = document.querySelector('#quick [data-q="'+ix+'"]'); if(!b) return; var on = q[1].every(function(id){ return state.acts.indexOf(id)>-1; }); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); }); }
 
 document.addEventListener("click",function(e){
   var t = e.target.closest("button,input,summary"); if(!t) { if(!e.target.closest(".search")) $("sug").style.display="none"; return; }
@@ -640,7 +830,7 @@ $("sug").addEventListener("keydown",function(e){
   });
   $("browseBody").innerHTML = h;
 })();
-loadHash();
+window.__loading = true; loadHash(); window.__loading = false;
 </script>
 </body>
 </html>
