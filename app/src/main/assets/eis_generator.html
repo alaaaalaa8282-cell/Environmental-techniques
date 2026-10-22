@@ -3050,7 +3050,7 @@ function generateReport() {
   if (_q.sharedWith.length) _qLines.push(ar ? ('خطوات خطة الطوارئ نفسها مستخدمة في ' + _q.sharedWith.length + ' مشروع آخر (مثل: ' + _q.sharedWith.slice(0, 3).join('، ') + ')') : ('The same emergency steps are used by ' + _q.sharedWith.length + ' other project(s) (e.g. ' + _q.sharedWith.slice(0, 3).join(', ') + ')'));
   const qualityBadgeHTML = '<div class="warning-box" style="border-color:' + (_q.level === 'custom' && !_q.sharedWith.length ? '#2f855a' : '#dd6b20') + ';"><strong>' + (ar ? '🏷️ مستوى جودة محتوى هذا المشروع:' : '🏷️ Content quality of this project:') + '</strong> ' + _qLabel + (_qLines.length ? '<ul style="margin-top:8px;padding-inline-start:22px;line-height:1.8;">' + _qLines.map(function (l) { return '<li>' + l + '</li>'; }).join('') + '</ul>' : '') + '</div>';
   const traceabilityAuditHTML = '<div class="warning-box" style="border-color:#805ad5;"><strong>' + (ar ? 'تتبّع الأدلة والتحقق الخاص بالمشروع' : 'Project-specific evidence and verification') + '</strong><ul style="margin-top:8px;padding-inline-start:22px;line-height:1.8;"><li>' + (ar ? 'التصنيف القانوني المعروض مأخوذ من قاعدة الأداة، ولم يُثبت هنا بمطابقة مباشرة مع أحدث قائمة رسمية؛ تحقق من الدولة والجهة المختصة ونوع النشاط والطاقة الإنتاجية.' : 'The displayed legal classification comes from the tool database and has not been directly verified here against the latest official list; confirm jurisdiction, authority, activity type and capacity.') + '</li><li>' + (ar ? 'القيم والكفاءات والأرقام الواردة في وصف تقنيات المعالجة أمثلة مرجعية عامة وليست ضمان أداء أو قياسات لهذا المشروع؛ لا تعتمدها للتصميم أو إثبات الامتثال دون مصدر فني موثوق وبيانات المورد.' : 'Treatment performance figures and numerical claims are general reference examples, not guarantees or measurements for this project; do not use them for design or compliance without a reliable technical source and vendor data.') + '</li><li>' + (ar ? 'حدود المقارنة وتكرار الرصد المقترح يحتاجان إلى ربطهما بخط الأساس، ومصدر الانبعاث، وطريقة القياس وفترة المتوسط، والتصريح الساري. عند غياب السند، تُعامل كمسائل مفتوحة للمختص لا كاشتراط قانوني مثبت.' : 'Comparison limits and suggested monitoring frequency must be tied to baseline, emission source, method, averaging period and current permit. Where evidence is missing, treat them as open specialist-review items, not established legal requirements.') + '</li><li>' + (ar ? 'طابق كل خطر على حدة مع إجراء التحكم ومؤشر الرصد وسيناريو الطوارئ؛ وجود بند عام أو تكراره في مشروعات أخرى لا يثبت ملاءمته.' : 'Cross-check every hazard against its control, monitoring indicator and emergency scenario; a generic or repeated item is not proof of suitability.') + '</li></ul><p style="margin-top:8px;"><strong>' + (ar ? 'حالة التحقق:' : 'Verification status:') + '</strong> ' + (ar ? 'مسودة آلية — لم يتم التحقق الخارجي من المراجع القانونية أو بيانات الموقع أو التصاريح في هذه الجلسة.' : 'Automated draft — legal references, site data and permits have not been externally verified in this session.') + '</p></div>';
-  let html = `<div class="report-cover"><h1>${project.icon} ${currentLang === 'ar' ? 'تقرير الأثر البيئي (EIS)' : 'Environmental Impact Statement (EIS)'}</h1><h2 style="color: var(--secondary); margin-top: 15px;">${displayName}</h2><div class="meta"><div><strong>${t.reportDate}:</strong> ${today}</div><div><strong>${t.reportType}:</strong> Environmental Impact Statement</div><div><strong>${t.reportStatus}:</strong> ${t.reportStatusValue}</div><div><strong>${currentLang === 'ar' ? 'المرحلة المختارة' : 'Selected phase'}:</strong> ${phaseName}</div></div></div><div class="executive-summary"><h3 style="color: var(--primary); margin-bottom: 15px;">${t.executiveSummary}</h3><p>${t.executiveSummaryText} <strong>${displayName}</strong> ${t.executiveSummaryText2}</p><p><strong>${currentLang === 'ar' ? 'مرحلة التقييم' : 'Assessment phase'}:</strong> ${phaseName}</p></div>${summaryBoxHTML}${actInfoHTML}${profileBlockHTML}${facilityDataHTML}<h2 class="report-section-title"><span class="num">1</span> ${t.section1}</h2><div class="report-block"><strong>${t.classificationEgypt}:</strong> <span class="classification-badge badge-egypt">${classLabel}</span><br><br><strong>${t.classificationSaudi}:</strong> <span class="classification-badge badge-saudi">${saudiClassLabel}</span>${classReviewNoteHTML}${siteRiskTierHTML}<br><strong>${t.regulatoryRequirements}:</strong> ${regulatoryTextDynamic}${siteSensitivityNote ? `<p class="warning-box" style="margin-top:10px;">${siteSensitivityNote}</p>` : ''}${tierDiffNote ? `<p class="warning-box" style="margin-top:10px;">${tierDiffNote}</p>` : ''}${phaseRegNote(phaseKey, currentLang === 'ar') ? `<p style="margin-top:10px;"><strong>${phaseRegNote(phaseKey, currentLang === 'ar')}</strong></p>` : ''}</div><h2 class="report-section-title"><span class="num">2</span> ${t.section2}</h2>${phaseScreeningHTML}${phaseExtraHTML}<p style="margin-bottom: 15px;">${t.impactTable}:</p><table class="report-table"><thead><tr><th style="width: 5%;">${t.impactNum}</th><th style="width: 45%;">${t.impactName}</th><th style="width: 50%;">${t.impactDesc}</th></tr></thead><tbody>${activeProj.problems.map((p, i) => `<tr><td>${i + 1}</td><td><strong>${escapeHtml(p.name || '')}</strong></td><td>${escapeHtml(p.descriptionFull || p.description || '')}</td></tr>`).join('')}</tbody></table><h2 class="report-section-title"><span class="num">3</span> ${t.section3}</h2>${phaseKey !== 'operation' ? phaseSection3HTML(Object.assign({}, activeProj, { solutions: reportSolutions }), phaseKey, currentLang === 'ar', impactTier) : `<p style="margin-bottom: 15px;">${t.empTable}:</p><table class="report-table"><thead><tr><th style="width: 5%;">${t.empNum}</th><th style="width: 30%;">${t.empMeasure}</th><th style="width: 65%;">${t.empMechanism}</th></tr></thead><tbody>${reportSolutions.map((s, i) => `<tr><td>${i + 1}</td><td><strong>${s.name}</strong></td><td>${s.mechanism}</td></tr>`).join('')}</tbody></table>`}${solutionReview.withheld.length ? `<div class="report-block" style="background:#fff7e6;"><strong>${currentLang === 'ar' ? 'حلول محجوبة أو مشروطة — مراجعة فنية مطلوبة' : 'Withheld or conditional solutions — technical review required'}</strong><ul>${solutionReview.withheld.map(x => `<li><strong>${x.solution.name}</strong> <span style="display:inline-block;padding:2px 7px;border-radius:10px;background:${x.assessment.status === 'exclude' ? '#fee2e2' : '#ffedd5'};color:${x.assessment.status === 'exclude' ? '#991b1b' : '#9a3412'};font-size:.85em;">${currentLang === 'ar' ? (x.assessment.status === 'exclude' ? 'محجوب' : 'مشروط') : (x.assessment.status === 'exclude' ? 'Withheld' : 'Conditional')}</span> — ${currentLang === 'ar' ? x.assessment.reasonAr : x.assessment.reasonEn}</li>`).join('')}</ul></div>` : ''}${locationSectionHTML}<h2 class="report-section-title"><span class="num">5</span> ${t.section5}</h2><div class="report-block"><strong>${t.emergencyScenario}:</strong> ${activeEmergency.scenario}</div>${phaseEmergencyHTML}<div class="report-block"><strong>${t.emergencyActions}:</strong><ol style="margin-top: 10px; padding-right: 25px; line-height: 2;">${activeEmergency.actions.map(a => `<li>${a}</li>`).join('')}</ol></div><div class="report-block"><strong>${t.trainingRequirements}:</strong> ${extras.training}</div><h2 class="report-section-title"><span class="num">6</span> ${t.section6}</h2>${phaseSafetyHTML(phaseKey, currentLang === 'ar')}<div class="report-block"><strong>${t.hseRequirements}:</strong><ul style="margin-top: 10px; padding-right: 25px; line-height: 2;">${activeProj.safety.map(s => `<li>${s}</li>`).join('')}</ul></div><div class="report-block"><strong>${t.healthMonitoring}:</strong> ${extras.health}</div>${(function(){var i=monitoringHTML.indexOf('</h2>');return i<0?phaseMonitoringHTML+monitoringHTML:monitoringHTML.slice(0,i+5)+phaseMonitoringHTML+monitoringHTML.slice(i+5);})()}<h2 class="report-section-title"><span class="num">8</span> ${t.section7}</h2><div class="report-block"><p>${t.conclusion}:</p><ol style="margin-top: 15px; padding-right: 25px; line-height: 2;">${conclusionListDynamic.map(c => `<li>${c}</li>`).join('')}</ol></div><div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid var(--primary); text-align: center; color: var(--text-light); font-size: 0.9em;"><p><strong>${t.reportFooter}:</strong> EIS Generator System</p><p><strong>${t.reportFooterNote}</strong></p></div>`;
+  let html = `<div class="report-cover"><h1>${project.icon} ${currentLang === 'ar' ? 'تقرير الأثر البيئي (EIS)' : 'Environmental Impact Statement (EIS)'}</h1><h2 style="color: var(--secondary); margin-top: 15px;">${displayName}</h2><div class="meta"><div><strong>${t.reportDate}:</strong> ${today}</div><div><strong>${t.reportType}:</strong> Environmental Impact Statement</div><div><strong>${t.reportStatus}:</strong> ${t.reportStatusValue}</div><div><strong>${currentLang === 'ar' ? 'المرحلة المختارة' : 'Selected phase'}:</strong> ${phaseName}</div></div></div><div class="executive-summary"><h3 style="color: var(--primary); margin-bottom: 15px;">${t.executiveSummary}</h3><p>${t.executiveSummaryText} <strong>${displayName}</strong> ${t.executiveSummaryText2}</p><p><strong>${currentLang === 'ar' ? 'مرحلة التقييم' : 'Assessment phase'}:</strong> ${phaseName}</p></div>${summaryBoxHTML}${actInfoHTML}${profileBlockHTML}${facilityDataHTML}<h2 class="report-section-title"><span class="num">1</span> ${t.section1}</h2><div class="report-block"><strong>${t.classificationEgypt}:</strong> <span class="classification-badge badge-egypt">${classLabel}</span><br><br><strong>${t.classificationSaudi}:</strong> <span class="classification-badge badge-saudi">${saudiClassLabel}</span>${saudiProcNote(saudiClassLabel)}${classReviewNoteHTML}${siteRiskTierHTML}<br><strong>${t.regulatoryRequirements}:</strong> ${regulatoryTextDynamic}${siteSensitivityNote ? `<p class="warning-box" style="margin-top:10px;">${siteSensitivityNote}</p>` : ''}${tierDiffNote ? `<p class="warning-box" style="margin-top:10px;">${tierDiffNote}</p>` : ''}${phaseRegNote(phaseKey, currentLang === 'ar') ? `<p style="margin-top:10px;"><strong>${phaseRegNote(phaseKey, currentLang === 'ar')}</strong></p>` : ''}</div><h2 class="report-section-title"><span class="num">2</span> ${t.section2}</h2>${phaseScreeningHTML}${phaseExtraHTML}<p style="margin-bottom: 15px;">${t.impactTable}:</p><table class="report-table"><thead><tr><th style="width: 5%;">${t.impactNum}</th><th style="width: 45%;">${t.impactName}</th><th style="width: 50%;">${t.impactDesc}</th></tr></thead><tbody>${activeProj.problems.map((p, i) => `<tr><td>${i + 1}</td><td><strong>${escapeHtml(p.name || '')}</strong></td><td>${escapeHtml(p.descriptionFull || p.description || '')}</td></tr>`).join('')}</tbody></table><h2 class="report-section-title"><span class="num">3</span> ${t.section3}</h2>${phaseKey !== 'operation' ? phaseSection3HTML(Object.assign({}, activeProj, { solutions: reportSolutions }), phaseKey, currentLang === 'ar', impactTier) : `<p style="margin-bottom: 15px;">${t.empTable}:</p><table class="report-table"><thead><tr><th style="width: 5%;">${t.empNum}</th><th style="width: 30%;">${t.empMeasure}</th><th style="width: 65%;">${t.empMechanism}</th></tr></thead><tbody>${reportSolutions.map((s, i) => `<tr><td>${i + 1}</td><td><strong>${s.name}</strong></td><td>${s.mechanism}</td></tr>`).join('')}</tbody></table>`}${solutionReview.withheld.length ? `<div class="report-block" style="background:#fff7e6;"><strong>${currentLang === 'ar' ? 'حلول محجوبة أو مشروطة — مراجعة فنية مطلوبة' : 'Withheld or conditional solutions — technical review required'}</strong><ul>${solutionReview.withheld.map(x => `<li><strong>${x.solution.name}</strong> <span style="display:inline-block;padding:2px 7px;border-radius:10px;background:${x.assessment.status === 'exclude' ? '#fee2e2' : '#ffedd5'};color:${x.assessment.status === 'exclude' ? '#991b1b' : '#9a3412'};font-size:.85em;">${currentLang === 'ar' ? (x.assessment.status === 'exclude' ? 'محجوب' : 'مشروط') : (x.assessment.status === 'exclude' ? 'Withheld' : 'Conditional')}</span> — ${currentLang === 'ar' ? x.assessment.reasonAr : x.assessment.reasonEn}</li>`).join('')}</ul></div>` : ''}${locationSectionHTML}<h2 class="report-section-title"><span class="num">5</span> ${t.section5}</h2><div class="report-block"><strong>${t.emergencyScenario}:</strong> ${activeEmergency.scenario}</div>${phaseEmergencyHTML}<div class="report-block"><strong>${t.emergencyActions}:</strong><ol style="margin-top: 10px; padding-right: 25px; line-height: 2;">${activeEmergency.actions.map(a => `<li>${a}</li>`).join('')}</ol></div><div class="report-block"><strong>${t.trainingRequirements}:</strong> ${extras.training}</div><h2 class="report-section-title"><span class="num">6</span> ${t.section6}</h2>${phaseSafetyHTML(phaseKey, currentLang === 'ar')}<div class="report-block"><strong>${t.hseRequirements}:</strong><ul style="margin-top: 10px; padding-right: 25px; line-height: 2;">${activeProj.safety.map(s => `<li>${s}</li>`).join('')}</ul></div><div class="report-block"><strong>${t.healthMonitoring}:</strong> ${extras.health}</div>${(function(){var i=monitoringHTML.indexOf('</h2>');return i<0?phaseMonitoringHTML+monitoringHTML:monitoringHTML.slice(0,i+5)+phaseMonitoringHTML+monitoringHTML.slice(i+5);})()}<h2 class="report-section-title"><span class="num">8</span> ${t.section7}</h2><div class="report-block"><p>${t.conclusion}:</p><ol style="margin-top: 15px; padding-right: 25px; line-height: 2;">${conclusionListDynamic.map(c => `<li>${c}</li>`).join('')}</ol></div><div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid var(--primary); text-align: center; color: var(--text-light); font-size: 0.9em;"><p><strong>${t.reportFooter}:</strong> EIS Generator System</p><p><strong>${t.reportFooterNote}</strong></p></div>`;
   
   reportContent.innerHTML = html;
   document.getElementById('reportSection').classList.add('active');
@@ -4436,8 +4436,8 @@ function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):s;}
 function startsWithKey(map,part){for(var k in map){if(k.indexOf(part)===0)return k;}return null;}
 /* ---------- data (report + guide) ---------- */
 var BODYRX=/^المصدر المعتاد في هذا النوع من الأنشطة: (.*?)\. الأثر: (.*?)\. يُقاس أو يُراجع: (.*?)\. يُعالج ضمن: (.*?)(\.?)$/;
-var SEVRX=/^درجة الخطورة: (عالية|متوسطة|منخفضة)(?: \((غير مراجع)[^)]*\))? — (.*)$/;
-var SEVW={'عالية':'High','متوسطة':'Medium','منخفضة':'Low'};
+var SEVRX=/^درجة الخطورة: (حرجة|عالية|متوسطة|منخفضة)(?: \((غير مراجع[^)]*|مراجَع[^)]*)\))? — (.*)$/;
+var SEVW={'حرجة':'Critical','عالية':'High','متوسطة':'Medium','منخفضة':'Low'};
 function trBody(b){
   var m=b.match(BODYRX); if(!m)return null;
   var s=SRC[m[1]],i=IMP[m[2]],me=MEAS[m[3]],t=TREAT[m[4]];
@@ -4465,7 +4465,7 @@ function trCore(t){
   var cm=t.match(/^(يُعالج ضمن|الأثر|يُقاس أو يُراجع|المصدر المعتاد في هذا النوع من الأنشطة): (.*?)(\.?)$/);
   if(cm){var map={'يُعالج ضمن':[TREAT,'Addressed under'],'الأثر':[IMP,'Impact'],'يُقاس أو يُراجع':[MEAS,'Measured or reviewed'],'المصدر المعتاد في هذا النوع من الأنشطة':[SRC,'Usual source in this type of activity']}[cm[1]];var v=map[0][cm[2]];if(v)return map[1]+': '+(cm[1]==='الأثر'?cap(v):v)+cm[3];}
   var m=t.match(SEVRX);
-  if(m){var b=trBody(m[3])||EXACT[m[3]]||TARGETS[m[3]]; if(b)return 'Severity: '+SEVW[m[1]]+(m[2]?' (not reviewed)':'')+' — '+b;}
+  if(m){var b=trBody(m[3])||EXACT[m[3]]||TARGETS[m[3]]; if(b)return 'Severity: '+SEVW[m[1]]+(m[2]?(/^غير/.test(m[2])?' (not reviewed)':' (reviewed)'):'')+' — '+b;}
   var b2=trBody(t); if(b2)return b2;
   var me=trMech(t); if(me)return me;
   var i=t.lastIndexOf(' — ');
@@ -6411,6 +6411,94 @@ var st=document.createElement('style');st.id='v109css';st.textContent='#reportCo
 
 </script>
 <script id="v115-fixes">
+/* V115 Egyptian classification review against EEAA's official "قوائم التصنيف البيئي للمشروعات الخاضعة لإجراءات تقييم التأثير البيئي"
+   (PDF published on eeaa.gov.eg, September 2023). Only activities that map unambiguously to a named official item were changed:
+   A: low-risk industrial items (confectionery, electrical appliance assembly, salt, cosmetics mixing, ready-mix, cement products, dairy, surgical instruments,
+      fish feed, wire and cable, car-care liquids, soft drinks, plastic crushing, vehicle assembly, plastic forming/injection, olive presses) and medical labs;
+   B: gas-cylinder filling (energy item 7), quarries outside industrial zones, hazardous-materials stores (chemical warehouses);
+   C: gypsum/lime, glass from raw materials, floor ceramics, sugar and green hydrogen (official "major projects" list).
+   The letters keep the existing A/B/C wording; "B-specific" and "major" official sub-lists are not represented separately. */
+(function () {
+  try {
+    var T = {
+      A: ['قائمة (أ) - أثر بيئي محدود', 'List (A) - Limited Environmental Impact'],
+      B: ['قائمة (ب) - أثر بيئي متوسط', 'List (B) - Medium Environmental Impact'],
+      C: ['قائمة (ج) - فئة ذات آثار بيئية كبيرة محتملة حسب تصنيف EEAA؛ يلزم التحقق من ملاءمة تصنيف النشاط', 'List (C) - category with potentially high environmental impacts under EEAA system; verify activity assignment']
+    };
+    var SET = {
+      'مصنع شوكولاتة وحلويات':'A','مصنع أجهزة كهربائية':'A','مصنع ملح وتكرير ملح':'A','مصنع مواد تجميل':'A','مصنع خرسانة جاهزة':'A',
+      'مصنع طوب وأسمنت رمل':'A','مصنع جبن وألبان':'A','مصنع أدوات جراحية':'A','مصنع أعلاف أسماك':'A','مصنع أسلاك وكابلات':'A',
+      'مصنع سوائل غسيل سيارات':'A','مصنع مشروبات غازية وعصائر':'A','مصنع تدوير البلاستيك':'A','مصنع تجميع سيارات':'A','مصنع بلاستيك':'A',
+      'مصنع بلاستيك طبي':'A','معصرة زيتون':'A','معمل تحاليل طبية':'A',
+      'محطة تعبئة غاز':'B','محاجر':'B','مخازن مواد خطرة':'B',
+      'مصنع جبس':'C','مصنع زجاج مسطح':'C','مصنع زجاج':'C','مصنع زجاجات وعبوات زجاجية':'C','مصنع سيراميك':'C','مصنع سكر':'C','محطة إنتاج هيدروجين أخضر':'C'
+    };
+    window.__cls115 = [];
+    Object.keys(SET).forEach(function (n) {
+      var p = projects[n]; if (!p || !p.classification) return;
+      var t = T[SET[n]], before = p.classification.egypt;
+      if (before === t[0]) return;
+      p.classification.egypt = t[0];
+      var e = (typeof projectsEN !== 'undefined') ? projectsEN[n] : null;
+      if (e && e.classification) e.classification.egypt = t[1];
+      window.__cls115.push([n, before.slice(0, 14), SET[n]]);
+    });
+    /* PVC pipes: forming/extrusion is a low-risk industrial item; resin production or lead stabilisers are not */
+    var pvc = projects['مصنع أنابيب PVC'];
+    if (pvc && pvc.classification) {
+      pvc.classification.egypt = 'قائمة (أ) - أثر بيئي محدود؛ تقدير احترازي: تُعامل كـ(ج) إذا شمل الموقع تصنيع راتنج PVC، ويلزم التحقق من الجهة المختصة';
+      var ep = (typeof projectsEN !== 'undefined') ? projectsEN['مصنع أنابيب PVC'] : null;
+      if (ep && ep.classification) ep.classification.egypt = 'List (A) - Limited Environmental Impact; precautionary note: treat as List (C) if the site manufactures PVC resin; verify with the competent authority';
+      window.__cls115.push(['مصنع أنابيب PVC', 'ب', 'A']);
+    }
+  } catch (err) { if (typeof console !== 'undefined') console.error('v115 classification', err); }
+})();
+/* V115 severity review: every hazard that was still labelled "(غير مراجع)" was read against a written rubric
+   (intrinsic hazard of the pollutant/activity under normal operation plus accident potential):
+   critical = potential for many casualties or large irreversible harm; high = serious harm or exceedance without dedicated control
+   (toxic/explosive/hazardous waste, heavy metals, blasting or aircraft noise, large combustion or GHG sources);
+   medium = manageable with standard controls; low = minor or local nuisance. Levels are only raised, never lowered.
+   The label becomes "(مراجَع V115)"; this is a qualitative desk review, not a site assessment. */
+(function () {
+  try {
+    var ORD = ['منخفضة','متوسطة','عالية','حرجة'], ENW = {'منخفضة':'Low','متوسطة':'Medium','عالية':'High','حرجة':'Critical'};
+    var RAISE = [
+      ['تخزين هيدروجين', /الضغط العالي/, 'عالية'], ['مستشفى', /بقايا أدوية/, 'عالية'], ['مدبغة جلود', /الكبريتيد/, 'عالية'],
+      ['مصنع عطور وبخور', /VOCs عالية جداً/, 'عالية'], ['مصنع مواد لاصقة وغراء', /VOCs عالية جداً/, 'عالية'],
+      ['مصنع إسفنج وفوم', /VOCs عالية/, 'عالية'], ['مصنع إطارات سيارات', /VOCs عالية/, 'عالية'],
+      ['مصنع أسمدة', /الأمونيا/, 'عالية'], ['محطة كهرباء تعمل بالفحم', /CO2/, 'عالية'], ['مطار', /الضوضاء من الطائرات/, 'عالية'],
+      ['محجر حصى وركام', /ضوضاء واهتزازات/, 'عالية'], ['محجر جرانيت', /ضوضاء واهتزازات/, 'عالية'],
+      ['مصنع أسمنت', /الضوضاء والاهتزازات/, 'متوسطة'], ['مصنع خرسانة جاهزة', /ضوضاء واهتزازات/, 'متوسطة'],
+      ['محطة إعادة تدوير مخلفات البناء', /ضوضاء واهتزازات/, 'متوسطة'], ['طريق سريع / كوبري كبير', /الضوضاء المرورية/, 'متوسطة'],
+      ['مرفأ حاويات', /ضوضاء وازدحام/, 'متوسطة'], ['خط مترو أنفاق / مونوريل', /اهتزازات وضوضاء/, 'متوسطة'],
+      ['تعدين النحاس', /غبار الحفر/, 'عالية'], ['منجم فحم', /غبار الفحم/, 'عالية'], ['مصنع حديد إسفنجي (DRI)', /أول أكسيد الكربون/, 'عالية'],
+      ['مصنع لب الورق (Pulp Mill)', /الكبريتية المختزلة/, 'عالية'], ['مصنع خلايا شمسية (تصنيع من السليكون)', /مواد كيميائية شديدة الخطورة/, 'عالية'],
+      ['مصنع أشباه موصلات', /غازات فلورية/, 'عالية'], ['محرقة نفايات طبية', /رماد قاعي/, 'عالية'],
+      ['محطة تدوير الزيوت المستعملة', /حمأة زيتية خطرة/, 'عالية'], ['مصنع صباغة وتجهيز منسوجات', /استهلاك مياه ضخم جداً/, 'عالية']
+    ];
+    var LVL = /(درجة الخطورة:\s*)(حرجة|عالية|متوسطة|منخفضة)/;
+    window.__sev115 = [];
+    RAISE.forEach(function (r) {
+      var p = projects[r[0]]; if (!p) return;
+      (p.problems || []).forEach(function (h, i) {
+        if (!r[1].test(h.name || '')) return;
+        var cur = ((h.description || '').match(LVL) || [])[2];
+        if (!cur || ORD.indexOf(r[2]) <= ORD.indexOf(cur)) return;
+        ['description', 'descriptionFull'].forEach(function (k) { if (h[k]) h[k] = h[k].replace(LVL, '$1' + r[2]); });
+        var e = (typeof projectsEN !== 'undefined') ? projectsEN[r[0]] : null, eh = e && e.problems && e.problems[i];
+        if (eh && eh.description) eh.description = eh.description.replace(/(Severity:\s*)(Critical|High|Medium|Low)/, '$1' + ENW[r[2]]);
+        window.__sev115.push([r[0], h.name, cur, r[2]]);
+      });
+    });
+    Object.keys(projects).forEach(function (n) {
+      (projects[n].problems || []).forEach(function (h) {
+        ['description', 'descriptionFull'].forEach(function (k) { if (h[k]) h[k] = h[k].replace('(غير مراجع)', '(مراجَع V115)'); });
+      });
+      var e = (typeof projectsEN !== 'undefined') ? projectsEN[n] : null;
+      if (e && e.problems) e.problems.forEach(function (h) { if (h.description) h.description = h.description.replace('(Unreviewed)', '(Reviewed V115)'); });
+    });
+  } catch (err) { if (typeof console !== 'undefined') console.error('v115 severity', err); }
+})();
 /* V115: library solutions injected automatically were written for other facilities. Remove only the library-linked ones whose
    stated applicability does not fit: ammonia-storage leak detection (refrigeration/fertilizer plants) on livestock farms,
    sewage and industrial water-treatment plants; oil-and-gas LDAR on livestock farms. Project-recorded solutions are untouched. */
@@ -6431,6 +6519,22 @@ var st=document.createElement('style');st.id='v109css';st.textContent='#reportCo
     });
   } catch (e) { if (typeof console !== 'undefined') console.error('v115-fixes', e); }
 })();
+</script>
+<script id="v116-saudi">
+function saudiProcNote(lbl){
+  var l=String(lbl||''),k=/الأولى|Category 1|First/i.test(l)?1:(/الثانية|Category 2|Second/i.test(l)?2:(/الثالثة|Category 3|Third/i.test(l)?3:0));
+  var ar=(typeof currentLang==='undefined'||currentLang==='ar');
+  if(!k)return '';
+  var A={1:'الإجراء بحسب اللائحة التنفيذية للتصاريح البيئية (المركز الوطني للرقابة على الالتزام البيئي): اعتماد خطة إدارة بيئية من المركز، وخطة تأهيل بيئي لأنشطة محددة، يعدّها مقدم خدمة مرخّص.',
+    2:'الإجراء بحسب اللائحة التنفيذية للتصاريح البيئية (المركز الوطني للرقابة على الالتزام البيئي): دراسة تقييم أثر بيئي فئة 2 (المادة 7)، ومراجعة المركز 30 يوم عمل، وقد يطلب المركز دراسة الفئة 3.',
+    3:'الإجراء بحسب اللائحة التنفيذية للتصاريح البيئية (المركز الوطني للرقابة على الالتزام البيئي): تقرير تحديد نطاق (مراجعة 15 يوم عمل) ثم دراسة تقييم أثر بيئي فئة 3 (المادة 8، مراجعة 60 يوم عمل).'};
+  var E={1:'Procedure under the Executive Regulation for Environmental Permits (NCEC): an Environmental Management Plan approved by the Center, plus an Environmental Rehabilitation Plan for specified activities, prepared by a licensed service provider.',
+    2:'Procedure under the Executive Regulation for Environmental Permits (NCEC): a Category 2 EIA study (Article 7), reviewed by the Center within 30 working days; the Center may require a Category 3 study instead.',
+    3:'Procedure under the Executive Regulation for Environmental Permits (NCEC): a scoping report (15 working days review), then a Category 3 EIA study (Article 8, 60 working days review).'};
+  var N_A='القوائم المنشورة استرشادية؛ قرار التصنيف يصدر من المركز خلال 10 أيام عمل من استلام نموذج التصنيف والرسوم. أي نشاط داخل 500 م من منطقة حساسة يتطلب دراسة أثر تفصيلية أياً كانت فئته. تجديد تصريح التشغيل للفئتين 2 و3 يتطلب دراسة تدقيق بيئي كل 3 سنوات.',
+      N_E='The Center\'s lists are indicative; the classification decision is issued within 10 working days of receiving the classification form and fee. Any activity within 500 m of a sensitive area requires a detailed EIA regardless of category. Renewing the operating permit for Categories 2 and 3 requires an environmental audit study every 3 years.';
+  return '<p class="warning-box" style="margin:8px 0">'+(ar?A[k]:E[k])+'<br>'+(ar?N_A:N_E)+'</p>';
+}
 </script>
 </body>
 </html>
