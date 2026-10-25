@@ -6838,6 +6838,87 @@ function localize(rc){var SA=CTRY==='SA';
  else{ if(iSa>-1){var end=kids.findIndex(function(n,i){return i>iSa&&n.nodeType===1&&n.tagName==='P'&&/ملاحظة تصنيف واحدة|مستوى الخطورة/.test(n.textContent)});rm(iSa,end>-1?end:iSa+3)}
    var warn=blk.querySelector('p.warning-box');if(warn&&/اللائحة التنفيذية للتصاريح البيئية \(المركز/.test(warn.textContent))warn.remove()}
 }
+
+/* ---- English studio layer (country separation + annex + inputs) ---- */
+var SCAT=['','Category 1 — Low-risk activity','Category 2 — Medium-risk activity','Category 3 — High-risk activity'];
+var EGL=['','List (A) — limited environmental impact','List (B) — medium environmental impact','List (C) — potentially high environmental impact','Major project (full EIA per the major-projects lists)'];
+var PROCEN={1:['Environmental Management Plan (EMP) approved by the Center, plus an Environmental Rehabilitation Plan for specified activities, prepared by a licensed service provider','—'],
+ 2:['Category 2 EIA study (Article 7); the Center may require a Category 3 study instead','30 working days'],
+ 3:['Scoping report, then a Category 3 EIA study (Article 8)','15 working days for scoping, then 60 working days for the study']};
+var EGPEN={1:'Simplified screening form + short management plan',2:'ESIA study + management plan (ESMP)',3:'Scoping, then a full impact study + management plan',4:'Major project: full impact study per the major-projects lists'};
+function moneyEN(n){if(!n)return '—';return CTRY==='EG'?(Math.round(n*13.4/1000)*1000).toLocaleString('en-US')+' EGP':Number(n).toLocaleString('en-US')+' SAR'}
+function tblEN(h,rows){return tbl(h,rows)}
+function buildEN(name){
+ var d=SD[name];if(!d)return null;var SA=CTRY==='SA';
+ var locs=(typeof selectedLocations!=='undefined'?selectedLocations:[]);
+ var bumpSite=locs.some(function(x){return ['residential','river','lake','sea','groundwater'].indexOf(x)>-1});
+ var sens=locs.indexOf('protected')>-1;
+ var base=cat(d.s),c=base,bumped=false;if(SA&&base&&bumpSite&&c<3){c=base+1;bumped=true}
+ var eg=egl(d.e);
+ var top='<div class="studio-top" style="border:2px solid #0f3460;border-radius:10px;padding:12px;margin:12px 0;background:#f0f7ff" dir="ltr"><h3 style="margin:0 0 6px">🧭 Regulatory pathway summary ('+(SA?'Saudi Arabia — NCEC':'Egypt — EEAA')+')</h3>';
+ if(SA){top+='<p>Estimated classification: <b>'+(SCAT[base]||'Not specified')+'</b>'+(bumped?' — given the site (near residents, water or coast) it is treated as <b>Category '+c+'</b>':'')+'</p>'+
+  (c?'<p>Required: '+PROCEN[c][0]+'. Center review: '+PROCEN[c][1]+'.</p>':'')+
+  (sens?'<p>⚠️ The project is near a protected/sensitive area: a detailed impact study is required regardless of category (regulation: within 500 m).</p>':'')+
+  '<p style="font-size:.9em;color:#475569">The lists are indicative; the Center\'s final decision follows the classification form (within 10 working days).</p>'}
+ else{top+='<p>Classification: <b>'+(EGL[eg]||'Not specified')+'</b></p>'+(eg?'<p>Provisional route: '+EGPEN[eg]+'.</p>':'')+'<p style="font-size:.9em;color:#475569">Provisional; to be settled under the official EEAA lists in force and the decision of the competent administrative authority.</p>'}
+ top+='<p style="font-size:.92em">📎 Procedure details and timeline are in <a href="#studioB">Annex A</a> (end of report)</p></div>';
+ var B='<h2 class="studio-annex" id="studioB" dir="ltr">Annex A — Statutory procedure'+(SA?' and timeline':'')+'</h2>';
+ if(SA){var s=[['Submit the classification form to the Center','10 working days','Category decision (1/2/3)'],['Client prepares documents','Client-dependent','Drawings, process description, raw materials']];
+  if(c===1)s.push(['Environmental Management Plan (EMP) and its approval','Per the Center','Center approval of the plan']);
+  if(c>=3)s.push(['Scoping report','15 working days review','Center approval of scope']);
+  if(c>=2)s.push(['EIA study',c===2?'30 working days review':'60 working days review','Center approval of the study']);
+  s.push(['Obtain the construction permit','After approval','Environmental permit']);if(c>=2)s.push(['Environmental audit study for operating-permit renewal','Every 3 years','Audit report']);
+  B+=(c?tbl(['Step','Duration','Output'],s):'<p>Classification not specified; submit the classification form to the Center.</p>')+'<p style="font-size:.9em">Source: Executive Regulation for Environmental Permits for establishing and operating activities (National Center for Environmental Compliance).</p>'}
+ else{B+=tbl(['Step','Output'],[['Determine the list (A/B/C) and submit the screening form to the competent administrative authority','List decision'],['Client prepares documents','Drawings, process description, raw materials'],['Prepare what the list requires',eg?EGPEN[eg]:'Per the authority decision'],['Obtain the environmental approval','Environmental approval']])+'<p style="font-size:.9em">Source: EEAA lists and procedures in force (verify against the official list).</p>'}
+ var C='';
+ if(d.c){C='<table dir="ltr"><tr><th>Project size</th><th>Approx. cost</th></tr><tr><td>Small</td><td>'+moneyEN(d.c.s)+'</td></tr><tr><td>Medium</td><td>'+moneyEN(d.c.m)+'</td></tr><tr><td>Large</td><td>'+moneyEN(d.c.l)+'</td></tr></table><p style="font-size:.9em">Preliminary estimate; verify with actual laboratory quotations before approval.</p>'}else C='<p>No estimate available for this project here.</p>';
+ return {top:top,annex:B,cost:C}}
+function localizeEN(rc){var SA=CTRY==='SA';
+ var BIND=SA?'per NCEC (National Center for Environmental Compliance) requirements':'per Egyptian law (Law 4/1994 executive regulation)';
+ var tn=[],w=document.createTreeWalker(rc,NodeFilter.SHOW_TEXT);while(w.nextNode())tn.push(w.currentNode);
+ tn.forEach(function(n){var v=n.nodeValue,x=v;
+  x=x.replace('requirements in Egypt and Saudi Arabia',SA?'requirements in Saudi Arabia':'requirements in Egypt');
+  x=x.replace(/per Egyptian law \(Law 4\/1994 executive regulation\) or NCEC(?: \(National Center for Environmental Compliance\))?‎? requirements, depending on the project country/g,BIND);
+  x=x.replace(/binding limits come from Egyptian law \(Law 4\/1994 and its regulation, Law 48\/1982\) or NCEC(?: \(National Center for Environmental Compliance\))?‎? requirements depending on the project country/g,SA?'binding limits come from NCEC (National Center for Environmental Compliance) requirements':'binding limits come from Egyptian law (Law 4/1994 and its regulation, Law 48/1982)');
+  if(SA){x=x.replace(/EEAA(?: \(Egyptian Environmental Affairs Agency\))?‎?/g,'NCEC (National Center for Environmental Compliance)').replace(/Environmental Affairs Agency/g,'National Center for Environmental Compliance (NCEC)')}
+  else{x=x.replace(/NCEC(?: \(National Center for Environmental Compliance\))?‎?/g,'EEAA (Egyptian Environmental Affairs Agency)')}
+  if(x!==v)n.nodeValue=x});
+ var h2=[].slice.call(rc.querySelectorAll('h2.report-section-title')).filter(function(e){return /Project Description and Environmental Classification/.test(e.textContent)})[0];
+ if(!h2)return;var blk=h2.nextElementSibling;if(!blk)return;var kids=[].slice.call(blk.childNodes);
+ function isS(n,t){return n.nodeType===1&&n.tagName==='STRONG'&&n.textContent.indexOf(t)>-1}
+ var iEg=kids.findIndex(function(n){return isS(n,'Classification in Egypt')}),iSa=kids.findIndex(function(n){return isS(n,'Classification in Saudi')}),iReg=kids.findIndex(function(n){return isS(n,'Regulatory Requirements')});
+ function rm(a,b){for(var i=a;i<b&&i<kids.length;i++){if(kids[i]&&kids[i].parentNode)kids[i].parentNode.removeChild(kids[i])}}
+ if(SA){if(iReg>-1){var fp=-1;for(var i=iReg+1;i<kids.length;i++){if(kids[i].nodeType===1&&kids[i].tagName==='P'){fp=i;break}}rm(iReg,fp>-1?fp:kids.length)}
+  if(iEg>-1&&iSa>-1)rm(iEg,iSa)}
+ else{if(iSa>-1){var end=kids.findIndex(function(n,i){return i>iSa&&n.nodeType===1&&n.tagName==='P'&&/risk level/i.test(n.textContent)});rm(iSa,end>-1?end:iSa+3)}
+  var wb=blk.querySelector('p.warning-box');if(wb&&/Executive Regulation for Environmental Permits/.test(wb.textContent))wb.remove()}
+}
+function inputsBlockEN(d){
+ var SA=CTRY==='SA',L=[],area=nm(gv('projectArea')),w=nm(gv('workerCount')),sh=gv('shiftCount'),dist=nm(gv('studioDist'));
+ var wt=gv('waterInput'),mt=gv('materialsInput'),pt=gv('productOutput'),st=gv('wastewaterOutput'),gt=gv('solidWasteOutput');
+ if(!(area||w||sh||dist||wt||mt||pt||st||gt))return '<div class="report-block studio-inp" dir="ltr"><h3 style="color:var(--primary)">🔗 Linking the report to your project inputs</h3><p style="font-size:.92em">No operating data entered. Enter (area, workers, shifts, water, distance to nearest housing...) in the project operating data section and regenerate the report to see calculations and checks specific to your project.</p></div>';
+ var cls=null;if(w!=null)cls=w<25?0:(w<=150?1:2);else if(area!=null)cls=area<5000?0:(area<=50000?1:2);
+ if(cls!=null){var cs=d&&d.c?moneyEN([d.c.s,d.c.m,d.c.l][cls]):null;L.push('ℹ️ <b>Approximate project size: '+['small','medium','large'][cls]+'</b> (rough split by '+(w!=null?'workers: under 25 / up to 150 / more':'area: under 5,000 m² / up to 50,000 / more')+')'+(cs?' — estimated study and laboratory cost for this size: <b>'+cs+'</b>':'')+'.')}
+ if(dist!=null){var red=dist>10?20*Math.log(dist/10)/Math.LN10:0;
+  if(SA&&dist<=500)L.push('⚠️ <b>Nearest receptor at '+f1(dist)+' m (500 m or less):</b> if it is a "sensitive area" under the regulation, a detailed impact study is required regardless of activity category (confirm with the Center).');
+  else if(SA)L.push('✅ Nearest receptor at '+f1(dist)+' m (beyond 500 m): the 500 m rule does not apply to this receptor.');
+  L.push('ℹ️ <b>Noise with distance:</b> geometric attenuation between 10 m and '+f1(dist)+' m ≈ <b>'+f1(red)+' dB</b> (6 dB per doubling of distance, no barriers or absorption). Example: a 90 dB source at 10 m ≈ '+f1(90-red)+' dB at the receptor.')}
+ if(sh==='shift3')L.push('⚠️ <b>24-hour operation:</b> the project runs at night, so noise and lighting must be compared with night limits at the nearest housing, and night monitoring is needed.');
+ else if(sh==='shift2')L.push('ℹ️ Two shifts (16 h): check the end of the second shift against the night-time noise hours.');
+ if(w!=null){var dom=w*60*0.8/1000;L.push('ℹ️ <b>Expected sanitary sewage from '+f1(w)+' workers:</b> ≈ '+f1(dom)+' m³/day (assuming 60 L/person/day × 80% reaching sewage) — domestic sewage only.');
+  L.push('ℹ️ <b>Expected domestic waste from workers:</b> ≈ '+f1(w*0.5)+' kg/day (typical range 0.3–1 kg/person/day = '+f1(w*0.3)+' to '+f1(w)+').');
+  var sv=vl(st);if(sv!=null&&sv<dom*0.9)L.push('⚠️ The wastewater you entered ('+f1(sv)+' m³/day) is below the expected domestic sewage for the workers ('+f1(dom)+'): check the figure or state where domestic sewage goes.');
+  var gs=ms(gt);if(gs!=null&&gs*1000<w*0.3)L.push('⚠️ The solid waste entered ('+f1(gs*1000)+' kg/day) is below the usual minimum for the workers ('+f1(w*0.3)+' kg/day).')}
+ var wv=vl(wt),sv2=vl(st);
+ if(wv!=null&&sv2!=null){if(sv2>wv*1.05)L.push('⚠️ <b>Water balance:</b> discharge ('+f1(sv2)+' m³/day) exceeds consumption ('+f1(wv)+'). Likely an error in one figure, or an unlisted water source.');
+  else if(sv2<wv*0.2)L.push('ℹ️ <b>Water balance:</b> discharge ('+f1(sv2)+') is under 20% of consumption ('+f1(wv)+'). Explain where the rest goes (evaporation, product, irrigation, recycling).');
+  else L.push('✅ <b>Water balance:</b> discharge ('+f1(sv2)+' m³/day) against consumption ('+f1(wv)+') is reasonable.')}
+ var mv=ms(mt),pv=ms(pt),g2=ms(gt);
+ if(mv!=null&&pv!=null){var out=pv+(g2||0);if(out>mv*1.1)L.push('⚠️ <b>Material balance:</b> product'+(g2?' + waste':'')+' ('+f1(out)+' t/day) exceeds raw materials ('+f1(mv)+'). Check the figures or add other inputs (water, additives).');
+  else if(out<mv*0.5)L.push('ℹ️ <b>Material balance:</b> less than half the raw materials ('+f1(mv)+' t/day) appears as product and waste ('+f1(out)+'). Explain the rest (losses, moisture, emissions, water) since it reaches the environment.');
+  else L.push('✅ <b>Material balance:</b> product'+(g2?' and waste':'')+' ('+f1(out)+') against raw materials ('+f1(mv)+') is reasonable.')}
+ if(area!=null&&area>0&&w!=null&&w>0)L.push('ℹ️ Workforce density: '+f1(w/(area/10000))+' workers per hectare.');
+ return '<div class="report-block studio-inp" dir="ltr"><h3 style="color:var(--primary)">🔗 Analysis of your project inputs</h3><ul style="padding-left:20px;line-height:1.9">'+L.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul><p style="font-size:.85em;color:#64748b">Preliminary checks using typical assumptions (60 L/person/day, 0.5 kg waste/person/day); not a substitute for actual measurements.</p></div>'}
 var busy=false;
 
 function gv(id){var e=document.getElementById(id);return e?String(e.value||'').trim():''}
@@ -6877,18 +6958,18 @@ function inputsBlock(d){
  return '<div class="report-block studio-inp"><h3 style="color:var(--primary)">🔗 تحليل مدخلات مشروعك</h3><ul style="padding-right:20px;line-height:1.9">'+L.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul><p style="font-size:.85em;color:#64748b">الأرقام فحوصات أولية بافتراضات معتادة (60 لتر/فرد/يوم، 0.5 كجم نفايات/فرد/يوم، انتشار هندسي للصوت). تُستبدل بقياسات المشروع الفعلية عند توفرها.</p></div>'}
 function inject(){
  if(busy)return;var rc=document.getElementById('reportContent');if(!rc||!rc.innerHTML.trim())return;
- if(typeof currentLang!=='undefined'&&currentLang!=='ar')return;
+ var EN_=(typeof currentLang!=='undefined'&&currentLang!=='ar');
  if(rc.querySelector('.studio-top'))return;
  var n=(document.getElementById('searchInput').value||'').trim();if(typeof canonName==='function')n=canonName(n);
- var r=build(n);if(!r)return;busy=true;
- try{localize(rc)}catch(e){}
+ var r=EN_?buildEN(n):build(n);if(!r)return;busy=true;
+ try{EN_?localizeEN(rc):localize(rc)}catch(e){}
  var cov=rc.querySelector('.report-cover')||rc.firstElementChild;var tmp=document.createElement('div');tmp.innerHTML=r.top;
  var topNode=tmp.firstChild;if(cov&&cov.nextSibling)rc.insertBefore(topNode,cov.nextSibling);else rc.insertBefore(topNode,rc.firstChild);
- var ib=document.createElement('div');ib.innerHTML=inputsBlock(SD[n]);if(ib.firstChild)rc.insertBefore(ib.firstChild,topNode.nextSibling);
+ var ib=document.createElement('div');ib.innerHTML=EN_?inputsBlockEN(SD[n]):inputsBlock(SD[n]);if(ib.firstChild)rc.insertBefore(ib.firstChild,topNode.nextSibling);
  var an=document.createElement('div');an.className='studio-annexes';an.innerHTML=r.annex;rc.appendChild(an);
  var old=document.getElementById('studioCostPanel');if(old)old.remove();
  var pn=document.createElement('details');pn.id='studioCostPanel';pn.style.cssText='margin:14px 0;padding:10px 14px;border:1px dashed #94a3b8;border-radius:10px;background:#fffbeb';
- pn.innerHTML='<summary style="cursor:pointer;font-weight:700">💰 التكلفة والمعامل — للمكتب فقط (لا تدخل التقرير ولا الطباعة)</summary>'+r.cost.replace(/<h2[^>]*>.*?<\/h2>/,'');
+ pn.innerHTML='<summary style="cursor:pointer;font-weight:700">'+(EN_?'💰 Cost and laboratories — office only (not in the report or print)':'💰 التكلفة والمعامل — للمكتب فقط (لا تدخل التقرير ولا الطباعة)')+'</summary>'+r.cost.replace(/<h2[^>]*>.*?<\/h2>/,'');
  rc.parentNode.insertBefore(pn,rc.nextSibling);
  if(!document.getElementById('studioPrintCss')){var st=document.createElement('style');st.id='studioPrintCss';st.textContent='@media print{#studioCostPanel{display:none!important}}';document.head.appendChild(st)}
  busy=false}
