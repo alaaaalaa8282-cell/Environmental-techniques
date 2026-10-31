@@ -92,7 +92,7 @@ h1{font-size:1.55rem;margin:6px 0 2px;letter-spacing:0}
 .toast.show{opacity:1}
 .ctlb{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 12px;margin:2px;font:inherit;font-size:.88rem;cursor:pointer}
 .ctlb:focus-visible,.mxc:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.cd{background:color-mix(in srgb,var(--accent) 8%,var(--surface));border-inline-start:4px solid var(--accent);border-radius:8px;padding:8px 12px;margin:6px 0}
+.cd{background:var(--surface);background:color-mix(in srgb,var(--accent) 8%,var(--surface));border-inline-start:4px solid var(--accent);border-radius:8px;padding:8px 12px;margin:6px 0}
 .cd p{margin:4px 0;font-size:.92rem}.cd .en{color:var(--muted);font-size:.78rem;font-weight:400}.cd .fn{color:var(--muted);font-size:.8rem;direction:ltr;text-align:left}
 .prt,.prtonly{display:none}
 .mx{border-collapse:collapse;font-size:.82rem;min-width:100%}
@@ -545,7 +545,7 @@ function matrixHTML(list){
 function inlineP(id){
   var k = ctlOf(id), h = "";
   if(k.length){
-    h += '<div class="noprint"><p><b>وسائل تحكم شائعة (اضغط للتفاصيل):</b></p><div class="chips">'+k.map(function(x){ return '<button type="button" class="ctlb" data-sl="'+x+'">'+esc(SOL[x].a)+' ⓘ</button>'; }).join(" ")+'</div><div class="cdet"></div></div>';
+    h += '<div class="noprint"><p><b>وسائل تحكم شائعة (اضغط على الوسيلة لعرض التفاصيل):</b></p>'+k.map(solCard).join("")+'</div>';
     h += '<p class="prt"><b>وسائل التحكم:</b> '+esc(solNames(id).join("، "))+'</p>';
   }
   if(MONI[id]) h += '<p><b>يُقاس ويُراقب:</b> '+esc(MONI[id].join("، "))+'</p>';
@@ -554,7 +554,7 @@ function inlineP(id){
 function extraP(id){
   var h = "";
   if(ctlOf(id).length){
-    h += '<div class="noprint"><p><b>وسائل تحكم شائعة (اضغط للتفاصيل):</b></p><div class="chips">'+ctlOf(id).map(function(k){ return '<button type="button" class="ctlb" data-sl="'+k+'">'+esc(SOL[k].a)+' ⓘ</button>'; }).join(" ")+'</div><div class="cdet"></div></div>';
+    h += '<div class="noprint"><p><b>وسائل تحكم شائعة (اضغط على الوسيلة لعرض التفاصيل):</b></p>'+ctlOf(id).map(solCard).join("")+'</div>';
     h += '<div class="prt"><p><b>حلول التحكم والمعالجة:</b></p>'+ctlOf(id).map(solCard).join("")+'</div>';
   }
   if(MONI[id]) h += '<p><b>يُقاس ويُراقب:</b> '+esc(MONI[id].join("، "))+'</p>';
@@ -633,6 +633,18 @@ function toggleQuick(ix, btn){
   render();
 }
 function actCount(list){ var m = {}; list.forEach(function(r){ r.items.forEach(function(it){ m[it.a[0]] = 1; }); }); return Object.keys(m).length; }
+function agencyCard(list){
+  var A = state.acts, has = function(ids){ return ids.some(function(x){ return A.indexOf(x)>-1; }); };
+  var rec = {}; list.forEach(function(r){ rec[r.k] = r.max; });
+  var o = [["NCEC","المركز الوطني للرقابة على الالتزام البيئي","الترخيص البيئي واعتماد الدراسة عبر منصة «التزام»."]];
+  if(has([54,55,56]) || (rec.WLD||0)>=3 || (state.ctx && state.ctx.indexOf("wild")>-1)) o.push(["NCW","المركز الوطني لتنمية الحياة الفطرية","المشروع قد يمس موائل أو محميات أو مسارات هجرة: اطلب اشتراطات ومنطقة عازلة."]);
+  if(has([51])) o.push(["NCVC","المركز الوطني لتنمية الغطاء النباتي ومكافحة التصحر","إزالة نباتات أو أشجار أو تأثير على مراعٍ: يلزم موافقة وخطة تعويض."]);
+  if(has([30,31,34,35,36,37])) o.push(["MWAN","المركز الوطني لإدارة النفايات (مَوان)","نفايات خطرة أو طبية أو حمأة أو مخلفات تعدين: اعتماد خطة التخلص الآمن والجهات المرخصة."]);
+  if(has([49]) || (rec.AIR||0)>=4) o.push(["NCM","المركز الوطني للأرصاد","بيانات الرياح والمناخ المرجعية اللازمة لنمذجة الانتشار وأحداث الطقس المتطرف."]);
+  var h = '<div class="card"><h3>الجهات اللي هتحتاج تنسق معاها (السعودية)</h3><ul>';
+  o.forEach(function(x){ h += '<li><b>'+esc(x[0])+'</b> — '+esc(x[1])+': '+esc(x[2])+'</li>'; });
+  return h+'</ul><p class="hint" style="font-size:.85rem">الترشيح مبني على أنشطة المشروع والمحيط المختار، والقرار النهائي للجهة المختصة.</p></div>';
+}
 function render(){
   var R = $("result");
   var prevDet = state._fresh ? {} : snapDet(), prevY = window.scrollY, wasFresh = !!state._fresh; state._fresh = 0;
@@ -713,6 +725,7 @@ function render(){
   h += '<div class="row-btns"><button class="btn" id="bEdit">تعديل الأنشطة</button>'+(state.acts.length?'<button class="btn" id="bCopy">نسخ كنص</button><button class="btn" id="bLink">نسخ رابط المشاركة</button><button class="btn" id="bPrint">طباعة</button>':'')+(state.proj>=0?'<button class="btn" id="bReset">رجوع للأنشطة الأصلية</button>':'')+'</div>';
   h += '<div class="card panel" id="panel"></div>';
   if(state.acts.length) h += actSection(list);
+  if(state.acts.length) h += agencyCard(list);
   if(state.acts.length) h += '<p class="foot">الخطورة هنا تقدير عام للنشاط قبل وسائل التحكم. الشرط المكتوب تحت كل بند يوضح إيه اللي يرفعها أو يخفضها في مشروعك. وسائل التحكم والمؤشرات المذكورة مرجعية للفرز الأولي، والحدود الملزمة وتكرار القياس يحددهما التصريح والجهة المختصة.</p>';
   R.innerHTML = h;
   if(state.panelOpen) buildPanel();
