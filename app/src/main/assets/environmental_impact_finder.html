@@ -102,8 +102,8 @@ h1{font-size:1.55rem;margin:6px 0 2px;letter-spacing:0}
 .mxc.s1{background:var(--s1);color:var(--t1)}.mxc.s2{background:var(--s2);color:var(--t2)}.mxc.s3{background:var(--s3);color:var(--t3)}.mxc.s4{background:var(--s4);color:var(--t4)}
 .mxc.sel{outline:3px solid var(--ink);outline-offset:1px}.mxn{color:var(--muted)}
 @media (pointer:coarse){.ctlb{min-height:44px}.chip-btn{min-height:44px;padding:8px 14px}.btn{min-height:44px}.cell{min-height:56px}#sug button{min-height:48px}}
-/*V8*/.lnk2{margin:3px 0;color:var(--muted);font-size:.85rem}.pgp{margin:6px 0;color:var(--muted);font-size:.92rem}.pgd{margin:6px 0;border-inline-start:3px solid var(--accent);padding-inline-start:8px}.pgd>summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:.95rem}.pgn{font-weight:400;color:var(--muted);font-size:.82rem;margin-inline-start:6px}.pg{margin:8px 0}.pgt{margin:10px 0 4px;font-size:.95rem;color:var(--ink);border-inline-start:3px solid var(--accent);padding-inline-start:8px}.inl{display:none;margin:4px 0 2px;padding:8px 10px;border-inline-start:3px solid var(--accent);background:var(--surface);border-radius:8px}.inl.show{display:block}.inl p{margin:4px 0;font-size:.92rem}.lnk{background:none;border:0;padding:3px 0;color:var(--accent);font:inherit;font-size:.9rem;cursor:pointer;text-decoration:underline}.why{margin:6px 0 2px;padding:8px 10px;border-radius:10px;background:var(--surface);font-size:.9rem}.srcit summary{cursor:pointer}.srcit>p{margin:4px 0;font-size:.92rem}
-@media print{.lnk,.inl{display:none!important}
+/*V8*/.lnk2{display:block;background:none;border:0;padding:3px 0;font:inherit;font-size:.9rem;color:var(--accent);text-decoration:underline;cursor:pointer;text-align:start}.flash{animation:flashk 1.8s ease-out}@keyframes flashk{0%{background:rgba(224,160,0,.35);box-shadow:0 0 0 3px rgba(224,160,0,.45)}100%{background:transparent;box-shadow:0 0 0 3px transparent}}.backfab{display:none;position:fixed;left:12px;bottom:16px;z-index:60;background:var(--accent);color:#fff;border-radius:999px;box-shadow:0 2px 10px rgba(0,0,0,.3);overflow:hidden}.backfab.show{display:flex}.backfab button{background:none;border:0;color:#fff;font:inherit;font-size:.9rem;padding:10px 14px;cursor:pointer}#backX{border-inline-start:1px solid rgba(255,255,255,.35);padding-inline:12px}.pgp{margin:6px 0;color:var(--muted);font-size:.92rem}.pgd{margin:6px 0;border-inline-start:3px solid var(--accent);padding-inline-start:8px}.pgd>summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:.95rem}.pgn{font-weight:400;color:var(--muted);font-size:.82rem;margin-inline-start:6px}.pg{margin:8px 0}.pgt{margin:10px 0 4px;font-size:.95rem;color:var(--ink);border-inline-start:3px solid var(--accent);padding-inline-start:8px}.inl{display:none;margin:4px 0 2px;padding:8px 10px;border-inline-start:3px solid var(--accent);background:var(--surface);border-radius:8px}.inl.show{display:block}.inl p{margin:4px 0;font-size:.92rem}.lnk{background:none;border:0;padding:3px 0;color:var(--accent);font:inherit;font-size:.9rem;cursor:pointer;text-decoration:underline}.why{margin:6px 0 2px;padding:8px 10px;border-radius:10px;background:var(--surface);font-size:.9rem}.srcit summary{cursor:pointer}.srcit>p{margin:4px 0;font-size:.92rem}
+@media print{.lnk,.inl,.backfab,.lnk2{display:none!important}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .noprint{display:none!important}.prt,.prtonly{display:block!important}
   :root{--bg:#fff;--surface:#fff;--ink:#000;--muted:#333;--line:#999;--accent:#0F6B6E}
@@ -117,6 +117,7 @@ h1{font-size:1.55rem;margin:6px 0 2px;letter-spacing:0}
 <body>
 <div class="wrap">
   <h1>كاشف الأثر البيئي</h1>
+  <div class="cnsw" id="cnsw" role="group" aria-label="الدولة" style="display:flex;gap:8px;margin:6px 0"><button class="chip-btn on" data-cn="SA" aria-pressed="true">🇸🇦 السعودية</button><button class="chip-btn" data-cn="EG" aria-pressed="false">🇪🇬 مصر</button></div>
   <p class="sub" id="hero-note">اكتب أي مشروع أو نشاط، وهيظهرلك مين ممكن يتأثر وليه.</p>
 
   <div class="search">
@@ -133,6 +134,7 @@ h1{font-size:1.55rem;margin:6px 0 2px;letter-spacing:0}
 
   <div id="result"></div>
   <div class="toast" id="toast" role="status"></div>
+  <div class="backfab" id="backFab"><button type="button" id="backGo"></button><button type="button" id="backX" aria-label="إغلاق">✕</button></div>
 </div>
 
 <script>
@@ -492,7 +494,7 @@ function critical(list){
 }
 function clsText(c){
   var E = {"أ":"قائمة (أ) أثر محدود","ب":"قائمة (ب) أثر متوسط","ج":"قائمة (ج) آثار كبيرة محتملة","ك":"مشروعات كبرى"}, S = {1:"الفئة الأولى (منخفض)",2:"الفئة الثانية (متوسط)",3:"الفئة الثالثة (عالي الخطورة)"};
-  var a = []; if(c && c[0]) a.push("مصر: "+E[c[0]]); if(c && c[1]) a.push("السعودية: "+S[c[1]]);
+  var a = []; if(COUNTRY==="EG"){ if(c && c[0]) a.push("مصر: "+E[c[0]]); } else if(c && c[1]) a.push("السعودية: "+S[c[1]]);
   return a.join(" · ");
 }
 function actSection(list){
@@ -507,7 +509,7 @@ function actSection(list){
 }
 var LGT = /^(مطاعم|فنادق|مجمعات سكنية|كمبوند سكني|حي سكني متكامل|مدينة ملاهي|جامعة|مدينة جامعية|مخيمات صحراوية سياحية|مغسلة ملابس|مصنع مكرونة|مصنع شوكولاتة وحلويات|مطبخ مركزي|مجمع عيادات|مركز غسيل كلوي|مركز غسيل كلى وعيادات تخصصية|مخازن تبريد|مستودعات لوجستية|محطة شحن سيارات كهربائية)$/;
 var LGH = ["nox:0","vocs:0","sox:0","sox:1","pm:1","bod_cod:1","hazardous_chemical_waste:1","medical_waste:0"];
-function ctlOf(id){ var k = ctlBase(id).slice(); if(LGT.test(state.name||"")){ var kf = k.filter(function(x){ return LGH.indexOf(x)<0; }); if(kf.length) k = kf; } if(state.proj>=0 && PROJ[state.proj].l) k = k.filter(function(x){ return x.indexOf('off_')!==0 || x.indexOf('off_flaring')===0; }); var pk = polKeys(ACTBY[id]); pk.forEach(function(x){ if(k.indexOf(x)<0) k.push(x); }); if(!HEAVYP.test(state.name||"") && state.sz!=="l") k = k.filter(function(x){ return x!=="co2:2"; }); return k; }
+function ctlOf(id){ var k = ctlBase(id).slice(); if(LGT.test(state.name||"")){ var kf = k.filter(function(x){ return LGH.indexOf(x)<0; }); if(kf.length) k = kf; } if(state.proj>=0 && PROJ[state.proj].l) k = k.filter(function(x){ return x.indexOf('off_')!==0 || x.indexOf('off_flaring')===0; }); var pk = polKeys(ACTBY[id]); pk.forEach(function(x){ if(k.indexOf(x)<0) k.push(x); }); if(!HEAVYP.test(state.name||"") && state.sz!=="l") k = k.filter(function(x){ return x!=="co2:0"; }); return k; }
 var HEAVYP = /^محطة (كهرباء|طاقة (حرارية$|نووية)|توليد (ديزل|دورة))|^مصنع (أسمنت|حديد|تكرير|بتروكيماويات|أسمدة|ألومنيوم|زجاج( مسطح)?$|ورق$|لب|كيماويات|صودا|حامض)|^مسبك|معالجة غاز|حقل نفط|استخراج البترول|تحويل نفايات إلى طاقة|^تعدين النحاس|استرجاع كبريت/;
 /*V8 POL*/
 var POLTX = function(a){ return String(ovx(a)[0]||"").replace(/لا (يوجد|توجد)[^،.]*/g,""); };
@@ -722,6 +724,17 @@ function actCount(list){ var m = {}; list.forEach(function(r){ r.items.forEach(f
 function agencyCard(list){
   var A = state.acts, has = function(ids){ return ids.some(function(x){ return A.indexOf(x)>-1; }); };
   var rec = {}; list.forEach(function(r){ rec[r.k] = r.max; });
+  if(COUNTRY==="EG"){
+    var oe = [["EEAA","جهاز شئون البيئة","مراجعة الدراسة أو نموذج الفحص وإصدار الموافقة البيئية."],["الجهة الإدارية المختصة","محافظة / هيئة التنمية الصناعية / المنطقة الحرة","استلام الطلب وتحويله لجهاز شئون البيئة وإصدار تراخيص الإنشاء والتشغيل."]];
+    if(has([54,55,56]) || (rec.WLD||0)>=3 || (state.ctx && state.ctx.indexOf("wild")>-1)) oe.push(["قطاع حماية الطبيعة","جهاز شئون البيئة","المشروع قد يمس موائل أو محميات أو مسارات هجرة: اطلب اشتراطات ومنطقة عازلة."]);
+    if(has([51])) oe.push(["وزارة الزراعة","وزارة الزراعة واستصلاح الأراضي","إزالة نباتات أو أشجار أو تأثير على أراضٍ زراعية: يلزم موافقة وخطة تعويض."]);
+    if(has([30,31,34,35,36,37])) oe.push(["WMRA","جهاز تنظيم إدارة المخلفات","نفايات خطرة أو طبية أو حمأة أو مخلفات تعدين: اعتماد خطة التخلص الآمن والجهات المرخصة."]);
+    if((rec.SWT||0)>=3 || (rec.GWT||0)>=3) oe.push(["وزارة الموارد المائية والري","وزارة الموارد المائية والري","تأثير محتمل على نيل أو ترعة أو مصرف أو مياه جوفية: ترخيص صرف أو موافقة الري."]);
+    if(has([49]) || (rec.AIR||0)>=4) oe.push(["الهيئة العامة للأرصاد الجوية","الأرصاد","بيانات الرياح والمناخ المرجعية اللازمة لنمذجة الانتشار وأحداث الطقس المتطرف."]);
+    var he = '<div class="card"><h3>الجهات اللي هتحتاج تنسق معاها (مصر)</h3><ul>';
+    oe.forEach(function(x){ he += '<li><b>'+esc(x[0])+'</b> — '+esc(x[1])+': '+esc(x[2])+'</li>'; });
+    return he+'</ul><p class="hint" style="font-size:.85rem">الترشيح مبني على أنشطة المشروع والمحيط المختار، والقرار النهائي للجهة المختصة.</p></div>';
+  }
   var o = [["NCEC","المركز الوطني للرقابة على الالتزام البيئي","الترخيص البيئي واعتماد الدراسة عبر منصة «التزام»."]];
   if(has([54,55,56]) || (rec.WLD||0)>=3 || (state.ctx && state.ctx.indexOf("wild")>-1)) o.push(["NCW","المركز الوطني لتنمية الحياة الفطرية","المشروع قد يمس موائل أو محميات أو مسارات هجرة: اطلب اشتراطات ومنطقة عازلة."]);
   if(has([51])) o.push(["NCVC","المركز الوطني لتنمية الغطاء النباتي ومكافحة التصحر","إزالة نباتات أو أشجار أو تأثير على مراعٍ: يلزم موافقة وخطة تعويض."]);
@@ -730,6 +743,44 @@ function agencyCard(list){
   var h = '<div class="card"><h3>الجهات اللي هتحتاج تنسق معاها (السعودية)</h3><ul>';
   o.forEach(function(x){ h += '<li><b>'+esc(x[0])+'</b> — '+esc(x[1])+': '+esc(x[2])+'</li>'; });
   return h+'</ul><p class="hint" style="font-size:.85rem">الترشيح مبني على أنشطة المشروع والمحيط المختار، والقرار النهائي للجهة المختصة.</p></div>';
+}
+var COUNTRY = "SA";
+function setCountry(c){ COUNTRY = c==="EG" ? "EG" : "SA"; try{ localStorage.setItem("eif:country", COUNTRY); }catch(e){} document.querySelectorAll("#cnsw [data-cn]").forEach(function(b){ var on = b.dataset.cn===COUNTRY; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); }); }
+try{ var _c0 = localStorage.getItem("eif:country"); if(_c0==="EG") COUNTRY = "EG"; }catch(e){}
+var backStack = [];
+function openSrc(btn, force){
+  var pn = btn.nextElementSibling, a1 = ACTBY[+btn.dataset.src]; if(!pn || !a1) return;
+  var op = force ? true : !pn.classList.contains("show");
+  if(op && !pn.innerHTML) pn.innerHTML = srcBody(a1);
+  pn.classList.toggle("show", op); btn.setAttribute("aria-expanded", op); btn.textContent = op ? "إخفاء التفاصيل ▴" : "الملوثات والحلول والرصد ▾";
+}
+function openRec(k){
+  var sec = $("r-"+k);
+  if(sec && !sec.classList.contains("open")){ sec.classList.add("open"); var bt = sec.querySelector("[data-tg]"); if(bt) bt.setAttribute("aria-expanded","true"); state.open[k] = true; }
+}
+function flash(el){ el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); setTimeout(function(){ el.classList.remove("flash"); }, 1800); }
+function updateBack(){
+  var f = $("backFab"); if(!f) return;
+  if(!backStack.length){ f.classList.remove("show"); return; }
+  var s = backStack[backStack.length-1], nm = s.name.length>26 ? s.name.slice(0,26)+"…" : s.name;
+  $("backGo").textContent = "↩ رجوع إلى: "+nm+(backStack.length>1 ? " ("+backStack.length+")" : "");
+  f.classList.add("show");
+}
+function jumpTo(t){
+  var org = t.closest(".item"), id = t.dataset.jump;
+  var tgt = document.querySelector('.rec .item[data-act="'+id+'"][data-home="1"]');
+  if(!org || !tgt) return;
+  backStack.push({act:org.dataset.act, rk:org.dataset.rk, name:(org.querySelector("b")||{}).textContent||""});
+  openRec(tgt.dataset.rk);
+  var b = tgt.querySelector("[data-src]"); if(b) openSrc(b, true);
+  updateBack();
+  tgt.scrollIntoView({behavior:"smooth", block:"start"}); flash(tgt);
+}
+function goBack(){
+  var s = backStack.pop(); updateBack(); if(!s) return;
+  openRec(s.rk);
+  var it = document.querySelector('.rec .item[data-act="'+s.act+'"][data-rk="'+s.rk+'"]');
+  if(it){ it.scrollIntoView({behavior:"smooth", block:"center"}); flash(it); }
 }
 function whyLine(r){
   var g = {}; r.items.forEach(function(it){ g[it.a[1]] = (g[it.a[1]]||0)+1; });
@@ -759,7 +810,7 @@ function srcSection(list){
   return '<div class="'+(state.view==='matrix' ? '' : 'prtonly')+'">'+h+'</div></div>';
 }
 function render(){
-  retitle();
+  retitle(); backStack = []; updateBack();
   var R = $("result");
   var prevDet = state._fresh ? {} : snapDet(), prevY = window.scrollY, wasFresh = !!state._fresh; state._fresh = 0;
   if(state.proj<0 && !state.custom){ R.innerHTML=""; return; }
@@ -769,13 +820,18 @@ function render(){
   var h = '<div class="head"><div class="ic">'+icon+'</div><div><h2>'+esc(state.name)+'</h2><p>'+esc(sect)+' — '+actCount(list)+' نشاط مسبب للتلوث، '+list.length+' مستقبل متأثر'+(list.length?'، منهم '+list.filter(function(r){return r.max>=3;}).length+' بدرجة عالية أو حرجة':'')+'</p></div></div>';
   var cl = state.proj>=0 ? CLS[PROJ[state.proj].n] : null;
   if(cl && clsText(cl)){
-    var nm0 = state.name, note0 = CLSNOTE[nm0] ? '<small>'+esc(CLSNOTE[nm0])+'</small>' : '';
-    var est0 = CLSEST.indexOf(nm0)>-1 ? '<small>تصنيف مصر هنا تقدير لمشروع كبير؛ الإرشادات الرسمية لا تضع فئة منفصلة للمشروعات الكبرى، والأرجح قائمة (ج).</small>' : '';
-    h += '<p class="cls"><b>التصنيف البيئي:</b> '+esc(clsText(cl))+note0+est0+'<small>مصر: القوائم (أ/ب/ج) من إرشادات جهاز شئون البيئة. السعودية: الفئات 1 إلى 3 من المركز الوطني للالتزام البيئي (NCEC)، وتصنيف المشروع نفسه هنا تقدير لم يُتحقق منه من القوائم الرسمية. يلزم الرجوع للجهة المختصة.</small></p>';
+    var nm0 = state.name, note0 = (COUNTRY==='SA' && CLSNOTE[nm0]) ? '<small>'+esc(CLSNOTE[nm0])+'</small>' : '';
+    var est0 = (COUNTRY==='EG' && CLSEST.indexOf(nm0)>-1) ? '<small>تصنيف مصر هنا تقدير لمشروع كبير؛ الإرشادات الرسمية لا تضع فئة منفصلة للمشروعات الكبرى، والأرجح قائمة (ج).</small>' : '';
+    h += '<p class="cls"><b>التصنيف البيئي:</b> '+esc(clsText(cl))+note0+est0+''+(COUNTRY==='EG' ? '<small>القوائم (أ/ب/ج) من إرشادات جهاز شئون البيئة، وتصنيف المشروع نفسه هنا تقدير لم يُتحقق منه من القوائم الرسمية. يلزم الرجوع للجهاز أو الجهة الإدارية المختصة.</small>' : '<small>الفئات 1 إلى 3 من المركز الوطني للالتزام البيئي (NCEC)، وتصنيف المشروع نفسه هنا تقدير لم يُتحقق منه من القوائم الرسمية. يلزم الرجوع للجهة المختصة.</small>')+'</p>';
   }
   if(cl){
     var K = cl[1], ST = {1:"الفئة الأولى: خطة إدارة بيئية (EMP) مبسطة للتشغيل",2:"الفئة الثانية: دراسة تقييم أثر بيئي أولية محدودة",3:"الفئة الثالثة: دراسة تفصيلية كاملة مع تقرير تحديد النطاق (Scoping)"};
-    if(ST[K]) h += '<div class="card"><h3>المطلوب للترخيص (السعودية)</h3><p><b>'+esc(ST[K])+'</b></p><details class="sl"><summary>المستندات الأساسية للطلب عبر منصة «التزام»</summary><ol><li>استمارة التصنيف</li><li>السجل التجاري والرقم الموحد للمنشأة</li><li>إثبات حيازة الموقع (صك ملكية أو عقد إيجار موثق)</li><li>المخطط العام للموقع (Site Layout)</li><li>ملف الإحداثيات الجغرافية (Shapefile)</li><li>الدراسة البيئية بصيغة PDF من مكتب استشاري مرخص من NCEC</li><li>العنوان الوطني وشهادات الزكاة والضريبة والجمارك وإيصال سداد المقابل المالي</li></ol></details><p class="hint" style="font-size:.85rem">إرشادي من دليل عام غير رسمي. راجع اللائحة التنفيذية للتصاريح البيئية قبل التقديم.</p></div>';
+    if(COUNTRY==='SA' && ST[K]) h += '<div class="card"><h3>المطلوب للترخيص (السعودية)</h3><p><b>'+esc(ST[K])+'</b></p><details class="sl"><summary>المستندات الأساسية للطلب عبر منصة «التزام»</summary><ol><li>استمارة التصنيف</li><li>السجل التجاري والرقم الموحد للمنشأة</li><li>إثبات حيازة الموقع (صك ملكية أو عقد إيجار موثق)</li><li>المخطط العام للموقع (Site Layout)</li><li>ملف الإحداثيات الجغرافية (Shapefile)</li><li>الدراسة البيئية بصيغة PDF من مكتب استشاري مرخص من NCEC</li><li>العنوان الوطني وشهادات الزكاة والضريبة والجمارك وإيصال سداد المقابل المالي</li></ol></details><p class="hint" style="font-size:.85rem">إرشادي من دليل عام غير رسمي. راجع اللائحة التنفيذية للتصاريح البيئية قبل التقديم.</p></div>';
+  }
+  if(cl && COUNTRY==='EG' && cl[0]){
+    var TE = {"أ":["قائمة (أ) — أثر محدود","نموذج الفحص البيئي (أ) + خطة إدارة مختصرة","أثر محدود. غالبًا بتملأ نموذج الفحص وبتثبت إنك فاهم الأثر وبتتحكم فيه."],"ب":["قائمة (ب) — أثر متوسط","نموذج (ب) لتحديد النطاق + دراسة أثر بيئي حسب قرار الجهاز + خطة إدارة","أثر متوسط. بتقدّم نموذج (ب) والجهاز بيحدد هل محتاج دراسة أثر كاملة، وغالبًا بتحتاج قياسات أساس وخطة إدارة."],"ج":["قائمة (ج) — أثر كبير","تحديد نطاق (Scoping) + دراسة تقييم أثر كاملة (EIA) + خطة إدارة","أثر كبير. دراسة كاملة بقياسات أساس واستشارة الأطراف المعنية، وبتتراجع من جهاز شئون البيئة قبل الموافقة."]};
+    var te = TE[cl[0]==="ك" ? "ج" : cl[0]];
+    if(te) h += '<div class="card"><h3>المطلوب للترخيص (مصر)</h3><p><b>'+esc(te[0])+'</b> — '+esc(te[1])+'</p><p>'+esc(te[2])+'</p><details class="sl"><summary>خطوات الإجراء</summary><ol><li>حدد النشاط بدقة (اكتب بالظبط إيه بيتصنع أو بيتقدم أو بيتعالج؛ أي غموض بيغيّر القائمة)</li><li>حدد قائمة النشاط (أ / ب / ج) وهي اللي بتحدد الإجراء</li><li>اجمع بيانات المشروع: المساحة، الإنتاج، المياه، الوقود، الكيماويات، العمال، جهة الصرف والنفايات</li><li>حدد الموقع والحساسيات: أقرب سكن، محمية، نيل أو ترعة، بحر، مطار، مياه جوفية</li><li>قياسات الأساس بمعمل معتمد (غالبًا للقائمتين ب وج)</li><li>اكتب الدراسة أو الخطة وراجع اتساقها</li><li>قدّم عبر الجهة الإدارية المختصة (محافظة / هيئة التنمية الصناعية…) وهي بتحوله لجهاز شئون البيئة</li><li>الموافقة البيئية بتسبق ترخيص الإنشاء، وبعد التشغيل فيه التزام بالرصد وتقارير دورية</li></ol></details><p class="hint" style="font-size:.85rem">إرشادي وغير رسمي. القرار النهائي في تحديد القائمة والمستندات لجهاز شئون البيئة والجهة الإدارية.</p></div>';
   }
   if(!state.acts.length){
     h += '<div class="card hint">علّم على خصائص المشروع من فوق، أو افتح «تعديل الأنشطة».</div>';
@@ -839,7 +895,8 @@ function render(){
       h += whyLine(r);
       r.items.forEach(function(it){
         var phs = it.a[3].split("").map(function(c){ return PHN[c]; }).join(" + ");
-        h += '<div class="item"><div class="t"><b>'+esc(it.a[2])+'</b><span class="sev s'+it.sev+'">'+SEV[it.sev]+'</span><span class="ph">'+phs+'</span></div><div class="p">'+esc(it.path)+'</div>'+(home[it.a[0]].k!==r.k ? '<p class="lnk2">الملوثات والحلول والرصد: تحت «'+esc(REC[home[it.a[0]].k][0])+'».</p>' : '<button type="button" class="lnk" data-src="'+it.a[0]+'" aria-expanded="false">الملوثات والحلول والرصد ▾</button><div class="inl"></div>')+'</div>';
+        var isHome = home[it.a[0]].k===r.k;
+        h += '<div class="item" data-act="'+it.a[0]+'" data-rk="'+r.k+'"'+(isHome ? ' data-home="1"' : '')+'><div class="t"><b>'+esc(it.a[2])+'</b><span class="sev s'+it.sev+'">'+SEV[it.sev]+'</span><span class="ph">'+phs+'</span></div><div class="p">'+esc(it.path)+'</div>'+(!isHome ? '<button type="button" class="lnk2" data-jump="'+it.a[0]+'">الملوثات والحلول والرصد: تحت «'+esc(REC[home[it.a[0]].k][0])+'» ↗</button>' : '<button type="button" class="lnk" data-src="'+it.a[0]+'" aria-expanded="false">الملوثات والحلول والرصد ▾</button><div class="inl"></div>')+'</div>';
       });
       h += '</div></section>';
     });
@@ -879,6 +936,7 @@ function writeHash(){
     if(state.ctx) P.push("cx="+state.ctx.join(","));
     if(state.fuel) P.push("fu="+state.fuel);
     if(state.view==="matrix") P.push("v=m");
+    if(COUNTRY==="EG") P.push("cn=eg");
     var cur = numSort(state.acts).join(",");
     if(state.proj<0 || cur!==numSort(state.base).join(",")) P.push("a="+cur);
     history.replaceState(null,"","#"+P.join("&"));
@@ -887,6 +945,7 @@ function writeHash(){
 function loadHash(){
   var m = {};
   location.hash.replace(/^#/,"").split("&").forEach(function(kv){ var i = kv.indexOf("="); if(i>0){ try{ m[kv.slice(0,i)] = decodeURIComponent(kv.slice(i+1)); }catch(e){} } });
+  if(m.cn==="eg") setCountry("EG");
   var ok = false;
   var pi = m.p===undefined ? -1 : (/^\d+$/.test(m.p) ? +m.p : PN.indexOf(norm(m.p)));
   if(pi>-1 && PROJ[pi]){ pick(pi); ok = true; }
@@ -904,6 +963,7 @@ function syncQuick(){ QUICK.forEach(function(q,ix){ var b = document.querySelect
 
 document.addEventListener("click",function(e){
   var t = e.target.closest("button,input,summary"); if(!t) { if(!e.target.closest(".search")) $("sug").style.display="none"; return; }
+  if(t.dataset.cn){ setCountry(t.dataset.cn); if(state.proj>=0 || state.custom) render(); return; }
   if(t.dataset.i!==undefined){ pick(+t.dataset.i); return; }
   if(t.dataset.custom){ startCustom($("q").value); return; }
   if(t.dataset.sl!==undefined){
@@ -930,12 +990,12 @@ document.addEventListener("click",function(e){
     render(); return;
   }
   if(t.dataset.src!==undefined){
-    var pn = t.nextElementSibling, a1 = ACTBY[+t.dataset.src]; if(!pn || !a1) return;
-    var op = !pn.classList.contains("show");
-    if(op && !pn.innerHTML) pn.innerHTML = srcBody(a1);
-    pn.classList.toggle("show", op); t.setAttribute("aria-expanded", op); t.textContent = op ? "إخفاء التفاصيل ▴" : "الملوثات والحلول والرصد ▾";
+    openSrc(t, false);
     return;
   }
+  if(t.dataset.jump!==undefined){ jumpTo(t); return; }
+  if(t.id==="backGo"){ goBack(); return; }
+  if(t.id==="backX"){ backStack = []; updateBack(); return; }
   if(t.dataset.go){ state.open[t.dataset.go]=true; render(); var s=$("r-"+t.dataset.go); if(s) s.scrollIntoView({behavior:"smooth",block:"start"}); return; }
   if(t.dataset.tg){ var k=t.dataset.tg, sec=$("r-"+k); var o=!sec.classList.contains("open"); state.open[k]=o; sec.classList.toggle("open",o); t.setAttribute("aria-expanded",o); return; }
   if(t.id==="bEdit"){ state.panelOpen = !state.panelOpen; if(state.panelOpen) buildPanel(); else $("panel").classList.remove("show"); return; }
@@ -992,7 +1052,7 @@ $("sug").addEventListener("keydown",function(e){
   });
   $("browseBody").innerHTML = h;
 })();
-window.__loading = true; loadHash(); window.__loading = false;
+setCountry(COUNTRY); window.__loading = true; loadHash(); window.__loading = false;
 </script>
 </body>
 </html>
