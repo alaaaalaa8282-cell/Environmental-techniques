@@ -102,7 +102,7 @@ h1{font-size:1.55rem;margin:6px 0 2px;letter-spacing:0}
 .mxc.s1{background:var(--s1);color:var(--t1)}.mxc.s2{background:var(--s2);color:var(--t2)}.mxc.s3{background:var(--s3);color:var(--t3)}.mxc.s4{background:var(--s4);color:var(--t4)}
 .mxc.sel{outline:3px solid var(--ink);outline-offset:1px}.mxn{color:var(--muted)}
 @media (pointer:coarse){.ctlb{min-height:44px}.chip-btn{min-height:44px;padding:8px 14px}.btn{min-height:44px}.cell{min-height:56px}#sug button{min-height:48px}}
-/*V8*/.pgp{margin:6px 0;color:var(--muted);font-size:.92rem}.pgd{margin:6px 0;border-inline-start:3px solid var(--accent);padding-inline-start:8px}.pgd>summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:.95rem}.pgn{font-weight:400;color:var(--muted);font-size:.82rem;margin-inline-start:6px}.pg{margin:8px 0}.pgt{margin:10px 0 4px;font-size:.95rem;color:var(--ink);border-inline-start:3px solid var(--accent);padding-inline-start:8px}.inl{display:none;margin:4px 0 2px;padding:8px 10px;border-inline-start:3px solid var(--accent);background:var(--surface);border-radius:8px}.inl.show{display:block}.inl p{margin:4px 0;font-size:.92rem}.lnk{background:none;border:0;padding:3px 0;color:var(--accent);font:inherit;font-size:.9rem;cursor:pointer;text-decoration:underline}.why{margin:6px 0 2px;padding:8px 10px;border-radius:10px;background:var(--surface);font-size:.9rem}.srcit summary{cursor:pointer}.srcit>p{margin:4px 0;font-size:.92rem}
+/*V8*/.lnk2{margin:3px 0;color:var(--muted);font-size:.85rem}.pgp{margin:6px 0;color:var(--muted);font-size:.92rem}.pgd{margin:6px 0;border-inline-start:3px solid var(--accent);padding-inline-start:8px}.pgd>summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:.95rem}.pgn{font-weight:400;color:var(--muted);font-size:.82rem;margin-inline-start:6px}.pg{margin:8px 0}.pgt{margin:10px 0 4px;font-size:.95rem;color:var(--ink);border-inline-start:3px solid var(--accent);padding-inline-start:8px}.inl{display:none;margin:4px 0 2px;padding:8px 10px;border-inline-start:3px solid var(--accent);background:var(--surface);border-radius:8px}.inl.show{display:block}.inl p{margin:4px 0;font-size:.92rem}.lnk{background:none;border:0;padding:3px 0;color:var(--accent);font:inherit;font-size:.9rem;cursor:pointer;text-decoration:underline}.why{margin:6px 0 2px;padding:8px 10px;border-radius:10px;background:var(--surface);font-size:.9rem}.srcit summary{cursor:pointer}.srcit>p{margin:4px 0;font-size:.92rem}
 @media print{.lnk,.inl{display:none!important}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .noprint{display:none!important}.prt,.prtonly{display:block!important}
@@ -507,7 +507,8 @@ function actSection(list){
 }
 var LGT = /^(مطاعم|فنادق|مجمعات سكنية|كمبوند سكني|حي سكني متكامل|مدينة ملاهي|جامعة|مدينة جامعية|مخيمات صحراوية سياحية|مغسلة ملابس|مصنع مكرونة|مصنع شوكولاتة وحلويات|مطبخ مركزي|مجمع عيادات|مركز غسيل كلوي|مركز غسيل كلى وعيادات تخصصية|مخازن تبريد|مستودعات لوجستية|محطة شحن سيارات كهربائية)$/;
 var LGH = ["nox:0","vocs:0","sox:0","sox:1","pm:1","bod_cod:1","hazardous_chemical_waste:1","medical_waste:0"];
-function ctlOf(id){ var k = ctlBase(id).slice(); if(LGT.test(state.name||"")){ var kf = k.filter(function(x){ return LGH.indexOf(x)<0; }); if(kf.length) k = kf; } if(state.proj>=0 && PROJ[state.proj].l) k = k.filter(function(x){ return x.indexOf('off_')!==0 || x.indexOf('off_flaring')===0; }); var pk = polKeys(ACTBY[id]); pk.forEach(function(x){ if(k.indexOf(x)<0) k.push(x); }); return k; }
+function ctlOf(id){ var k = ctlBase(id).slice(); if(LGT.test(state.name||"")){ var kf = k.filter(function(x){ return LGH.indexOf(x)<0; }); if(kf.length) k = kf; } if(state.proj>=0 && PROJ[state.proj].l) k = k.filter(function(x){ return x.indexOf('off_')!==0 || x.indexOf('off_flaring')===0; }); var pk = polKeys(ACTBY[id]); pk.forEach(function(x){ if(k.indexOf(x)<0) k.push(x); }); if(!HEAVYP.test(state.name||"") && state.sz!=="l") k = k.filter(function(x){ return x!=="co2:2"; }); return k; }
+var HEAVYP = /^محطة (كهرباء|طاقة (حرارية$|نووية)|توليد (ديزل|دورة))|^مصنع (أسمنت|حديد|تكرير|بتروكيماويات|أسمدة|ألومنيوم|زجاج( مسطح)?$|ورق$|لب|كيماويات|صودا|حامض)|^مسبك|معالجة غاز|حقل نفط|استخراج البترول|تحويل نفايات إلى طاقة|^تعدين النحاس|استرجاع كبريت/;
 /*V8 POL*/
 var POLTX = function(a){ return String(ovx(a)[0]||"").replace(/لا (يوجد|توجد)[^،.]*/g,""); };
 var TOK = [
@@ -534,23 +535,30 @@ function tokensOf(a){
 function polKeys(a){
   if(!a || a[1]!=="air" || a[0]===46) return [];
   var base = ctlBase(a[0]).map(pfxOf), out = [], light = LGT.test(state.name||"");
-  function add(k){ if(out.indexOf(k)<0 && SOL[k] && !(light && LGH.indexOf(k)>-1) && !(k==="fl:0" && !/ألومني|ألومنيوم/.test(state.name||""))) out.push(k); }
+  function add(k){ if(out.indexOf(k)<0 && !(a[0]===2 && k==="co:2") && SOL[k] && !(light && LGH.indexOf(k)>-1) && !(k==="fl:0" && !/ألومني|ألومنيوم/.test(state.name||""))) out.push(k); }
   tokensOf(a).forEach(function(tk){
     var pf = tokPfx(tk,a[0]);
     if(!base.some(function(p){ return pf.indexOf(p)>-1; })) tk.der.forEach(add);
-    if(tk.fam && !((tk.id==="so2" || tk.id==="pm") && (state.fuel==="gas" || state.fuel==="elec"))) Object.keys(SOL).filter(function(k){ return tk.fam.indexOf(pfxOf(k))>-1; }).forEach(add);
+    if(tk.fam && [1,5,6,8,9].indexOf(a[0])>-1 && !((tk.id==="so2" || tk.id==="pm") && (state.fuel==="gas" || state.fuel==="elec"))) Object.keys(SOL).filter(function(k){ return tk.fam.indexOf(pfxOf(k))>-1; }).forEach(add);
   });
   return out;
 }
 var PLAB = {nox:"NOx",sox:"SO2",pm:"الجسيمات",diesel_exhaust:"عادم الديزل",silica_dust:"غبار السيليكا",cem_fugitive_dust:"الغبار المتطاير",vocs:"المركبات العضوية المتطايرة",odor_pollution:"الروائح",min_smelter_emissions:"انبعاثات المصاهر",lead_air:"الرصاص في الهواء",off_flaring:"الشعلة والغاز المصاحب",methane_fugitive:"تسريبات الميثان",bod_cod:"المواد العضوية (BOD/COD)",heavy_metals_water:"المعادن الثقيلة في المياه",oil_water:"الزيت والشحوم في المياه",eutrophication:"المغذيات والإثراء الغذائي",pathogens_water:"الميكروبات في المياه",thermal_pollution:"التلوث الحراري",brine:"المحلول الملحي المركز",chemical_spill:"الانسكاب الكيميائي",hydrocarbons_soil:"الهيدروكربونات في التربة",pesticides_soil:"المبيدات في التربة",heavy_metals_soil:"المعادن الثقيلة في التربة",saline_soil:"ملوحة التربة",soil_erosion:"تعرية التربة",hazardous_chemical_waste:"النفايات الكيميائية الخطرة",medical_waste:"النفايات الطبية",sludge:"الحمأة",con_site_runoff:"جريان موقع الإنشاء",industrial_noise:"ضوضاء صناعية",construction_noise:"ضوضاء الإنشاء",blasting_noise:"ضوضاء التفجير",occupational_noise:"الضوضاء المهنية",co2:"CO2",co:"CO",hg:"الزئبق",dx:"الديوكسينات",h2s:"H2S",nh3:"NH3",fl:"HF والفلوريد",hcl:"HCl والغازات الحمضية",min_tailings:"مخلفات التعدين",e_waste:"النفايات الإلكترونية",battery_waste:"البطاريات",plastic_waste:"نفايات البلاستيك",food_waste:"مخلفات الغذاء"};
+var PTR = [[6,["so2","nox","pm","hg","co"],1],[6,["co2"],62],[1,["co2"],62],[2,["co2"],62],[9,["co2"],62],[7,["voc"],5]];
 function ctlGroups(id){
   var keys = ctlOf(id), a = ACTBY[id], g = [], used = {};
   if(a && a[1]==="air"){
+    var owner = {};
     tokensOf(a).forEach(function(tk){
       var pf = tokPfx(tk,id), ks = keys.filter(function(k){ return pf.indexOf(pfxOf(k))>-1; });
       ks.forEach(function(k){ used[k] = 1; });
-      if(id===6 && ["so2","nox","pm","hg","co","co2"].indexOf(tk.id)>-1 && state.acts.indexOf(1)>-1 && state.fuel!=="elec"){ g.push({t:tk.t, k:[], ptr:"نفس مدخنة الحرق: وسائله في بند «حرق وقود ثابت»."}); return; }
-      if(ks.length) g.push({t:tk.t, k:ks}); else if(id!==46) g.push({t:tk.t, k:[], miss:1});
+      var rl = PTR.filter(function(r){ return r[0]===id && r[1].indexOf(tk.id)>-1 && state.acts.indexOf(r[2])>-1 && !(r[2]===1 && state.fuel==="elec"); })[0];
+      if(rl){ g.push({t:tk.t, k:[], ptr:"نفس المصدر في بند «"+ACTBY[rl[2]][2]+"»: وسائله هناك."}); return; }
+      var fresh = ks.filter(function(k){ return !owner[k]; }), dups = ks.filter(function(k){ return owner[k]; });
+      fresh.forEach(function(k){ owner[k] = tk.t; });
+      if(fresh.length){ var o = {t:tk.t, k:fresh}; if(dups.length) o.note = "وسائل مشتركة مع «"+owner[dups[0]]+"» مذكورة هناك."; g.push(o); }
+      else if(dups.length) g.push({t:tk.t, k:[], ptr:"نفس وسائل «"+owner[dups[0]]+"» أعلاه."});
+      else if(id!==46) g.push({t:tk.t, k:[], miss:1});
     });
     var rest = keys.filter(function(k){ return !used[k]; });
     if(rest.length) g.push({t:g.length ? "وسائل عامة للمصدر" : "", k:rest});
@@ -568,7 +576,7 @@ function ctlHTML(id){
     if(x.ptr) return '<p class="pgp"><b>'+esc(x.t)+':</b> '+esc(x.ptr)+'</p>';
     var body = x.k.length ? x.k.map(solCard).join("") : '<p class="hint">مفيش وسيلة معالجة مسجلة لهذا الملوث في الأداة. راجع المرجع.</p>';
     if(!x.t) return '<div class="pg">'+body+'</div>';
-    return '<details class="pgd"><summary>'+esc(x.t)+' <span class="pgn">'+x.k.length+' '+(x.k.length===1?'وسيلة':'وسائل')+'</span></summary>'+body+'</details>';
+    return '<details class="pgd"><summary>'+esc(x.t)+' <span class="pgn">'+x.k.length+' '+(x.k.length===1?'وسيلة':'وسائل')+'</span></summary>'+body+(x.note ? '<p class="pgp">'+esc(x.note)+'</p>' : '')+'</details>';
   }).join("")+'</div><div class="prt"><p><b>وسائل التحكم:</b></p>'+G.map(function(x){
     return '<p>'+(x.t ? '<b>'+esc(x.t)+':</b> ' : '')+esc(x.ptr ? x.ptr : x.k.length ? x.k.map(function(k){ var o = SOL[k]; return o.a+(o.f ? " ("+o.f+")" : ""); }).join("، ") : "غير مسجلة")+'</p>';
   }).join("")+'</div>';
@@ -727,8 +735,7 @@ function whyLine(r){
   var g = {}; r.items.forEach(function(it){ g[it.a[1]] = (g[it.a[1]]||0)+1; });
   var parts = Object.keys(GRP).filter(function(k){ return g[k]; }).map(function(k){ return GRP[k]+" ("+g[k]+")"; });
   var s = '<p class="why"><b>مصدر الأثر:</b> '+esc(parts.join("، "))+'.';
-  if(r.k==="PUB" || r.k==="VUL") s += ' وجود سكان قريبين هو اللي بيفعّل البنود دي ويرفع الاهتمام بالأثر الصحي؛ الأثر بيوصلهم من المصادر دي، وتفاصيل كل ملوث وحله تفتح في مكانها بالزر تحت كل بند.';
-  else s += ' اضغط «الملوثات والحلول والرصد» تحت أي بند تفتح التفاصيل في مكانها.';
+  if(r.k==="PUB" || r.k==="VUL") s += ' وجود سكان قريبين هو اللي بيفعّل البنود دي ويرفع الاهتمام بالأثر الصحي.';
   return s+'</p>';
 }
 function srcBody(a){
@@ -749,7 +756,7 @@ function srcSection(list){
       h += '<details class="item srcit" id="src-'+a[0]+'" data-dk="src|'+a[0]+'"><summary><b>'+esc(a[2])+'</b> <span class="sev s'+x.sev+'">'+SEV[x.sev]+'</span> <span class="ph">'+phs+'</span></summary><p><b>يؤثر على:</b> '+esc(x.recs.join("، "))+'</p>'+srcBody(a)+'</details>';
     });
   });
-  return h+'</div>';
+  return '<div class="'+(state.view==='matrix' ? '' : 'prtonly')+'">'+h+'</div></div>';
 }
 function render(){
   retitle();
@@ -798,7 +805,7 @@ function render(){
       if(hid.length) h += '<p class="hint" style="margin:-4px 0 8px;font-size:.88rem">مخفي حسب المحيط المحدد: '+esc(hid.join("، "))+'. لو مش متأكد من المحيط اختار «مش محدد».</p>';
     }
     if(state.proj>=0 && PROJ[state.proj].l && !state.ctx) h += '<p class="hint" style="margin:-4px 0 8px;font-size:.88rem">مشروع داخلي: «البحر» مخفي مبدئياً. لو الموقع ساحلي علّم «بحر أو شاطئ».</p>';
-    if(state.proj>=0 && PROJ[state.proj].c) h += '<p class="hint" style="margin:-4px 0 8px;font-size:.88rem">مشروع بحري: ضبطنا المحيط مبدئياً على «بحر» و«حياة برية». لو فيه سكان على الساحل قريبين علّم «سكان قريبين».</p>';
+    if(state.proj>=0 && PROJ[state.proj].c) h += '<p class="hint" style="margin:-4px 0 8px;font-size:.88rem">ضبطنا المحيط مبدئياً على: '+esc(CTX.filter(function(c0){ return PROJ[state.proj].c.indexOf(c0[0])>-1; }).map(function(c0){ return c0[1]; }).join("، "))+'. غيّره لو موقعك مختلف.</p>';
     if(state.acts.indexOf(1)>-1){
       h += '<div class="sect-title" style="margin-top:6px">الوقود المستخدم في الغلايات والمولدات</div><div class="row-btns" role="group" aria-label="نوع الوقود" style="margin-top:0">';
       [["gas","غاز طبيعي"],["liq","سولار أو مازوت"],["coal","فحم"],["elec","كهرباء فقط"],[null,"مش محدد"]].filter(function(f){ return !(f[0]==='elec' && /محطة (كهرباء|توليد|طاقة حرارية)/.test(state.name)); }).forEach(function(f){
@@ -823,13 +830,16 @@ function render(){
       cr.forEach(function(c){ h += '<li><b>'+esc(c.a[2])+'</b> — يؤثر على: '+esc(c.recs.join("، "))+'</li>'; });
       h += '</ul></div>';
     }
+    var home = {}, MED = ["AIR","SWT","GWT","SOIL","SEA"];
+    list.forEach(function(r0){ r0.items.forEach(function(it0){ var id0 = it0.a[0], m0 = MED.indexOf(r0.k); if(home[id0]===undefined) home[id0] = {k:r0.k, m:m0}; else if(m0>-1 && (home[id0].m<0 || m0<home[id0].m)) home[id0] = {k:r0.k, m:m0}; }); });
+    h += '<p class="hint" style="margin:4px 0 8px;font-size:.88rem">اضغط «الملوثات والحلول والرصد» تحت أي بند تفتح تفاصيله في مكانها. البند اللي بيظهر تحت أكتر من مستقبِل تفاصيله مكتوبة مرة واحدة، عند مصدره (الهواء أو المياه أو التربة).</p>';
     if(state.view==='matrix' && list.length) h += matrixHTML(list); else list.forEach(function(r,ix){
       var open = state.open[r.k]!==undefined ? state.open[r.k] : ix<3;
       h += '<section class="rec s'+r.max+(open?' open':'')+'" id="r-'+r.k+'"><button data-tg="'+r.k+'" aria-expanded="'+open+'"><span aria-hidden="true">'+REC[r.k][1]+'</span><span class="nm">'+esc(REC[r.k][0])+'</span><span class="sev s'+r.max+'">'+SEV[r.max]+'</span><span class="cnt">'+r.items.length+' بند</span><span class="caret" aria-hidden="true">‹</span></button><div class="body">';
       h += whyLine(r);
       r.items.forEach(function(it){
         var phs = it.a[3].split("").map(function(c){ return PHN[c]; }).join(" + ");
-        h += '<div class="item"><div class="t"><b>'+esc(it.a[2])+'</b><span class="sev s'+it.sev+'">'+SEV[it.sev]+'</span><span class="ph">'+phs+'</span></div><div class="p">'+esc(it.path)+'</div><button type="button" class="lnk" data-src="'+it.a[0]+'" aria-expanded="false">الملوثات والحلول والرصد ▾</button><div class="inl"></div></div>';
+        h += '<div class="item"><div class="t"><b>'+esc(it.a[2])+'</b><span class="sev s'+it.sev+'">'+SEV[it.sev]+'</span><span class="ph">'+phs+'</span></div><div class="p">'+esc(it.path)+'</div>'+(home[it.a[0]].k!==r.k ? '<p class="lnk2">الملوثات والحلول والرصد: تحت «'+esc(REC[home[it.a[0]].k][0])+'».</p>' : '<button type="button" class="lnk" data-src="'+it.a[0]+'" aria-expanded="false">الملوثات والحلول والرصد ▾</button><div class="inl"></div>')+'</div>';
       });
       h += '</div></section>';
     });
