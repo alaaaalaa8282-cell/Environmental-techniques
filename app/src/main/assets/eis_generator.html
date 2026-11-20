@@ -2627,14 +2627,21 @@ finalImpact=function(sum,m){var sl=sum>20?4:(sum>15?3:(sum>10?2:(sum>5?1:0))),ml
 
 
 var NAME_POOL=["منصة بحرية لاستخراج البترول والغاز", "معمل معالجة غاز طبيعي", "مصفاة بترول ساحلية", "محطة معالجة مياه صرف صناعي", "مزرعة دواجن متكاملة", "مصنع أسمنت جديد", "مشروع طاقة شمسية"];
-function nameSug(){var inp=document.getElementById('pName'),box=document.getElementById('nameSug');if(!inp||!box)return;var q=(inp.value||'').trim().toLowerCase();
+function nsNorm(s){return String(s||'').toLowerCase().replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[\u064B-\u0652]/g,'').trim()}
+var NS_MAP={'منصة بحرية لاستخراج البترول والغاز':['energy','استخراج البترول البحري'],'معمل معالجة غاز طبيعي':['energy','محطة معالجة غاز'],'مصفاة بترول ساحلية':['energy','مصفاة'],'محطة معالجة مياه صرف صناعي':['waste','محطة معالجة مياه صناعية'],'مزرعة دواجن متكاملة':['animal','مزارع دواجن'],'مصنع أسمنت جديد':['ind','أسمنت'],'مشروع طاقة شمسية':['energy','طاقة شمسية']};
+function nsPool(){var r=[],seen={};
+try{Object.keys(activities).forEach(function(s){(activities[s]||[]).forEach(function(x){var k=s+'|'+x;if(!seen[k]){seen[k]=1;r.push({n:x,s:s,a:x})}})})}catch(e){}
+NAME_POOL.forEach(function(n){var m=NS_MAP[n];r.push({n:n,s:m?m[0]:'',a:m?m[1]:''})});
+try{savedProjects.forEach(function(p){if(p&&p.name)r.push({n:p.name,s:'',a:''})})}catch(e){}
+return r}
+function nameSug(){var inp=document.getElementById('pName'),box=document.getElementById('nameSug');if(!inp||!box)return;var q=nsNorm(inp.value);
 if(!q){box.style.display='none';box.innerHTML='';return}
-var pool=NAME_POOL.slice();try{savedProjects.forEach(function(p){if(p&&p.name&&pool.indexOf(p.name)<0)pool.push(p.name)})}catch(e){}
-var r=pool.filter(function(n){var l=n.toLowerCase();return l.indexOf(q)>-1&&l!==q}).slice(0,3);
+var seen={};var r=nsPool().filter(function(x){var l=nsNorm(x.n);if(l.indexOf(q)<0)return false;var k=x.n+'|'+x.s;if(seen[k])return false;seen[k]=1;return true});
+r.sort(function(x,y){return (nsNorm(x.n).indexOf(q)===0?0:1)-(nsNorm(y.n).indexOf(q)===0?0:1)});r=r.slice(0,6);
 if(!r.length){box.style.display='none';box.innerHTML='';return}
-box.style.display='flex';box.innerHTML=r.map(function(n,i){return'<button type="button" class="btn" style="padding:4px 10px;font-size:.85em;margin:0" onmousedown="event.preventDefault()" onclick="nameSet('+i+')">'+esc(n)+'</button>'}).join('');box._r=r}
-function nameSet(i){var box=document.getElementById('nameSug'),inp=document.getElementById('pName');if(box&&box._r&&box._r[i]){inp.value=box._r[i];box.style.display='none';box.innerHTML=''}}
-
+box.style.display='flex';box.innerHTML=r.map(function(x,i){var sn='';try{sn=x.s?(sectorNamesDB[x.s]||''):''}catch(e){}return'<button type="button" class="btn" style="padding:4px 10px;font-size:.85em;margin:0" onmousedown="event.preventDefault()" onclick="nameSet('+i+')">'+esc(x.n)+(sn?' <small style="opacity:.7">· '+esc(sn)+'</small>':'')+'</button>'}).join('');box._r=r}
+function nameSet(i){var box=document.getElementById('nameSug'),inp=document.getElementById('pName');if(!(box&&box._r&&box._r[i]))return;var x=box._r[i];inp.value=x.n;box.style.display='none';box.innerHTML='';
+if(x.s){var sec=document.getElementById('pSector');sec.value=x.s;if(sec.value===x.s){try{sec.dispatchEvent(new Event('change'))}catch(e){updateActivities()}var act=document.getElementById('pActivity');if(!act.options.length||act.options.length<2)updateActivities();if(x.a){act.value=x.a;if(act.value!==x.a){for(var k=0;k<act.options.length;k++){if(act.options[k].value&&nsNorm(act.options[k].value)===nsNorm(x.a)){act.value=act.options[k].value;break}}}if(act.value){try{act.dispatchEvent(new Event('change'))}catch(e){checkOffshore()}}}}}}
 
 /* ================= اختيار الدولة: السعودية / مصر ================= */
 var COUNTRY='SA',FX=13.4;
